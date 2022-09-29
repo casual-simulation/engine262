@@ -13,7 +13,7 @@ import { Q } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-error.prototype.tostring
-function ErrorProto_toString(args, { thisValue }) {
+function* ErrorProto_toString(args, { thisValue }) {
   // 1. Let O be this value.
   const O = thisValue;
   // 2. If Type(O) is not Object, throw a TypeError exception.
@@ -21,7 +21,7 @@ function ErrorProto_toString(args, { thisValue }) {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', O);
   }
   // 3. Let name be ? Get(O, "name").
-  let name = Q(Get(O, new Value('name')));
+  let name = Q(yield* Get(O, new Value('name')));
   // 4. If name is undefined, set name to "Error"; otherwise set name to ? ToString(name).
   if (name === Value.undefined) {
     name = new Value('Error');
@@ -29,7 +29,7 @@ function ErrorProto_toString(args, { thisValue }) {
     name = Q(ToString(name));
   }
   // 5. Let msg be ? Get(O, "message").
-  let msg = Q(Get(O, new Value('message')));
+  let msg = Q(yield* Get(O, new Value('message')));
   // 6. If msg is undefined, set msg to the empty String; otherwise set msg to ? ToString(msg).
   if (msg === Value.undefined) {
     msg = new Value('');

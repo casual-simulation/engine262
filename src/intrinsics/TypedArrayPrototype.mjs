@@ -798,6 +798,7 @@ function TypedArrayProto_at([index = Value.undefined], { thisValue }) {
 
 export function bootstrapTypedArrayPrototype(realmRec) {
   const ArrayProto_toString = X(Get(realmRec.Intrinsics['%Array.prototype%'], new Value('toString')));
+  console.log(ArrayProto_toString);
   Assert(Type(ArrayProto_toString) === 'Object');
 
   const proto = bootstrapPrototype(realmRec, [

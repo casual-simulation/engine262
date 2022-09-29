@@ -39,7 +39,7 @@ import { OutOfRange } from '../helpers.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // 22.1.1 #sec-array-constructor
-function ArrayConstructor(argumentsList, { NewTarget }) {
+function* ArrayConstructor(argumentsList, { NewTarget }) {
   const numberOfArgs = argumentsList.length;
   if (numberOfArgs === 0) {
     // 22.1.1.1 #sec-array-constructor-array
@@ -88,7 +88,7 @@ function ArrayConstructor(argumentsList, { NewTarget }) {
       Assert(defineStatus === Value.true);
       k += 1;
     }
-    Assert(X(Get(array, new Value('length'))).numberValue() === numberOfArgs);
+    Assert(X(yield* Get(array, new Value('length'))).numberValue() === numberOfArgs);
     return array;
   }
 

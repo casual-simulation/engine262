@@ -105,7 +105,7 @@ export function* ArraySpeciesCreate(originalArray, length) {
   if (isArray === Value.false) {
     return Q(ArrayCreate(length));
   }
-  let C = Q(Get(originalArray, new Value('constructor')));
+  let C = Q(yield* Get(originalArray, new Value('constructor')));
   if (IsConstructor(C) === Value.true) {
     const thisRealm = surroundingAgent.currentRealmRecord;
     const realmC = Q(GetFunctionRealm(C));
@@ -116,7 +116,7 @@ export function* ArraySpeciesCreate(originalArray, length) {
     }
   }
   if (Type(C) === 'Object') {
-    C = Q(Get(C, wellKnownSymbols.species));
+    C = Q(yield* Get(C, wellKnownSymbols.species));
     if (C === Value.null) {
       C = Value.undefined;
     }
@@ -189,11 +189,11 @@ export function ArraySetLength(A, Desc) {
 }
 
 // 22.1.3.1.1 #sec-isconcatspreadable
-export function IsConcatSpreadable(O) {
+export function* IsConcatSpreadable(O) {
   if (Type(O) !== 'Object') {
     return Value.false;
   }
-  const spreadable = Q(Get(O, wellKnownSymbols.isConcatSpreadable));
+  const spreadable = Q(yield* Get(O, wellKnownSymbols.isConcatSpreadable));
   if (spreadable !== Value.undefined) {
     return ToBoolean(spreadable);
   }
@@ -281,7 +281,7 @@ export function CreateArrayIterator(array, kind) {
         // 1. Let elementKey be ! ToString(𝔽(index)).
         const elementKey = X(ToString(F(index)));
         // 2. Let elementValue be ? Get(array, elementKey).
-        const elementValue = Q(Get(array, elementKey));
+        const elementValue = Q(yield* Get(array, elementKey));
         // 3. If kind is value, perform ? Yield(elementValue).
         if (kind === 'value') {
           Q(yield* Yield(elementValue));

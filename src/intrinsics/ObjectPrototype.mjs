@@ -79,7 +79,7 @@ function* ObjectProto_toLocaleString(argList, { thisValue }) {
 }
 
 // #sec-object.prototype.tostring
-function ObjectProto_toString(argList, { thisValue }) {
+function* ObjectProto_toString(argList, { thisValue }) {
   // 1. If the this value is undefined, return "[object Undefined]".
   if (thisValue === Value.undefined) {
     return new Value('[object Undefined]');
@@ -116,7 +116,7 @@ function ObjectProto_toString(argList, { thisValue }) {
     builtinTag = 'Object';
   }
   // 15. Let tag be ? Get(O, @@toStringTag).
-  let tag = Q(Get(O, wellKnownSymbols.toStringTag));
+  let tag = Q(yield* Get(O, wellKnownSymbols.toStringTag));
   // 16. If Type(tag) is not String, set tag to builtinTag.
   if (Type(tag) !== 'String') {
     tag = builtinTag;
@@ -278,6 +278,6 @@ export function bootstrapObjectPrototype(realmRec) {
     ['__proto__', [ObjectProto__proto__Get, ObjectProto__proto__Set]],
   ]);
 
-  realmRec.Intrinsics['%Object.prototype.toString%'] = X(Get(proto, new Value('toString')));
-  realmRec.Intrinsics['%Object.prototype.valueOf%'] = X(Get(proto, new Value('valueOf')));
+  realmRec.Intrinsics['%Object.prototype.toString%'] = X(unwrap(Get(proto, new Value('toString'))));
+  realmRec.Intrinsics['%Object.prototype.valueOf%'] = X(unwrap(Get(proto, new Value('valueOf'))));
 }

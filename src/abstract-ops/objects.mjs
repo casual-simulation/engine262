@@ -21,7 +21,7 @@ import {
   MakeBasicObject,
   isArrayIndex,
 } from './all.mjs';
-import { unwind } from '../helpers.mjs';
+import { unwind, wrap } from '../helpers.mjs';
 
 // 9.1.1.1 OrdinaryGetPrototypeOf
 export function OrdinaryGetPrototypeOf(O) {
@@ -250,7 +250,7 @@ export function* OrdinaryGet(O, P, Receiver) {
     if (Type(parent) === 'Null') {
       return Value.undefined;
     }
-    return Q(parent.Get(P, Receiver));
+    return Q(yield* wrap(parent.Get(P, Receiver)));
   }
   if (IsDataDescriptor(desc)) {
     return desc.Value;
@@ -390,11 +390,11 @@ export function OrdinaryCreateFromConstructor(constructor, intrinsicDefaultProto
 }
 
 // 9.1.14 GetPrototypeFromConstructor
-export function GetPrototypeFromConstructor(constructor, intrinsicDefaultProto) {
+export function* GetPrototypeFromConstructor(constructor, intrinsicDefaultProto) {
   // Assert: intrinsicDefaultProto is a String value that
   // is this specification's name of an intrinsic object.
   Assert(IsCallable(constructor) === Value.true);
-  let proto = Q(Get(constructor, new Value('prototype')));
+  let proto = Q(yield* Get(constructor, new Value('prototype')));
   if (Type(proto) !== 'Object') {
     const realm = Q(GetFunctionRealm(constructor));
     proto = realm.Intrinsics[intrinsicDefaultProto];

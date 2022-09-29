@@ -34,7 +34,7 @@ import { assignProps } from './bootstrap.mjs';
 import { ArrayProto_sortBody, bootstrapArrayPrototypeShared } from './ArrayPrototypeShared.mjs';
 
 // 22.1.3.1 #sec-array.prototype.concat
-function ArrayProto_concat(args, { thisValue }) {
+function* ArrayProto_concat(args, { thisValue }) {
   const O = Q(ToObject(thisValue));
   const A = Q(ArraySpeciesCreate(O, 0));
   let n = 0;
@@ -52,7 +52,7 @@ function ArrayProto_concat(args, { thisValue }) {
         const P = X(ToString(F(k)));
         const exists = Q(HasProperty(E, P));
         if (exists === Value.true) {
-          const subElement = Q(Get(E, P));
+          const subElement = Q(yield* Get(E, P));
           const nStr = X(ToString(F(n)));
           Q(CreateDataPropertyOrThrow(A, nStr, subElement));
         }
@@ -179,7 +179,7 @@ function* ArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undef
     const Pk = X(ToString(F(k)));
     const kPresent = Q(HasProperty(O, Pk));
     if (kPresent === Value.true) {
-      const kValue = Q(Get(O, Pk));
+      const kValue = Q(yield* Get(O, Pk));
       const selected = ToBoolean(Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O]))));
       if (selected === Value.true) {
         Q(CreateDataPropertyOrThrow(A, X(ToString(F(to))), kValue));
@@ -205,7 +205,7 @@ function* FlattenIntoArray(target, source, sourceLen, start, depth, mapperFuncti
     const P = X(ToString(F(sourceIndex)));
     const exists = Q(HasProperty(source, P));
     if (exists === Value.true) {
-      let element = Q(Get(source, P));
+      let element = Q(yield* Get(source, P));
       if (mapperFunction) {
         Assert(thisArg);
         element = Q(yield* (Call(mapperFunction, thisArg, [element, F(sourceIndex), source])));
@@ -274,7 +274,7 @@ function* ArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefine
     const Pk = X(ToString(F(k)));
     const kPresent = Q(HasProperty(O, Pk));
     if (kPresent === Value.true) {
-      const kValue = Q(Get(O, Pk));
+      const kValue = Q(yield* Get(O, Pk));
       const mappedValue = Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O])));
       Q(CreateDataPropertyOrThrow(A, Pk, mappedValue));
     }
@@ -284,7 +284,7 @@ function* ArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefine
 }
 
 // 22.1.3.19 #sec-array.prototype.pop
-function ArrayProto_pop(args, { thisValue }) {
+function* ArrayProto_pop(args, { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (len === 0) {
@@ -293,7 +293,7 @@ function ArrayProto_pop(args, { thisValue }) {
   } else {
     const newLen = len - 1;
     const index = Q(ToString(F(newLen)));
-    const element = Q(Get(O, index));
+    const element = Q(yield* Get(O, index));
     Q(DeletePropertyOrThrow(O, index));
     Q(Set(O, new Value('length'), F(newLen), Value.true));
     return element;
@@ -318,21 +318,21 @@ function ArrayProto_push(items, { thisValue }) {
 }
 
 // 22.1.3.24 #sec-array.prototype.shift
-function ArrayProto_shift(args, { thisValue }) {
+function* ArrayProto_shift(args, { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (len === 0) {
     Q(Set(O, new Value('length'), F(+0), Value.true));
     return Value.undefined;
   }
-  const first = Q(Get(O, new Value('0')));
+  const first = Q(yield* Get(O, new Value('0')));
   let k = 1;
   while (k < len) {
     const from = X(ToString(F(k)));
     const to = X(ToString(F(k - 1)));
     const fromPresent = Q(HasProperty(O, from));
     if (fromPresent === Value.true) {
-      const fromVal = Q(Get(O, from));
+      const fromVal = Q(yield* Get(O, from));
       Q(Set(O, to, fromVal, Value.true));
     } else {
       Q(DeletePropertyOrThrow(O, to));
@@ -345,7 +345,7 @@ function ArrayProto_shift(args, { thisValue }) {
 }
 
 // 22.1.3.25 #sec-array.prototype.slice
-function ArrayProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
+function* ArrayProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   const relativeStart = Q(ToIntegerOrInfinity(start));
@@ -374,7 +374,7 @@ function ArrayProto_slice([start = Value.undefined, end = Value.undefined], { th
     const Pk = X(ToString(F(k)));
     const kPresent = Q(HasProperty(O, Pk));
     if (kPresent === Value.true) {
-      const kValue = Q(Get(O, Pk));
+      const kValue = Q(yield* Get(O, Pk));
       const nStr = X(ToString(F(n)));
       Q(CreateDataPropertyOrThrow(A, nStr, kValue));
     }
@@ -397,7 +397,7 @@ function ArrayProto_sort([comparefn = Value.undefined], { thisValue }) {
 }
 
 // 22.1.3.28 #sec-array.prototype.splice
-function ArrayProto_splice(args, { thisValue }) {
+function* ArrayProto_splice(args, { thisValue }) {
   const [start = Value.undefined, deleteCount = Value.undefined, ...items] = args;
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
@@ -430,7 +430,7 @@ function ArrayProto_splice(args, { thisValue }) {
     const from = X(ToString(F(actualStart + k)));
     const fromPresent = Q(HasProperty(O, from));
     if (fromPresent === Value.true) {
-      const fromValue = Q(Get(O, from));
+      const fromValue = Q(yield* Get(O, from));
       Q(CreateDataPropertyOrThrow(A, X(ToString(F(k))), fromValue));
     }
     k += 1;
@@ -444,7 +444,7 @@ function ArrayProto_splice(args, { thisValue }) {
       const to = X(ToString(F(k + itemCount)));
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
-        const fromValue = Q(Get(O, from));
+        const fromValue = Q(yield* Get(O, from));
         Q(Set(O, to, fromValue, Value.true));
       } else {
         Q(DeletePropertyOrThrow(O, to));
@@ -463,7 +463,7 @@ function ArrayProto_splice(args, { thisValue }) {
       const to = X(ToString(F(k + itemCount - 1)));
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
-        const fromValue = Q(Get(O, from));
+        const fromValue = Q(yield* Get(O, from));
         Q(Set(O, to, fromValue, Value.true));
       } else {
         Q(DeletePropertyOrThrow(O, to));
@@ -484,7 +484,7 @@ function ArrayProto_splice(args, { thisValue }) {
 // 22.1.3.30 #sec-array.prototype.tostring
 function* ArrayProto_toString(a, { thisValue }) {
   const array = Q(ToObject(thisValue));
-  let func = Q(Get(array, new Value('join')));
+  let func = Q(yield* Get(array, new Value('join')));
   if (IsCallable(func) === Value.false) {
     func = surroundingAgent.intrinsic('%Object.prototype.toString%');
   }
@@ -533,7 +533,7 @@ function ArrayProto_values(args, { thisValue }) {
 }
 
 // #sec-array.prototype.at
-function ArrayProto_at([index = Value.undefined], { thisValue }) {
+function* ArrayProto_at([index = Value.undefined], { thisValue }) {
   // 1. Let O be ? ToObject(this value).
   const O = Q(ToObject(thisValue));
   // 2. Let len be ? LengthOfArrayLike(O).
@@ -554,7 +554,7 @@ function ArrayProto_at([index = Value.undefined], { thisValue }) {
     return Value.undefined;
   }
   // 7. Return ? Get(O, ! ToString(k)).
-  return Q(Get(O, X(ToString(F(k)))));
+  return Q(yield* Get(O, X(ToString(F(k)))));
 }
 
 export function bootstrapArrayPrototype(realmRec) {
@@ -614,7 +614,7 @@ export function bootstrapArrayPrototype(realmRec) {
   }
 
   // Used in `arguments` objects.
-  realmRec.Intrinsics['%Array.prototype.values%'] = X(Get(proto, new Value('values')));
+  realmRec.Intrinsics['%Array.prototype.values%'] = X(unwrap(Get(proto, new Value('values'))));
 
   realmRec.Intrinsics['%Array.prototype%'] = proto;
 }

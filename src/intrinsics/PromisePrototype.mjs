@@ -16,6 +16,7 @@ import {
 import { Type, Value } from '../value.mjs';
 import { Q, ThrowCompletion, X } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-promise.prototype.catch
 function* PromiseProto_catch([onRejected = Value.undefined], { thisValue }) {
@@ -106,7 +107,7 @@ export function bootstrapPromisePrototype(realmRec) {
     ['then', PromiseProto_then, 2],
   ], realmRec.Intrinsics['%Object.prototype%'], 'Promise');
 
-  realmRec.Intrinsics['%Promise.prototype.then%'] = X(Get(proto, new Value('then')));
+  realmRec.Intrinsics['%Promise.prototype.then%'] = X(unwind(Get(proto, new Value('then'))));
 
   realmRec.Intrinsics['%Promise.prototype%'] = proto;
 }

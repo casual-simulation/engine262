@@ -33,7 +33,7 @@ import {
 // 9.4.4 #sec-arguments-exotic-objects
 
 
-function ArgumentsGetOwnProperty(P) {
+function* ArgumentsGetOwnProperty(P) {
   const args = this;
   const desc = OrdinaryGetOwnProperty(args, P);
   if (desc === Value.undefined) {
@@ -42,12 +42,12 @@ function ArgumentsGetOwnProperty(P) {
   const map = args.ParameterMap;
   const isMapped = X(HasOwnProperty(map, P));
   if (isMapped === Value.true) {
-    desc.Value = Get(map, P);
+    desc.Value = yield* Get(map, P);
   }
   return desc;
 }
 
-function ArgumentsDefineOwnProperty(P, Desc) {
+function* ArgumentsDefineOwnProperty(P, Desc) {
   const args = this;
   const map = args.ParameterMap;
   const isMapped = X(HasOwnProperty(map, P));
@@ -55,7 +55,7 @@ function ArgumentsDefineOwnProperty(P, Desc) {
   if (isMapped === Value.true && IsDataDescriptor(Desc) === true) {
     if (Desc.Value === undefined && Desc.Writable !== undefined && Desc.Writable === Value.false) {
       newArgDesc = Descriptor({ ...Desc });
-      newArgDesc.Value = X(Get(map, P));
+      newArgDesc.Value = X(yield* Get(map, P));
     }
   }
   const allowed = Q(OrdinaryDefineOwnProperty(args, P, newArgDesc));
@@ -78,18 +78,18 @@ function ArgumentsDefineOwnProperty(P, Desc) {
   return Value.true;
 }
 
-function ArgumentsGet(P, Receiver) {
+function* ArgumentsGet(P, Receiver) {
   const args = this;
   const map = args.ParameterMap;
   const isMapped = X(HasOwnProperty(map, P));
   if (isMapped === Value.false) {
     return Q(OrdinaryGet(args, P, Receiver));
   } else {
-    return Get(map, P);
+    return yield* Get(map, P);
   }
 }
 
-function ArgumentsSet(P, V, Receiver) {
+function* ArgumentsSet(P, V, Receiver) {
   const args = this;
   let isMapped;
   let map;
@@ -103,7 +103,7 @@ function ArgumentsSet(P, V, Receiver) {
     const setStatus = Set(map, P, V, Value.false);
     Assert(setStatus === Value.true);
   }
-  return Q(OrdinarySet(args, P, V, Receiver));
+  return Q(yield* OrdinarySet(args, P, V, Receiver));
 }
 
 function ArgumentsDelete(P) {

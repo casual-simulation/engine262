@@ -331,7 +331,7 @@ function* ProxyGet(P, Receiver) {
   const target = O.ProxyTarget;
   const trap = Q(GetMethod(handler, new Value('get')));
   if (trap === Value.undefined) {
-    return Q(target.Get(P, Receiver));
+    return Q(yield* wrap(target.Get(P, Receiver)));
   }
   const trapResult = Q(yield* (Call(trap, handler, [target, P, Receiver])));
   const targetDesc = Q(target.GetOwnProperty(P));

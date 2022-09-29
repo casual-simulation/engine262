@@ -102,11 +102,11 @@ function* PromiseAllResolveElementFunctions([x = Value.undefined]) {
 }
 
 // #sec-getpromiseresolve
-function GetPromiseResolve(promiseConstructor) {
+function* GetPromiseResolve(promiseConstructor) {
   // 1. Assert: IsConstructor(promiseConstructor) is true.
   Assert(IsConstructor(promiseConstructor) === Value.true);
   // 2. Let promiseResolve be ? Get(promiseConstructor, "resolve").
-  const promiseResolve = Q(Get(promiseConstructor, new Value('resolve')));
+  const promiseResolve = Q(yield* Get(promiseConstructor, new Value('resolve')));
   // 3. If IsCallable(promiseResolve) is false, throw a TypeError exception.
   if (IsCallable(promiseResolve) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', promiseResolve);

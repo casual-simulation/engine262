@@ -116,11 +116,11 @@ export function IsPropertyKey(argument) {
 }
 
 // 7.2.8 #sec-isregexp
-export function IsRegExp(argument) {
+export function* IsRegExp(argument) {
   if (Type(argument) !== 'Object') {
     return Value.false;
   }
-  const matcher = Q(Get(argument, wellKnownSymbols.match));
+  const matcher = Q(yield* Get(argument, wellKnownSymbols.match));
   if (matcher !== Value.undefined) {
     return ToBoolean(matcher);
   }

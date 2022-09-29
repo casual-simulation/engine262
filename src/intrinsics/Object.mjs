@@ -48,7 +48,7 @@ function ObjectConstructor([value = Value.undefined], { NewTarget }) {
 }
 
 // #sec-object.assign
-function Object_assign([target = Value.undefined, ...sources]) {
+function* Object_assign([target = Value.undefined, ...sources]) {
   // 1. Let to be ? ToObject(target).
   const to = Q(ToObject(target));
   // 2. If only one argument was passed, return to.
@@ -71,7 +71,7 @@ function Object_assign([target = Value.undefined, ...sources]) {
         // 2. If desc is not undefined and desc.[[Enumerable]] is true, then
         if (desc !== Value.undefined && desc.Enumerable === Value.true) {
           // a. Let propValue be ? Get(from, nextKey).
-          const propValue = Q(Get(from, nextKey));
+          const propValue = Q(yield* Get(from, nextKey));
           // b. Perform ? Set(to, nextKey, propValue, true).
           Q(Set(to, nextKey, propValue, Value.true));
         }
@@ -106,7 +106,7 @@ function Object_defineProperties([O = Value.undefined, Properties = Value.undefi
 }
 
 // #sec-objectdefineproperties ObjectDefineProperties
-function ObjectDefineProperties(O, Properties) {
+function* ObjectDefineProperties(O, Properties) {
   // 1. If Type(O) is not Object, throw a TypeError exception.
   if (Type(O) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', O);
@@ -124,7 +124,7 @@ function ObjectDefineProperties(O, Properties) {
     // b. If propDesc is not undefined and propDesc.[[Enumerable]] is true, then
     if (propDesc !== Value.undefined && propDesc.Enumerable === Value.true) {
       // i. Let descObj be ? Get(props, nextKey).
-      const descObj = Q(Get(props, nextKey));
+      const descObj = Q(yield* Get(props, nextKey));
       // ii. Let desc be ? ToPropertyDescriptor(descObj).
       const desc = Q(ToPropertyDescriptor(descObj));
       // iii. Append the pair (a two element List) consisting of nextKey and desc to the end of descriptors.

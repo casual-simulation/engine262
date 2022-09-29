@@ -99,7 +99,7 @@ export function FromPropertyDescriptor(Desc) {
 }
 
 // 6.2.5.5 #sec-topropertydescriptor
-export function ToPropertyDescriptor(Obj) {
+export function* ToPropertyDescriptor(Obj) {
   if (Type(Obj) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', Obj);
   }
@@ -107,27 +107,27 @@ export function ToPropertyDescriptor(Obj) {
   const desc = Descriptor({});
   const hasEnumerable = Q(HasProperty(Obj, new Value('enumerable')));
   if (hasEnumerable === Value.true) {
-    const enumerable = ToBoolean(Q(Get(Obj, new Value('enumerable'))));
+    const enumerable = ToBoolean(Q(yield* Get(Obj, new Value('enumerable'))));
     desc.Enumerable = enumerable;
   }
   const hasConfigurable = Q(HasProperty(Obj, new Value('configurable')));
   if (hasConfigurable === Value.true) {
-    const conf = ToBoolean(Q(Get(Obj, new Value('configurable'))));
+    const conf = ToBoolean(Q(yield* Get(Obj, new Value('configurable'))));
     desc.Configurable = conf;
   }
   const hasValue = Q(HasProperty(Obj, new Value('value')));
   if (hasValue === Value.true) {
-    const value = Q(Get(Obj, new Value('value')));
+    const value = Q(yield* Get(Obj, new Value('value')));
     desc.Value = value;
   }
   const hasWritable = Q(HasProperty(Obj, new Value('writable')));
   if (hasWritable === Value.true) {
-    const writable = ToBoolean(Q(Get(Obj, new Value('writable'))));
+    const writable = ToBoolean(Q(yield* Get(Obj, new Value('writable'))));
     desc.Writable = writable;
   }
   const hasGet = Q(HasProperty(Obj, new Value('get')));
   if (hasGet === Value.true) {
-    const getter = Q(Get(Obj, new Value('get')));
+    const getter = Q(yield* Get(Obj, new Value('get')));
     if (IsCallable(getter) === Value.false && Type(getter) !== 'Undefined') {
       return surroundingAgent.Throw('TypeError', 'NotAFunction', getter);
     }
@@ -135,7 +135,7 @@ export function ToPropertyDescriptor(Obj) {
   }
   const hasSet = Q(HasProperty(Obj, new Value('set')));
   if (hasSet === Value.true) {
-    const setter = Q(Get(Obj, new Value('set')));
+    const setter = Q(yield* Get(Obj, new Value('set')));
     if (IsCallable(setter) === Value.false && Type(setter) !== 'Undefined') {
       return surroundingAgent.Throw('TypeError', 'NotAFunction', setter);
     }

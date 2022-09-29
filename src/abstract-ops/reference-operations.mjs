@@ -55,7 +55,7 @@ export function IsPrivateReference(V) {
 }
 
 // #sec-getvalue
-export function GetValue(V) {
+export function* GetValue(V) {
   // 1. ReturnIfAbrupt(V).
   ReturnIfAbrupt(V);
   // 2. If V is not a Reference Record, return V.
@@ -73,10 +73,10 @@ export function GetValue(V) {
     // b. If IsPrivateReference(V) is true, then
     if (IsPrivateReference(V) === Value.true) {
       // i. Return ? PrivateGet(V.[[ReferencedName]], baseObj).
-      return Q(PrivateGet(V.ReferencedName, baseObj));
+      return Q(yield* PrivateGet(V.ReferencedName, baseObj));
     }
     // c. Return ? baseObj.[[Get]](V.[[ReferencedName]], GetThisValue(V)).
-    return Q(baseObj.Get(V.ReferencedName, GetThisValue(V)));
+    return Q(yield* wrap(baseObj.Get(V.ReferencedName, GetThisValue(V))));
   } else { // 5. Else,
     // a. Let base be V.[[Base]].
     const base = V.Base;

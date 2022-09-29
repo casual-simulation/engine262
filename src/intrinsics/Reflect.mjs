@@ -14,7 +14,7 @@ import {
 import { Type, Value } from '../value.mjs';
 import { Q } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
-import { unwind } from '../helpers.mjs';
+import { unwind, wrap } from '../helpers.mjs';
 
 // #sec-reflect.apply
 function* Reflect_apply([target = Value.undefined, thisArgument = Value.undefined, argumentsList = Value.undefined]) {
@@ -75,7 +75,7 @@ function Reflect_deleteProperty([target = Value.undefined, propertyKey = Value.u
 }
 
 // #sec-reflect.get
-function Reflect_get([target = Value.undefined, propertyKey = Value.undefined, receiver]) {
+function* Reflect_get([target = Value.undefined, propertyKey = Value.undefined, receiver]) {
   // 1. If Type(target) is not Object, throw a TypeError exception.
   if (Type(target) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', target);
@@ -88,7 +88,7 @@ function Reflect_get([target = Value.undefined, propertyKey = Value.undefined, r
     receiver = target;
   }
   // 4. Return ? target.[[Get]](key, receiver).
-  return Q(target.Get(key, receiver));
+  return Q(yield* wrap(target.Get(key, receiver)));
 }
 
 // #sec-reflect.getownpropertydescriptor

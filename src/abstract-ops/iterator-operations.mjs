@@ -80,15 +80,15 @@ export function* IteratorNext(iteratorRecord, value) {
 }
 
 // 7.4.3 #sec-iteratorcomplete
-export function IteratorComplete(iterResult) {
+export function* IteratorComplete(iterResult) {
   Assert(Type(iterResult) === 'Object');
-  return EnsureCompletion(ToBoolean(Q(Get(iterResult, new Value('done')))));
+  return EnsureCompletion(ToBoolean(Q(yield* Get(iterResult, new Value('done')))));
 }
 
 // 7.4.4 #sec-iteratorvalue
-export function IteratorValue(iterResult) {
+export function* IteratorValue(iterResult) {
   Assert(Type(iterResult) === 'Object');
-  return EnsureCompletion(Q(Get(iterResult, new Value('value'))));
+  return EnsureCompletion(Q(yield* Get(iterResult, new Value('value'))));
 }
 
 // 7.4.5 #sec-iteratorstep
@@ -213,12 +213,12 @@ export function CreateListIteratorRecord(list) {
 }
 
 // 25.1.4.1 #sec-createasyncfromsynciterator
-export function CreateAsyncFromSyncIterator(syncIteratorRecord) {
+export function* CreateAsyncFromSyncIterator(syncIteratorRecord) {
   const asyncIterator = X(OrdinaryObjectCreate(surroundingAgent.intrinsic('%AsyncFromSyncIteratorPrototype%'), [
     'SyncIteratorRecord',
   ]));
   asyncIterator.SyncIteratorRecord = syncIteratorRecord;
-  const nextMethod = X(Get(asyncIterator, new Value('next')));
+  const nextMethod = X(yield* Get(asyncIterator, new Value('next')));
   return {
     Iterator: asyncIterator,
     NextMethod: nextMethod,

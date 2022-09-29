@@ -30,7 +30,7 @@ import {
   isProxyExoticObject,
   F as toNumberValue,
 } from './all.mjs';
-import { unwind } from '../helpers.mjs';
+import { wrap } from '../helpers.mjs';
 
 
 // This file covers abstract operations defined in
@@ -57,18 +57,22 @@ export function MakeBasicObject(internalSlotsList) {
 }
 
 // 7.3.1 #sec-get-o-p
-export function Get(O, P) {
+export function* Get(O, P) {
   Assert(Type(O) === 'Object');
   Assert(IsPropertyKey(P));
   // TODO: This should just return Q(O.Get(P, O))
-  return NormalCompletion(Q(O.Get(P, O)));
+  return NormalCompletion(Q(
+    yield* wrap(O.Get(P, O))
+  ));
 }
 
 // 7.3.2 #sec-getv
-export function GetV(V, P) {
+export function* GetV(V, P) {
   Assert(IsPropertyKey(P));
   const O = Q(ToObject(V));
-  return Q(O.Get(P, V));
+  return Q(
+    yield* wrap(O.Get(P, V))
+  );
 }
 
 // 7.3.3 #sec-set-o-p-v-throw
@@ -277,15 +281,15 @@ export function CreateArrayFromList(elements) {
 }
 
 // 7.3.17 #sec-lengthofarraylike
-export function LengthOfArrayLike(obj) {
+export function* LengthOfArrayLike(obj) {
   // 1. Assert: Type(obj) is Object.
   Assert(Type(obj) === 'Object');
   // 2. Return ℝ(? ToLength(? Get(obj, "length"))).
-  return Q(ToLength(Q(Get(obj, new Value('length'))))).numberValue();
+  return Q(ToLength(Q(yield* Get(obj, new Value('length'))))).numberValue();
 }
 
 // 7.3.17 #sec-createlistfromarraylike
-export function CreateListFromArrayLike(obj, elementTypes) {
+export function* CreateListFromArrayLike(obj, elementTypes) {
   // 1. If elementTypes is not present, set elementTypes to « Undefined, Null, Boolean, String, Symbol, Number, BigInt, Object ».
   if (!elementTypes) {
     elementTypes = ['Undefined', 'Null', 'Boolean', 'String', 'Symbol', 'Number', 'BigInt', 'Object'];
@@ -305,7 +309,7 @@ export function CreateListFromArrayLike(obj, elementTypes) {
     // a. Let indexName be ! ToString(𝔽(index)).
     const indexName = X(ToString(toNumberValue(index)));
     // b. Let next be ? Get(obj, indexName).
-    const next = Q(Get(obj, indexName));
+    const next = Q(yield* Get(obj, indexName));
     // c. If Type(next) is not an element of elementTypes, throw a TypeError exception.
     if (!elementTypes.includes(Type(next))) {
       return surroundingAgent.Throw('TypeError', 'NotPropertyName', next);
@@ -330,7 +334,7 @@ export function* Invoke(V, P, argumentsList) {
 }
 
 // 7.3.19 #sec-ordinaryhasinstance
-export function OrdinaryHasInstance(C, O) {
+export function* OrdinaryHasInstance(C, O) {
   if (IsCallable(C) === Value.false) {
     return Value.false;
   }
@@ -341,7 +345,7 @@ export function OrdinaryHasInstance(C, O) {
   if (Type(O) !== 'Object') {
     return Value.false;
   }
-  const P = Q(Get(C, new Value('prototype')));
+  const P = Q(yield* Get(C, new Value('prototype')));
   if (Type(P) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', P);
   }
@@ -357,16 +361,16 @@ export function OrdinaryHasInstance(C, O) {
 }
 
 // 7.3.20 #sec-speciesconstructor
-export function SpeciesConstructor(O, defaultConstructor) {
+export function* SpeciesConstructor(O, defaultConstructor) {
   Assert(Type(O) === 'Object');
-  const C = Q(Get(O, new Value('constructor')));
+  const C = Q(yield* Get(O, new Value('constructor')));
   if (C === Value.undefined) {
     return defaultConstructor;
   }
   if (Type(C) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', C);
   }
-  const S = Q(Get(C, wellKnownSymbols.species));
+  const S = Q(yield* Get(C, wellKnownSymbols.species));
   if (S === Value.undefined || S === Value.null) {
     return defaultConstructor;
   }
@@ -377,7 +381,7 @@ export function SpeciesConstructor(O, defaultConstructor) {
 }
 
 // 7.3.21 #sec-enumerableownpropertynames
-export function EnumerableOwnPropertyNames(O, kind) {
+export function* EnumerableOwnPropertyNames(O, kind) {
   Assert(Type(O) === 'Object');
   const ownKeys = Q(O.OwnPropertyKeys());
   const properties = [];
@@ -388,7 +392,7 @@ export function EnumerableOwnPropertyNames(O, kind) {
         if (kind === 'key') {
           properties.push(key);
         } else {
-          const value = Q(Get(O, key));
+          const value = Q(yield* Get(O, key));
           if (kind === 'value') {
             properties.push(value);
           } else {
@@ -427,7 +431,7 @@ export function GetFunctionRealm(obj) {
 }
 
 // 7.3.23 #sec-copydataproperties
-export function CopyDataProperties(target, source, excludedItems) {
+export function* CopyDataProperties(target, source, excludedItems) {
   Assert(Type(target) === 'Object');
   Assert(excludedItems.every((i) => IsPropertyKey(i)));
   if (source === Value.undefined || source === Value.null) {
@@ -445,7 +449,7 @@ export function CopyDataProperties(target, source, excludedItems) {
     if (excluded === false) {
       const desc = Q(from.GetOwnProperty(nextKey));
       if (desc !== Value.undefined && desc.Enumerable === Value.true) {
-        const propValue = Q(Get(from, nextKey));
+        const propValue = Q(yield* Get(from, nextKey));
         X(CreateDataProperty(target, nextKey, propValue));
       }
     }

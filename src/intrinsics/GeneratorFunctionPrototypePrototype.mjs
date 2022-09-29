@@ -48,5 +48,5 @@ export function bootstrapGeneratorFunctionPrototypePrototype(realmRec) {
   realmRec.Intrinsics['%GeneratorFunction.prototype.prototype%'] = generatorPrototype;
 
   // Used by `CreateListIteratorRecord`:
-  realmRec.Intrinsics['%GeneratorFunction.prototype.prototype.next%'] = generatorPrototype.Get(new Value('next'));
+  realmRec.Intrinsics['%GeneratorFunction.prototype.prototype.next%'] = unwrap(wrap(generatorPrototype.Get(new Value('next'))));
 }

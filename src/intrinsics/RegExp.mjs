@@ -17,7 +17,7 @@ import { Q } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-regexp-constructor
-function RegExpConstructor([pattern = Value.undefined, flags = Value.undefined], { NewTarget }) {
+function* RegExpConstructor([pattern = Value.undefined, flags = Value.undefined], { NewTarget }) {
   // 1. Let patternIsRegExp be ? IsRegExp(pattern).
   const patternIsRegExp = Q(IsRegExp(pattern));
   let newTarget;
@@ -28,7 +28,7 @@ function RegExpConstructor([pattern = Value.undefined, flags = Value.undefined],
     // b. If patternIsRegExp is true and flags is undefined, then
     if (patternIsRegExp === Value.true && flags === Value.undefined) {
       // i. Let patternConstructor be ? Get(pattern, "constructor").
-      const patternConstructor = Q(Get(pattern, new Value('constructor')));
+      const patternConstructor = Q(yield* Get(pattern, new Value('constructor')));
       // ii. If SameValue(newTarget, patternConstructor) is true, return pattern.
       if (SameValue(newTarget, patternConstructor) === Value.true) {
         return pattern;
@@ -51,11 +51,11 @@ function RegExpConstructor([pattern = Value.undefined, flags = Value.undefined],
     }
   } else if (patternIsRegExp === Value.true) { // 5. Else if patternIsRegExp is true, then
     // a. Else if patternIsRegExp is true, then
-    P = Q(Get(pattern, new Value('source')));
+    P = Q(yield* Get(pattern, new Value('source')));
     // b. If flags is undefined, then
     if (flags === Value.undefined) {
       // i. Let F be ? Get(pattern, "flags").
-      F = Q(Get(pattern, new Value('flags')));
+      F = Q(yield* Get(pattern, new Value('flags')));
     } else { // c. Else, let F be flags.
       F = flags;
     }

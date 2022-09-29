@@ -5,18 +5,18 @@ import {
   EscapeRegExpPattern,
 } from './abstract-ops/all.mjs';
 import { Q, X } from './completion.mjs';
-import { wrap } from './helpers.mjs';
+import { wrap, unwrap } from './helpers.mjs';
 
 const bareKeyRe = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
 const getObjectTag = (value, wrap) => {
   let s;
   try {
-    s = X(Get(value, wellKnownSymbols.toStringTag)).stringValue();
+    s = X(unwrap(Get(value, wellKnownSymbols.toStringTag))).stringValue();
   } catch {}
   try {
-    const c = X(Get(value, new Value('constructor')));
-    s = X(Get(c, new Value('name'))).stringValue();
+    const c = X(unwrap(Get(value, new Value('constructor'))));
+    s = X(unwrap(Get(c, new Value('name')))).stringValue();
   } catch {}
   if (s) {
     if (wrap) {
@@ -29,15 +29,15 @@ const getObjectTag = (value, wrap) => {
 
 const compactObject = function*(realm, value) {
   try {
-    const toString = X(Get(value, new Value('toString')));
+    const toString = X(unwrap(Get(value, new Value('toString'))));
     const objectToString = realm.Intrinsics['%Object.prototype.toString%'];
     if (toString.nativeFunction === objectToString.nativeFunction) {
       return X(yield* Call(toString, value)).stringValue();
     } else {
       const tag = getObjectTag(value, false) || 'Unknown';
-      const ctor = X(Get(value, new Value('constructor')));
+      const ctor = X(unwrap(Get(value, new Value('constructor'))));
       if (Type(ctor) === 'Object') {
-        const ctorName = X(Get(ctor, new Value('name'))).stringValue();
+        const ctorName = X(unwrap(Get(ctor, new Value('name')))).stringValue();
         if (ctorName !== '') {
           return `#<${ctorName}>`;
         }
@@ -92,9 +92,9 @@ const INSPECTORS = {
     }
 
     if ('ErrorData' in v) {
-      let e = Q(Get(v, new Value('stack')));
+      let e = Q(unwrap(Get(v, new Value('stack'))));
       if (!e.stringValue) {
-        const toString = Q(Get(v, new Value('toString')));
+        const toString = Q(unwrap(Get(v, new Value('toString'))));
         e = X(yield* Call(toString, v));
       }
       return e.stringValue();

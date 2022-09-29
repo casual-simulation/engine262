@@ -38,11 +38,11 @@ export function* AddEntriesFromIterable(target, iterable, adder) {
       return Q(IteratorClose(iteratorRecord, error));
     }
     // e. Let k be Get(nextItem, "0").
-    const k = Get(nextItem, new Value('0'));
+    const k = yield* Get(nextItem, new Value('0'));
     // f. IfAbruptCloseIterator(k, iteratorRecord).
     IfAbruptCloseIterator(k, iteratorRecord);
     // g. Let v be Get(nextItem, "1").
-    const v = Get(nextItem, new Value('1'));
+    const v = yield* Get(nextItem, new Value('1'));
     // h. IfAbruptCloseIterator(v, iteratorRecord).
     IfAbruptCloseIterator(v, iteratorRecord);
     // i. Let status be Call(adder, target, « k, v »).
@@ -53,7 +53,7 @@ export function* AddEntriesFromIterable(target, iterable, adder) {
 }
 
 // #sec-map-iterable
-function MapConstructor([iterable = Value.undefined], { NewTarget }) {
+function* MapConstructor([iterable = Value.undefined], { NewTarget }) {
   // 1. If NewTarget is undefined, throw a TypeError exception.
   if (NewTarget === Value.undefined) {
     return surroundingAgent.Throw('TypeError', 'ConstructorNonCallable', this);
@@ -67,7 +67,7 @@ function MapConstructor([iterable = Value.undefined], { NewTarget }) {
     return map;
   }
   // 5. Let adder be ? Get(map, "set").
-  const adder = Q(Get(map, new Value('set')));
+  const adder = Q(yield* Get(map, new Value('set')));
   // 6. Return ? AddEntriesFromIterable(map, iterable, adder).
   return Q(AddEntriesFromIterable(map, iterable, adder));
 }

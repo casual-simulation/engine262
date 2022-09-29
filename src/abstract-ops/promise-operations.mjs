@@ -135,7 +135,7 @@ function* NewPromiseResolveThenableJob(promiseToResolve, thenable, then) {
 }
 
 // 25.6.1.3.2 #sec-promise-resolve-functions
-function PromiseResolveFunctions([resolution = Value.undefined]) {
+function* PromiseResolveFunctions([resolution = Value.undefined]) {
   // 1. Let F be the active function object.
   const F = this;
   // 2. Assert: F has a [[Promise]] internal slot whose value is an Object.
@@ -163,7 +163,7 @@ function PromiseResolveFunctions([resolution = Value.undefined]) {
     return FulfillPromise(promise, resolution);
   }
   // 9. Let then be Get(resolution, "then").
-  const then = Get(resolution, new Value('then'));
+  const then = yield* Get(resolution, new Value('then'));
   // 10. If then is an abrupt completion, then
   if (then instanceof AbruptCompletion) {
     // a. Return RejectPromise(promise, then.[[Value]]).
@@ -283,7 +283,7 @@ function TriggerPromiseReactions(reactions, argument) {
 export function* PromiseResolve(C, x) {
   Assert(Type(C) === 'Object');
   if (IsPromise(x) === Value.true) {
-    const xConstructor = Q(Get(x, new Value('constructor')));
+    const xConstructor = Q(yield* Get(x, new Value('constructor')));
     if (SameValue(xConstructor, C) === Value.true) {
       return x;
     }

@@ -53,7 +53,7 @@ export function* RegExpExec(R, S) {
   Assert(Type(R) === 'Object');
   Assert(Type(S) === 'String');
 
-  const exec = Q(Get(R, new Value('exec')));
+  const exec = Q(yield* Get(R, new Value('exec')));
   if (IsCallable(exec) === Value.true) {
     const result = Q(yield* (Call(exec, R, [S])));
     if (Type(result) !== 'Object' && Type(result) !== 'Null') {
@@ -66,7 +66,7 @@ export function* RegExpExec(R, S) {
 }
 
 // #sec-regexpbuiltinexec
-export function RegExpBuiltinExec(R, S) {
+export function* RegExpBuiltinExec(R, S) {
   // 1. Assert: R is an initialized RegExp instance.
   Assert('RegExpMatcher' in R);
   // 2. Assert: Type(S) is String.
@@ -74,7 +74,7 @@ export function RegExpBuiltinExec(R, S) {
   // 3. Let length be the number of code units in S.
   const length = S.stringValue().length;
   // 4. Let lastIndex be ? ℝ(ToLength(? Get(R, "lastIndex"))).
-  let lastIndex = Q(ToLength(Q(Get(R, new Value('lastIndex'))))).numberValue();
+  let lastIndex = Q(ToLength(Q(yield* Get(R, new Value('lastIndex'))))).numberValue();
   // 5. Let flags be R.[[OriginalFlags]].
   const flags = R.OriginalFlags.stringValue();
   // 6. If flags contains "g", let global be true; else let global be false.
@@ -148,7 +148,7 @@ export function RegExpBuiltinExec(R, S) {
   // 20. Let A be ! ArrayCreate(n + 1).
   const A = X(ArrayCreate(n + 1));
   // 21. Assert: The mathematical value of A's "length" property is n + 1.
-  Assert(X(Get(A, new Value('length'))).numberValue() === n + 1);
+  Assert(X(yield* Get(A, new Value('length'))).numberValue() === n + 1);
   // 22. Perform ! CreateDataPropertyOrThrow(A, "index", 𝔽(lastIndex)).
   X(CreateDataPropertyOrThrow(A, new Value('index'), F(lastIndex)));
   // 23. Perform ! CreateDataPropertyOrThrow(A, "input", S).
@@ -272,37 +272,37 @@ function RegExpProto_dotAllGetter(args, { thisValue }) {
 }
 
 // 21.2.5.4 #sec-get-regexp.prototype.flags
-function RegExpProto_flagsGetter(args, { thisValue }) {
+function* RegExpProto_flagsGetter(args, { thisValue }) {
   const R = thisValue;
   if (Type(R) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotATypeObject', 'RegExp', R);
   }
   let result = '';
-  const hasIndices = ToBoolean(Q(Get(R, new Value('hasIndices'))));
+  const hasIndices = ToBoolean(Q(yield* Get(R, new Value('hasIndices'))));
   if (hasIndices === Value.true) {
     result += 'd';
   }
-  const global = ToBoolean(Q(Get(R, new Value('global'))));
+  const global = ToBoolean(Q(yield* Get(R, new Value('global'))));
   if (global === Value.true) {
     result += 'g';
   }
-  const ignoreCase = ToBoolean(Q(Get(R, new Value('ignoreCase'))));
+  const ignoreCase = ToBoolean(Q(yield* Get(R, new Value('ignoreCase'))));
   if (ignoreCase === Value.true) {
     result += 'i';
   }
-  const multiline = ToBoolean(Q(Get(R, new Value('multiline'))));
+  const multiline = ToBoolean(Q(yield* Get(R, new Value('multiline'))));
   if (multiline === Value.true) {
     result += 'm';
   }
-  const dotAll = ToBoolean(Q(Get(R, new Value('dotAll'))));
+  const dotAll = ToBoolean(Q(yield* Get(R, new Value('dotAll'))));
   if (dotAll === Value.true) {
     result += 's';
   }
-  const unicode = ToBoolean(Q(Get(R, new Value('unicode'))));
+  const unicode = ToBoolean(Q(yield* Get(R, new Value('unicode'))));
   if (unicode === Value.true) {
     result += 'u';
   }
-  const sticky = ToBoolean(Q(Get(R, new Value('sticky'))));
+  const sticky = ToBoolean(Q(yield* Get(R, new Value('sticky'))));
   if (sticky === Value.true) {
     result += 'y';
   }
@@ -349,7 +349,7 @@ function RegExpProto_ignoreCaseGetter(args, { thisValue }) {
 }
 
 // #sec-regexp.prototype-@@match
-function RegExpProto_match([string = Value.undefined], { thisValue }) {
+function* RegExpProto_match([string = Value.undefined], { thisValue }) {
   // 1. Let rx be the this value.
   const rx = thisValue;
   // 2. If Type(rx) is not Object, throw a TypeError exception.
@@ -359,7 +359,7 @@ function RegExpProto_match([string = Value.undefined], { thisValue }) {
   // 3. Let S be ? ToString(string).
   const S = Q(ToString(string));
   // 4. Let global be ! ToBoolean(? Get(rx, "global")).
-  const global = ToBoolean(Q(Get(rx, new Value('global'))));
+  const global = ToBoolean(Q(yield* Get(rx, new Value('global'))));
   // 5. If global is false, then
   if (global === Value.false) {
     // a. Return ? RegExpExec(rx, S).
@@ -368,7 +368,7 @@ function RegExpProto_match([string = Value.undefined], { thisValue }) {
     // a. Assert: global is true.
     Assert(global === Value.true);
     // b. Let fullUnicode be ! ToBoolean(? Get(rx, "unicode")).
-    const fullUnicode = ToBoolean(Q(Get(rx, new Value('unicode'))));
+    const fullUnicode = ToBoolean(Q(yield* Get(rx, new Value('unicode'))));
     // c. Perform ? Set(rx, "lastIndex", +0𝔽, true).
     Q(Set(rx, new Value('lastIndex'), F(+0), Value.true));
     // d. Let A be ! ArrayCreate(0).
@@ -389,13 +389,13 @@ function RegExpProto_match([string = Value.undefined], { thisValue }) {
         return A;
       } else { // iii. Else,
         // 1. Let matchStr be ? ToString(? Get(result, "0")).
-        const matchStr = Q(ToString(Q(Get(result, new Value('0')))));
+        const matchStr = Q(ToString(Q(yield* Get(result, new Value('0')))));
         // 2. Perform ! CreateDataPropertyOrThrow(A, ! ToString(𝔽(n)), matchStr).
         X(CreateDataPropertyOrThrow(A, X(ToString(F(n))), matchStr));
         // 3. If matchStr is the empty String, then
         if (matchStr.stringValue() === '') {
           // a. Let thisIndex be ℝ(? ToLength(? Get(rx, "lastIndex"))).
-          const thisIndex = Q(ToLength(Q(Get(rx, new Value('lastIndex'))))).numberValue();
+          const thisIndex = Q(ToLength(Q(yield* Get(rx, new Value('lastIndex'))))).numberValue();
           // b. Let nextIndex be AdvanceStringIndex(S, thisIndex, fullUnicode).
           const nextIndex = AdvanceStringIndex(S, thisIndex, fullUnicode);
           // c. Perform ? Set(rx, "lastIndex", 𝔽(nextIndex), true).
@@ -416,9 +416,9 @@ function* RegExpProto_matchAll([string = Value.undefined], { thisValue }) {
   }
   const S = Q(ToString(string));
   const C = Q(SpeciesConstructor(R, surroundingAgent.intrinsic('%RegExp%')));
-  const flags = Q(ToString(Q(Get(R, new Value('flags')))));
+  const flags = Q(ToString(Q(yield* Get(R, new Value('flags')))));
   const matcher = Q(yield* Construct(C, [R, flags]));
-  const lastIndex = Q(ToLength(Q(Get(R, new Value('lastIndex')))));
+  const lastIndex = Q(ToLength(Q(yield* Get(R, new Value('lastIndex')))));
   Q(Set(matcher, new Value('lastIndex'), lastIndex, Value.true));
   let global;
   if (flags.stringValue().includes('g')) {
@@ -460,7 +460,7 @@ function* RegExpProto_replace([string = Value.undefined, replaceValue = Value.un
   const global = ToBoolean(Q(Get(rx, new Value('global'))));
   let fullUnicode;
   if (global === Value.true) {
-    fullUnicode = ToBoolean(Q(Get(rx, new Value('unicode'))));
+    fullUnicode = ToBoolean(Q(yield* Get(rx, new Value('unicode'))));
     Q(Set(rx, new Value('lastIndex'), F(+0), Value.true));
   }
 

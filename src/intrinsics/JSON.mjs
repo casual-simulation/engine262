@@ -231,7 +231,7 @@ class JSONValidator {
 }
 
 function* InternalizeJSONProperty(holder, name, reviver) {
-  const val = Q(Get(holder, name));
+  const val = Q(yield* Get(holder, name));
   if (Type(val) === 'Object') {
     const isArray = Q(IsArray(val));
     if (isArray === Value.true) {
@@ -311,7 +311,7 @@ const codeUnitTable = new Map([
 
 // #sec-serializejsonproperty
 function* SerializeJSONProperty(state, key, holder) {
-  let value = Q(Get(holder, key)); // eslint-disable-line no-shadow
+  let value = Q(yield* Get(holder, key)); // eslint-disable-line no-shadow
   if (Type(value) === 'Object' || Type(value) === 'BigInt') {
     const toJSON = Q(GetV(value, new Value('toJSON')));
     if (IsCallable(toJSON) === Value.true) {
@@ -471,7 +471,7 @@ function SerializeJSONArray(state, value) {
 }
 
 // #sec-json.stringify
-function JSON_stringify([value = Value.undefined, replacer = Value.undefined, space = Value.undefined]) {
+function* JSON_stringify([value = Value.undefined, replacer = Value.undefined, space = Value.undefined]) {
   const stack = [];
   const indent = '';
   let PropertyList = Value.undefined;
@@ -487,7 +487,7 @@ function JSON_stringify([value = Value.undefined, replacer = Value.undefined, sp
         let k = 0;
         while (k < len) {
           const vStr = X(ToString(F(k)));
-          const v = Q(Get(replacer, vStr));
+          const v = Q(yield* Get(replacer, vStr));
           let item = Value.undefined;
           if (Type(v) === 'String') {
             item = v;

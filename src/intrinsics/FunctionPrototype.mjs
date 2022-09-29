@@ -116,7 +116,7 @@ function BoundFunctionCreate(targetFunction, boundThis, boundArgs) {
 }
 
 // #sec-function.prototype.bind
-function FunctionProto_bind([thisArg = Value.undefined, ...args], { thisValue }) {
+function* FunctionProto_bind([thisArg = Value.undefined, ...args], { thisValue }) {
   // 1. Let Target be the this value.
   const Target = thisValue;
   // 2. If IsCallable(Target) is false, throw a TypeError exception.
@@ -132,7 +132,7 @@ function FunctionProto_bind([thisArg = Value.undefined, ...args], { thisValue })
   // 6. If targetHasLength is true, then
   if (targetHasLength === Value.true) {
     // a. Let targetLen be ? Get(Target, "length").
-    const targetLen = Q(Get(Target, new Value('length')));
+    const targetLen = Q(yield* Get(Target, new Value('length')));
     // b. If Type(targetLen) is Number, then
     if (Type(targetLen) === 'Number') {
       // i. If targetLen is +∞𝔽, set L to +∞.
@@ -155,7 +155,7 @@ function FunctionProto_bind([thisArg = Value.undefined, ...args], { thisValue })
   // 7. Perform ! SetFunctionLength(F, L).
   X(SetFunctionLength(F, L));
   // 8. Let targetName be ? Get(Target, "name").
-  let targetName = Q(Get(Target, new Value('name')));
+  let targetName = Q(yield* Get(Target, new Value('name')));
   // 9. If Type(targetName) is not String, set targetName to the empty String.
   if (Type(targetName) !== 'String') {
     targetName = new Value('');

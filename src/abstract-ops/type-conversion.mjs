@@ -84,7 +84,7 @@ export function* OrdinaryToPrimitive(O, hint) {
   // 5. For each element name of methodNames, do
   for (const name of methodNames) {
     // a. Let method be ? Get(O, name).
-    const method = Q(Get(O, name));
+    const method = Q(yield* Get(O, name));
     // b. If IsCallable(method) is true, then
     if (IsCallable(method) === Value.true) {
       // i. Let result be ? Call(method, O).
