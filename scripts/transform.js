@@ -75,7 +75,7 @@ module.exports = ({ types: t, template }) => {
   function addSectionFromComments(path) {
     if (path.node.leadingComments) {
       for (const c of path.node.leadingComments) {
-        const lines = c.value.split('\n');
+        const lines = c.value.split(/\r?\n/);
         for (const line of lines) {
           if (/#sec/.test(line)) {
             const section = line.split(' ').find((l) => l.includes('#sec'));
