@@ -248,7 +248,7 @@ function TypedArrayProto_fill([value = Value.undefined, start = Value.undefined,
 }
 
 // #sec-%typedarray%.prototype.filter
-function TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? ValidateTypedArray(O).
@@ -272,7 +272,7 @@ function TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.u
     // b. Let kValue be ? Get(O, Pk).
     const kValue = Q(Get(O, Pk));
     // c. Let selected be ! ToBoolean(? Call(callbackfn, thisArg, « kValue, 𝔽(k), O »)).
-    const selected = ToBoolean(Q(Call(callbackfn, thisArg, [kValue, F(k), O])));
+    const selected = ToBoolean(Q(yield* Call(callbackfn, thisArg, [kValue, F(k), O])));
     // d. If selected is true, then
     if (selected === Value.true) {
       // i. Append kValue to the end of kept.
@@ -329,7 +329,7 @@ function TypedArrayProto_length(args, { thisValue }) {
 }
 
 // #sec-%typedarray%.prototype.map
-function TypedArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* TypedArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? ValidateTypedArray(O).
@@ -351,7 +351,7 @@ function TypedArrayProto_map([callbackfn = Value.undefined, thisArg = Value.unde
     // b. Let kValue be ? Get(O, Pk).
     const kValue = Q(Get(O, Pk));
     // c. Let mappedValue be ? Call(callbackfn, thisArg, « kValue, 𝔽(k), O »).
-    const mappedValue = Q(Call(callbackfn, thisArg, [kValue, F(k), O]));
+    const mappedValue = Q(yield* Call(callbackfn, thisArg, [kValue, F(k), O]));
     // d. Perform ? Set(A, Pk, mappedValue, true).
     Q(Set(A, Pk, mappedValue, Value.true));
     // e. Set k to k + 1.
@@ -639,14 +639,14 @@ function TypedArrayProto_sort([comparefn = Value.undefined], { thisValue }) {
   return ArrayProto_sortBody(obj, len, (x, y) => TypedArraySortCompare(x, y, comparefn), true);
 }
 
-function TypedArraySortCompare(x, y, comparefn) {
+function* TypedArraySortCompare(x, y, comparefn) {
   // 1. Assert: Both Type(x) and Type(y) are Number or both are BigInt.
   Assert((Type(x) === 'Number' && Type(y) === 'Number')
          || (Type(x) === 'BigInt' && Type(y) === 'BigInt'));
   // 2. If comparefn is not undefined, then
   if (comparefn !== Value.undefined) {
     // a. Let v be ? ToNumber(? Call(comparefn, undefined, « x, y »)).
-    const v = Q(ToNumber(Q(Call(comparefn, Value.undefined, [x, y]))));
+    const v = Q(ToNumber(Q(yield* Call(comparefn, Value.undefined, [x, y]))));
     // b. If v is NaN, return +0𝔽.
     if (v.isNaN()) {
       return F(+0);

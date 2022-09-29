@@ -66,7 +66,7 @@ function MapProto_entries(args, { thisValue }) {
 }
 
 // #sec-map.prototype.foreach
-function MapProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* MapProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   // 1. Let M be the this value.
   const M = thisValue;
   // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
@@ -82,7 +82,7 @@ function MapProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefin
     // a. If e.[[Key]] is not empty, then
     if (e.Key !== undefined) {
       // i. Perform ? Call(callbackfn, thisArg, « e.[[Value]], e.[[Key]], M »).
-      Q(Call(callbackfn, thisArg, [e.Value, e.Key, M]));
+      Q(yield* (Call(callbackfn, thisArg, [e.Value, e.Key, M])));
     }
   }
   // 6. Return undefined.

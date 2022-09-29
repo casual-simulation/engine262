@@ -17,6 +17,7 @@ import {
   CreateBuiltinFunction,
   Call,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // 15.2.1.16.1.1 #sec-InnerModuleLinking
 export function InnerModuleLinking(module, stack, index) {
@@ -62,9 +63,9 @@ export function InnerModuleLinking(module, stack, index) {
 }
 
 // 15.2.1.16.2.1 #sec-innermoduleevaluation
-export function InnerModuleEvaluation(module, stack, index) {
+export function* InnerModuleEvaluation(module, stack, index) {
   if (!(module instanceof CyclicModuleRecord)) {
-    Q(module.Evaluate());
+    Q(yield* module.Evaluate());
     return index;
   }
   if (module.Status === 'evaluated') {
@@ -184,7 +185,7 @@ export function GetAsyncCycleRoot(module) {
 }
 
 // #sec-asyncmodulexecutionfulfilled
-function AsyncModuleExecutionFulfilled(module) {
+function* AsyncModuleExecutionFulfilled(module) {
   Assert(module.Status === 'evaluated');
   if (module.AsyncEvaluating === Value.false) {
     Assert(module.EvaluationError !== Value.undefined);
@@ -217,13 +218,13 @@ function AsyncModuleExecutionFulfilled(module) {
   }
   if (module.TopLevelCapability !== Value.undefined) {
     Assert(module.DFSIndex === module.DFSAncestorIndex);
-    X(Call(module.TopLevelCapability.Resolve, Value.undefined, [Value.undefined]));
+    X(yield* Call(module.TopLevelCapability.Resolve, Value.undefined, [Value.undefined]));
   }
   return Value.undefined;
 }
 
 // #sec-AsyncModuleExecutionRejected
-function AsyncModuleExecutionRejected(module, error) {
+function* AsyncModuleExecutionRejected(module, error) {
   Assert(module.Status === 'evaluated');
   if (module.AsyncEvaluating === Value.false) {
     Assert(module.EvaluationError !== Value.undefined);
@@ -240,7 +241,7 @@ function AsyncModuleExecutionRejected(module, error) {
   }
   if (module.TopLevelCapability !== Value.undefined) {
     Assert(module.DFSIndex === module.DFSAncestorIndex);
-    X(Call(module.TopLevelCapability.Reject, Value.undefined, [error]));
+    X(yield* Call(module.TopLevelCapability.Reject, Value.undefined, [error]));
   }
   return Value.undefined;
 }

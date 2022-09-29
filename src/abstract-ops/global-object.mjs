@@ -32,7 +32,7 @@ import { Assert, GetThisEnvironment } from './all.mjs';
 // 18 #sec-global-object
 
 // 2.1.1 #sec-performeval
-export function PerformEval(x, callerRealm, strictCaller, direct) {
+export function* PerformEval(x, callerRealm, strictCaller, direct) {
   // 1. Assert: If direct is false, then strictCaller is also false.
   if (direct === false) {
     Assert(strictCaller === false);
@@ -173,7 +173,7 @@ export function PerformEval(x, callerRealm, strictCaller, direct) {
   // 28. If result.[[Type]] is normal, then
   if (result.Type === 'normal') {
     // a. Set result to the result of evaluating body.
-    result = EnsureCompletion(unwind(Evaluate(body)));
+    result = EnsureCompletion(yield* Evaluate(body));
   }
   // 29. If result.[[Type]] is normal and result.[[Value]] is empty, then
   if (result.Type === 'normal' && result.Value === undefined) {

@@ -29,7 +29,7 @@ export function* Evaluate_SuperCall({ Arguments }) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', func);
   }
   // 6. Let result be ? Construct(func, argList, newTarget).
-  const result = Q(Construct(func, argList, newTarget));
+  const result = Q(yield* Construct(func, argList, newTarget));
   // 7. Let thisER be GetThisEnvironment().
   const thisER = GetThisEnvironment();
   // 8. Perform ? thisER.BindThisValue(result).

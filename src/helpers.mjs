@@ -132,7 +132,7 @@ export class OutOfRange extends RangeError {
   }
 }
 
-export function unwind(iterator, maxSteps = 1) {
+export function unwind(iterator, maxSteps = Infinity) {
   let steps = 0;
   while (true) {
     const { done, value } = iterator.next('Unwind');
@@ -145,6 +145,16 @@ export function unwind(iterator, maxSteps = 1) {
       throw new RangeError('Max steps exceeded');
     }
   }
+}
+
+/**
+ * @returns {Generator<any, any, any>}
+ */
+export function wrap(value) {
+  if (typeof value === 'object' && typeof value.next === 'function') {
+    return value;
+  }
+  return (function*() { return value; })();
 }
 
 const kSafeToResume = Symbol('kSameToResume');

@@ -23,9 +23,10 @@ import {
   IsDataDescriptor,
   IsAccessorDescriptor,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-proxy-object-internal-methods-and-internal-slots-getprototypeof
-function ProxyGetPrototypeOf() {
+function* ProxyGetPrototypeOf() {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -38,7 +39,7 @@ function ProxyGetPrototypeOf() {
   if (trap === Value.undefined) {
     return Q(target.GetPrototypeOf());
   }
-  const handlerProto = Q(Call(trap, handler, [target]));
+  const handlerProto = Q(yield* (Call(trap, handler, [target])));
   if (Type(handlerProto) !== 'Object' && Type(handlerProto) !== 'Null') {
     return surroundingAgent.Throw('TypeError', 'ProxyGetPrototypeOfInvalid');
   }
@@ -54,7 +55,7 @@ function ProxyGetPrototypeOf() {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-setprototypeof-v
-function ProxySetPrototypeOf(V) {
+function* ProxySetPrototypeOf(V) {
   const O = this;
 
   Assert(Type(V) === 'Object' || Type(V) === 'Null');
@@ -68,7 +69,7 @@ function ProxySetPrototypeOf(V) {
   if (trap === Value.undefined) {
     return Q(target.SetPrototypeOf(V));
   }
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target, V])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, V]))));
   if (booleanTrapResult === Value.false) {
     return Value.false;
   }
@@ -84,7 +85,7 @@ function ProxySetPrototypeOf(V) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-isextensible
-function ProxyIsExtensible() {
+function* ProxyIsExtensible() {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -97,7 +98,7 @@ function ProxyIsExtensible() {
   if (trap === Value.undefined) {
     return Q(IsExtensible(target));
   }
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target]))));
   const targetResult = Q(IsExtensible(target));
   if (SameValue(booleanTrapResult, targetResult) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'ProxyIsExtensibleInconsistent', targetResult);
@@ -106,7 +107,7 @@ function ProxyIsExtensible() {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-preventextensions
-function ProxyPreventExtensions() {
+function* ProxyPreventExtensions() {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -119,7 +120,7 @@ function ProxyPreventExtensions() {
   if (trap === Value.undefined) {
     return Q(target.PreventExtensions());
   }
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target]))));
   if (booleanTrapResult === Value.true) {
     const extensibleTarget = Q(IsExtensible(target));
     if (extensibleTarget === Value.true) {
@@ -130,7 +131,7 @@ function ProxyPreventExtensions() {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-getownproperty-p
-function ProxyGetOwnProperty(P) {
+function* ProxyGetOwnProperty(P) {
   const O = this;
 
   // 1. Assert: IsPropertyKey(P) is true.
@@ -153,7 +154,7 @@ function ProxyGetOwnProperty(P) {
     return Q(target.GetOwnProperty(P));
   }
   // 8. Let trapResultObj be ? Call(trap, handler, « target, P »).
-  const trapResultObj = Q(Call(trap, handler, [target, P]));
+  const trapResultObj = Q(yield* (Call(trap, handler, [target, P])));
   // 9. If Type(trapResultObj) is neither Object nor Undefined, throw a TypeError exception.
   if (Type(trapResultObj) !== 'Object' && Type(trapResultObj) !== 'Undefined') {
     return surroundingAgent.Throw('TypeError', 'ProxyGetOwnPropertyDescriptorInvalid', P);
@@ -211,7 +212,7 @@ function ProxyGetOwnProperty(P) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-defineownproperty-p-desc
-function ProxyDefineOwnProperty(P, Desc) {
+function* ProxyDefineOwnProperty(P, Desc) {
   const O = this;
 
   // 1. Assert: IsPropertyKey(P) is true.
@@ -236,7 +237,7 @@ function ProxyDefineOwnProperty(P, Desc) {
   // 8. Let descObj be FromPropertyDescriptor(Desc).
   const descObj = FromPropertyDescriptor(Desc);
   // 9. Let booleanTrapResult be ! ToBoolean(? Call(trap, handler, « target, P, descObj »)).
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target, P, descObj])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, P, descObj]))));
   // 10. If booleanTrapResult is false, return false.
   if (booleanTrapResult === Value.false) {
     return Value.false;
@@ -287,7 +288,7 @@ function ProxyDefineOwnProperty(P, Desc) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-hasproperty-p
-function ProxyHasProperty(P) {
+function* ProxyHasProperty(P) {
   const O = this;
 
   Assert(IsPropertyKey(P));
@@ -301,7 +302,7 @@ function ProxyHasProperty(P) {
   if (trap === Value.undefined) {
     return Q(target.HasProperty(P));
   }
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target, P])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, P]))));
   if (booleanTrapResult === Value.false) {
     const targetDesc = Q(target.GetOwnProperty(P));
     if (targetDesc !== Value.undefined) {
@@ -318,7 +319,7 @@ function ProxyHasProperty(P) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-get-p-receiver
-function ProxyGet(P, Receiver) {
+function* ProxyGet(P, Receiver) {
   const O = this;
 
   Assert(IsPropertyKey(P));
@@ -332,7 +333,7 @@ function ProxyGet(P, Receiver) {
   if (trap === Value.undefined) {
     return Q(target.Get(P, Receiver));
   }
-  const trapResult = Q(Call(trap, handler, [target, P, Receiver]));
+  const trapResult = Q(yield* (Call(trap, handler, [target, P, Receiver])));
   const targetDesc = Q(target.GetOwnProperty(P));
   if (targetDesc !== Value.undefined && targetDesc.Configurable === Value.false) {
     if (IsDataDescriptor(targetDesc) === true && targetDesc.Writable === Value.false) {
@@ -350,7 +351,7 @@ function ProxyGet(P, Receiver) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-set-p-v-receiver
-function ProxySet(P, V, Receiver) {
+function* ProxySet(P, V, Receiver) {
   const O = this;
 
   Assert(IsPropertyKey(P));
@@ -364,7 +365,7 @@ function ProxySet(P, V, Receiver) {
   if (trap === Value.undefined) {
     return Q(target.Set(P, V, Receiver));
   }
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target, P, V, Receiver])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, P, V, Receiver]))));
   if (booleanTrapResult === Value.false) {
     return Value.false;
   }
@@ -385,7 +386,7 @@ function ProxySet(P, V, Receiver) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-delete-p
-function ProxyDelete(P) {
+function* ProxyDelete(P) {
   const O = this;
 
   // 1. Assert: IsPropertyKey(P) is true.
@@ -408,7 +409,7 @@ function ProxyDelete(P) {
     return Q(target.Delete(P));
   }
   // 8. Let booleanTrapResult be ! ToBoolean(? Call(trap, handler, « target, P »)).
-  const booleanTrapResult = ToBoolean(Q(Call(trap, handler, [target, P])));
+  const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, P]))));
   // 9. If booleanTrapResult is false, return false.
   if (booleanTrapResult === Value.false) {
     return Value.false;
@@ -434,7 +435,7 @@ function ProxyDelete(P) {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-ownpropertykeys
-function ProxyOwnPropertyKeys() {
+function* ProxyOwnPropertyKeys() {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -447,7 +448,7 @@ function ProxyOwnPropertyKeys() {
   if (trap === Value.undefined) {
     return Q(target.OwnPropertyKeys());
   }
-  const trapResultArray = Q(Call(trap, handler, [target]));
+  const trapResultArray = Q(yield* (Call(trap, handler, [target])));
   const trapResult = Q(CreateListFromArrayLike(trapResultArray, ['String', 'Symbol']));
   if (new ValueSet(trapResult).size !== trapResult.length) {
     return surroundingAgent.Throw('TypeError', 'ProxyOwnKeysDuplicateEntries');
@@ -492,7 +493,7 @@ function ProxyOwnPropertyKeys() {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-call-thisargument-argumentslist
-function ProxyCall(thisArgument, argumentsList) {
+function* ProxyCall(thisArgument, argumentsList) {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -503,14 +504,14 @@ function ProxyCall(thisArgument, argumentsList) {
   const target = O.ProxyTarget;
   const trap = Q(GetMethod(handler, new Value('apply')));
   if (trap === Value.undefined) {
-    return Q(Call(target, thisArgument, argumentsList));
+    return Q(yield* Call(target, thisArgument, argumentsList));
   }
   const argArray = X(CreateArrayFromList(argumentsList));
-  return Q(Call(trap, handler, [target, thisArgument, argArray]));
+  return Q(yield* Call(trap, handler, [target, thisArgument, argArray]));
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-construct-argumentslist-newtarget
-function ProxyConstruct(argumentsList, newTarget) {
+function* ProxyConstruct(argumentsList, newTarget) {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -522,10 +523,10 @@ function ProxyConstruct(argumentsList, newTarget) {
   Assert(IsConstructor(target) === Value.true);
   const trap = Q(GetMethod(handler, new Value('construct')));
   if (trap === Value.undefined) {
-    return Q(Construct(target, argumentsList, newTarget));
+    return Q(yield* Construct(target, argumentsList, newTarget));
   }
   const argArray = X(CreateArrayFromList(argumentsList));
-  const newObj = Q(Call(trap, handler, [target, argArray, newTarget]));
+  const newObj = Q(yield* (Call(trap, handler, [target, argArray, newTarget])));
   if (Type(newObj) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', newObj);
   }

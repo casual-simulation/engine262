@@ -14,9 +14,10 @@ import {
 import { Type, Value } from '../value.mjs';
 import { Q } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-reflect.apply
-function Reflect_apply([target = Value.undefined, thisArgument = Value.undefined, argumentsList = Value.undefined]) {
+function* Reflect_apply([target = Value.undefined, thisArgument = Value.undefined, argumentsList = Value.undefined]) {
   // 1. If IsCallable(target) is false, throw a TypeError exception.
   if (IsCallable(target) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', target);
@@ -26,11 +27,11 @@ function Reflect_apply([target = Value.undefined, thisArgument = Value.undefined
   // 3. Perform PrepareForTailCall().
   PrepareForTailCall();
   // 4. Return ? Call(target, thisArgument, args).
-  return Q(Call(target, thisArgument, args));
+  return Q(yield* (Call(target, thisArgument, args)));
 }
 
 // #sec-reflect.construct
-function Reflect_construct([target = Value.undefined, argumentsList = Value.undefined, newTarget]) {
+function* Reflect_construct([target = Value.undefined, argumentsList = Value.undefined, newTarget]) {
   // 1. If IsConstructor(target) is false, throw a TypeError exception.
   if (IsConstructor(target) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', target);
@@ -44,7 +45,7 @@ function Reflect_construct([target = Value.undefined, argumentsList = Value.unde
   // 4. Let args be ? CreateListFromArrayLike(argumentsList).
   const args = Q(CreateListFromArrayLike(argumentsList));
   // 5. Return ? Construct(target, args, newTarget).
-  return Q(Construct(target, args, newTarget));
+  return Q(yield* Construct(target, args, newTarget));
 }
 
 // #sec-reflect.defineproperty

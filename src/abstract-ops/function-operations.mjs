@@ -45,6 +45,7 @@ import {
   Realm,
   F as toNumberValue,
 } from './all.mjs';
+import { wrap } from '../helpers.mjs';
 
 // This file covers abstract operations defined in
 // 9.2 #sec-ecmascript-function-objects
@@ -131,13 +132,13 @@ export function OrdinaryCallBindThis(F, calleeContext, thisArgument) {
 }
 
 // #sec-ordinarycallevaluatebody
-export function OrdinaryCallEvaluateBody(F, argumentsList) {
+export function* OrdinaryCallEvaluateBody(F, argumentsList) {
   // 1. Return the result of EvaluateBody of the parsed code that is F.[[ECMAScriptCode]] passing F and argumentsList as the arguments.
-  return EnsureCompletion(unwind(EvaluateBody(F.ECMAScriptCode, F, argumentsList)));
+  return EnsureCompletion(yield* EvaluateBody(F.ECMAScriptCode, F, argumentsList));
 }
 
 // #sec-definefield
-export function DefineField(receiver, fieldRecord) {
+export function* DefineField(receiver, fieldRecord) {
   // 1. Let fieldName be fieldRecord.[[Name]].
   const fieldName = fieldRecord.Name;
   // 2. Let initializer be fieldRecord.[[Initializer]].
@@ -146,7 +147,7 @@ export function DefineField(receiver, fieldRecord) {
   let initValue;
   if (initializer !== undefined) {
     // a. Let initValue be ? Call(initializer, receiver).
-    initValue = Q(Call(initializer, receiver));
+    initValue = Q(yield* Call(initializer, receiver));
   } else { // 4. Else, let initValue be undefined.
     initValue = Value.undefined;
   }
@@ -181,7 +182,7 @@ export function InitializeInstanceElements(O, constructor) {
 }
 
 // #sec-ecmascript-function-objects-call-thisargument-argumentslist
-function FunctionCallSlot(thisArgument, argumentsList) {
+function* FunctionCallSlot(thisArgument, argumentsList) {
   const F = this;
 
   // 1. Assert: F is an ECMAScript function object.
@@ -204,7 +205,7 @@ function FunctionCallSlot(thisArgument, argumentsList) {
   // 6. Perform OrdinaryCallBindThis(F, calleeContext, thisArgument).
   OrdinaryCallBindThis(F, calleeContext, thisArgument);
   // 7. Let result be OrdinaryCallEvaluateBody(F, argumentsList).
-  const result = OrdinaryCallEvaluateBody(F, argumentsList);
+  const result = yield* OrdinaryCallEvaluateBody(F, argumentsList);
   // 8. Remove calleeContext from the execution context stack and restore callerContext as the running execution context.
   surroundingAgent.executionContextStack.pop(calleeContext);
   // 9. If result.[[Type]] is return, return NormalCompletion(result.[[Value]]).
@@ -218,7 +219,7 @@ function FunctionCallSlot(thisArgument, argumentsList) {
 }
 
 // 9.2.2 #sec-ecmascript-function-objects-construct-argumentslist-newtarget
-function FunctionConstructSlot(argumentsList, newTarget) {
+function* FunctionConstructSlot(argumentsList, newTarget) {
   const F = this;
 
   // 1. Assert: F is an ECMAScript function object.
@@ -256,7 +257,7 @@ function FunctionConstructSlot(argumentsList, newTarget) {
   // 9. Let constructorEnv be the LexicalEnvironment of calleeContext.
   const constructorEnv = calleeContext.LexicalEnvironment;
   // 10. Let result be OrdinaryCallEvaluateBody(F, argumentsList).
-  const result = OrdinaryCallEvaluateBody(F, argumentsList);
+  const result = yield* OrdinaryCallEvaluateBody(F, argumentsList);
   // 11. Remove calleeContext from the execution context stack and restore callerContext as the running execution context.
   surroundingAgent.executionContextStack.pop(calleeContext);
   // 12. If result.[[Type]] is return, then
@@ -453,13 +454,13 @@ export function SetFunctionLength(F, length) {
 
 
 function nativeCall(F, argumentsList, thisArgument, newTarget) {
-  return F.nativeFunction(argumentsList, {
+  return wrap(F.nativeFunction(argumentsList, {
     thisValue: thisArgument || Value.undefined,
     NewTarget: newTarget || Value.undefined,
-  });
+  }));
 }
 
-function BuiltinFunctionCall(thisArgument, argumentsList) {
+function* BuiltinFunctionCall(thisArgument, argumentsList) {
   const F = this;
 
   // const callerContext = surroundingAgent.runningExecutionContext;
@@ -471,14 +472,14 @@ function BuiltinFunctionCall(thisArgument, argumentsList) {
   calleeContext.ScriptOrModule = F.ScriptOrModule;
   // 8. Perform any necessary implementation-defined initialization of calleeContext.
   surroundingAgent.executionContextStack.push(calleeContext);
-  const result = nativeCall(F, argumentsList, thisArgument, Value.undefined);
+  const result = yield* nativeCall(F, argumentsList, thisArgument, Value.undefined);
   // Remove calleeContext from the execution context stack and
   // restore callerContext as the running execution context.
   surroundingAgent.executionContextStack.pop(calleeContext);
   return result;
 }
 
-function BuiltinFunctionConstruct(argumentsList, newTarget) {
+function* BuiltinFunctionConstruct(argumentsList, newTarget) {
   const F = this;
 
   // const callerContext = surroundingAgent.runningExecutionContext;
@@ -491,7 +492,7 @@ function BuiltinFunctionConstruct(argumentsList, newTarget) {
   // 8. Perform any necessary implementation-defined initialization of calleeContext.
   surroundingAgent.executionContextStack.push(calleeContext);
   surroundingAgent.runningExecutionContext.callSite.constructCall = true;
-  const result = nativeCall(F, argumentsList, undefined, newTarget);
+  const result = yield* nativeCall(F, argumentsList, undefined, newTarget);
   // Remove calleeContext from the execution context stack and
   // restore callerContext as the running execution context.
   surroundingAgent.executionContextStack.pop(calleeContext);

@@ -30,6 +30,7 @@ import {
   isProxyExoticObject,
   F as toNumberValue,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 
 // This file covers abstract operations defined in
@@ -175,7 +176,7 @@ export function HasOwnProperty(O, P) {
 }
 
 // 7.3.12 #sec-call
-export function Call(F, V, argumentsList) {
+export function* Call(F, V, argumentsList) {
   if (!argumentsList) {
     argumentsList = [];
   }
@@ -185,11 +186,11 @@ export function Call(F, V, argumentsList) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', F);
   }
 
-  return EnsureCompletion(Q(F.Call(V, argumentsList)));
+  return EnsureCompletion(Q(yield* F.Call(V, argumentsList)));
 }
 
 // 7.3.13 #sec-construct
-export function Construct(F, argumentsList, newTarget) {
+export function* Construct(F, argumentsList, newTarget) {
   if (!newTarget) {
     newTarget = F;
   }
@@ -198,7 +199,7 @@ export function Construct(F, argumentsList, newTarget) {
   }
   Assert(IsConstructor(F) === Value.true);
   Assert(IsConstructor(newTarget) === Value.true);
-  return Q(F.Construct(argumentsList, newTarget));
+  return Q(yield* F.Construct(argumentsList, newTarget));
 }
 
 // 7.3.14 #sec-setintegritylevel
@@ -319,13 +320,13 @@ export function CreateListFromArrayLike(obj, elementTypes) {
 }
 
 // 7.3.18 #sec-invoke
-export function Invoke(V, P, argumentsList) {
+export function* Invoke(V, P, argumentsList) {
   Assert(IsPropertyKey(P));
   if (!argumentsList) {
     argumentsList = [];
   }
   const func = Q(GetV(V, P));
-  return Q(Call(func, V, argumentsList));
+  return Q(yield* Call(func, V, argumentsList));
 }
 
 // 7.3.19 #sec-ordinaryhasinstance

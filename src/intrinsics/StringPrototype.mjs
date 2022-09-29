@@ -229,23 +229,23 @@ function StringProto_localeCompare([that = Value.undefined], { thisValue }) {
 }
 
 // 21.1.3.11 #sec-string.prototype.match
-function StringProto_match([regexp = Value.undefined], { thisValue }) {
+function* StringProto_match([regexp = Value.undefined], { thisValue }) {
   const O = Q(RequireObjectCoercible(thisValue));
 
   if (regexp !== Value.undefined && regexp !== Value.null) {
     const matcher = Q(GetMethod(regexp, wellKnownSymbols.match));
     if (matcher !== Value.undefined) {
-      return Q(Call(matcher, regexp, [O]));
+      return Q(yield* (Call(matcher, regexp, [O])));
     }
   }
 
   const S = Q(ToString(O));
   const rx = Q(RegExpCreate(regexp, Value.undefined));
-  return Q(Invoke(rx, wellKnownSymbols.match, [S]));
+  return Q(yield* Invoke(rx, wellKnownSymbols.match, [S]));
 }
 
 // 21.1.3.12 #sec-string.prototype.matchall
-function StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
+function* StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
   // 1. Let O be ? RequireObjectCoercible(this value).
   const O = Q(RequireObjectCoercible(thisValue));
   // 2. If regexp is neither undefined nor null, then
@@ -268,7 +268,7 @@ function StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
     // d. If matcher is not undefined, then
     if (matcher !== Value.undefined) {
       // i. Return ? Call(matcher, regexp, « O »).
-      return Q(Call(matcher, regexp, [O]));
+      return Q(yield* Call(matcher, regexp, [O]));
     }
   }
   // 3. Let S be ? ToString(O).
@@ -276,7 +276,7 @@ function StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
   // 4. Let rx be ? RegExpCreate(regexp, "g").
   const rx = Q(RegExpCreate(regexp, new Value('g')));
   // 5. Return ? Invoke(rx, @@matchAll, « S »).
-  return Q(Invoke(rx, wellKnownSymbols.matchAll, [S]));
+  return Q(yield* Invoke(rx, wellKnownSymbols.matchAll, [S]));
 }
 
 // 21.1.3.13 #sec-string.prototype.normalize
@@ -330,7 +330,7 @@ function StringProto_repeat([count = Value.undefined], { thisValue }) {
 }
 
 // 21.1.3.17 #sec-string.prototype.replace
-function StringProto_replace([searchValue = Value.undefined, replaceValue = Value.undefined], { thisValue }) {
+function* StringProto_replace([searchValue = Value.undefined, replaceValue = Value.undefined], { thisValue }) {
   const O = Q(RequireObjectCoercible(thisValue));
   if (searchValue !== Value.undefined && searchValue !== Value.null) {
     const replacer = Q(GetMethod(searchValue, wellKnownSymbols.replace));
@@ -351,7 +351,7 @@ function StringProto_replace([searchValue = Value.undefined, replaceValue = Valu
   }
   let replStr;
   if (functionalReplace === Value.true) {
-    const replValue = Q(Call(replaceValue, Value.undefined, [matched, F(pos), string]));
+    const replValue = Q(yield* Call(replaceValue, Value.undefined, [matched, F(pos), string]));
     replStr = Q(ToString(replValue));
   } else {
     const captures = [];
@@ -363,7 +363,7 @@ function StringProto_replace([searchValue = Value.undefined, replaceValue = Valu
 }
 
 // #sec-string.prototype.replaceall
-function StringProto_replaceAll([searchValue = Value.undefined, replaceValue = Value.undefined], { thisValue }) {
+function* StringProto_replaceAll([searchValue = Value.undefined, replaceValue = Value.undefined], { thisValue }) {
   // 1. Let O be ? RequireObjectCoercible(this value).
   const O = Q(RequireObjectCoercible(thisValue));
   // 2.If searchValue is neither undefined nor null, then
@@ -386,7 +386,7 @@ function StringProto_replaceAll([searchValue = Value.undefined, replaceValue = V
     // d. If replacer is not undefined, then
     if (replacer !== Value.undefined) {
       // i. Return ? Call(replacer, searchValue, « O, replaceValue »).
-      return Q(Call(replacer, searchValue, [O, replaceValue]));
+      return Q(yield* Call(replacer, searchValue, [O, replaceValue]));
     }
   }
   // 3. Let string be ? ToString(O).
@@ -425,7 +425,7 @@ function StringProto_replaceAll([searchValue = Value.undefined, replaceValue = V
     // a. If functionalReplace is true, then
     if (functionalReplace === Value.true) {
       // i. Let replacement be ? ToString(? Call(replaceValue, undefined, « searchString, 𝔽(position), string »).
-      replacement = Q(ToString(Q(Call(replaceValue, Value.undefined, [searchString, F(position), string]))));
+      replacement = Q(ToString(Q(yield* Call(replaceValue, Value.undefined, [searchString, F(position), string]))));
     } else { // b. Else,
       // i. Assert: Type(replaceValue) is String.
       Assert(Type(replaceValue) === 'String');
@@ -451,19 +451,19 @@ function StringProto_replaceAll([searchValue = Value.undefined, replaceValue = V
 }
 
 // 21.1.3.19 #sec-string.prototype.slice
-function StringProto_search([regexp = Value.undefined], { thisValue }) {
+function* StringProto_search([regexp = Value.undefined], { thisValue }) {
   const O = Q(RequireObjectCoercible(thisValue));
 
   if (regexp !== Value.undefined && regexp !== Value.null) {
     const searcher = Q(GetMethod(regexp, wellKnownSymbols.search));
     if (searcher !== Value.undefined) {
-      return Q(Call(searcher, regexp, [O]));
+      return Q(yield* Call(searcher, regexp, [O]));
     }
   }
 
   const string = Q(ToString(O));
   const rx = Q(RegExpCreate(regexp, Value.undefined));
-  return Q(Invoke(rx, wellKnownSymbols.search, [string]));
+  return Q(yield* Invoke(rx, wellKnownSymbols.search, [string]));
 }
 
 // 21.1.3.19 #sec-string.prototype.slice
@@ -495,12 +495,12 @@ function StringProto_slice([start = Value.undefined, end = Value.undefined], { t
 }
 
 // #sec-string.prototype.split
-function StringProto_split([separator = Value.undefined, limit = Value.undefined], { thisValue }) {
+function* StringProto_split([separator = Value.undefined, limit = Value.undefined], { thisValue }) {
   const O = Q(RequireObjectCoercible(thisValue));
   if (separator !== Value.undefined && separator !== Value.null) {
     const splitter = Q(GetMethod(separator, wellKnownSymbols.split));
     if (splitter !== Value.undefined) {
-      return Q(Call(splitter, separator, [O, limit]));
+      return Q(yield* Call(splitter, separator, [O, limit]));
     }
   }
   const S = Q(ToString(O));

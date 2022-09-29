@@ -25,6 +25,7 @@ import {
 } from './parse.mjs';
 import { SourceTextModuleRecord } from './modules.mjs';
 import { Evaluate } from './evaluator.mjs';
+import { unwind, wrap } from './helpers.mjs';
 
 export * from './value.mjs';
 export * from './engine.mjs';
@@ -217,7 +218,7 @@ export class ManagedRealm extends Realm {
     }
     this.active = true;
     surroundingAgent.executionContextStack.push(this.topContext);
-    const r = cb();
+    const r = unwind(wrap(cb()));
     surroundingAgent.executionContextStack.pop(this.topContext);
     this.active = false;
     return r;
@@ -267,16 +268,17 @@ export class ManagedRealm extends Realm {
     if (typeof sourceText !== 'string') {
       throw new TypeError('sourceText must be a string');
     }
-    const module = this.scope(() => ParseJSONModule(new Value(sourceText), this, {
+    const _this = this;
+    const module = this.scope(function*() { return yield* ParseJSONModule(new Value(sourceText), this, {
       specifier,
-    }));
+    })});
     return module;
   }
 }
 
 class ManagedSourceTextModuleRecord extends SourceTextModuleRecord {
-  Evaluate() {
-    const r = super.Evaluate();
+  *Evaluate() {
+    const r = yield* super.Evaluate();
     if (!(r instanceof AbruptCompletion)) {
       runJobQueue();
     }

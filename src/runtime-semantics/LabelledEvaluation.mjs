@@ -586,7 +586,7 @@ function* ForInOfBodyEvaluation(lhs, stmt, iteratorRecord, iterationKind, lhsKin
   // 6. Repeat,
   while (true) {
     // a. Let nextResult be ? Call(iteratorRecord.[[NextMethod]], iteratorRecord.[[Iterator]]).
-    let nextResult = Q(Call(iteratorRecord.NextMethod, iteratorRecord.Iterator));
+    let nextResult = Q(yield* Call(iteratorRecord.NextMethod, iteratorRecord.Iterator));
     // b. If iteratorKind is async, then set nextResult to ? Await(nextResult).
     if (iteratorKind === 'async') {
       nextResult = Q(yield* Await(nextResult));

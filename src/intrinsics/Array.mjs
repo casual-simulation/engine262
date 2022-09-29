@@ -96,7 +96,7 @@ function ArrayConstructor(argumentsList, { NewTarget }) {
 }
 
 // 22.1.2.1 #sec-array.from
-function Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   const C = thisValue;
   let mapping;
   let A;
@@ -111,7 +111,7 @@ function Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg =
   const usingIterator = Q(GetMethod(items, wellKnownSymbols.iterator));
   if (usingIterator !== Value.undefined) {
     if (IsConstructor(C) === Value.true) {
-      A = Q(Construct(C));
+      A = Q(yield* Construct(C));
     } else {
       A = X(ArrayCreate(0));
     }
@@ -131,7 +131,7 @@ function Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg =
       const nextValue = Q(IteratorValue(next));
       let mappedValue;
       if (mapping) {
-        mappedValue = Call(mapfn, thisArg, [nextValue, F(k)]);
+        mappedValue = yield* (Call(mapfn, thisArg, [nextValue, F(k)]));
         IfAbruptCloseIterator(mappedValue, iteratorRecord);
       } else {
         mappedValue = nextValue;
@@ -144,7 +144,7 @@ function Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg =
   const arrayLike = X(ToObject(items));
   const len = Q(LengthOfArrayLike(arrayLike));
   if (IsConstructor(C) === Value.true) {
-    A = Q(Construct(C, [F(len)]));
+    A = Q(yield* Construct(C, [F(len)]));
   } else {
     A = Q(ArrayCreate(len));
   }
@@ -154,7 +154,7 @@ function Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg =
     const kValue = Q(Get(arrayLike, Pk));
     let mappedValue;
     if (mapping === true) {
-      mappedValue = Q(Call(mapfn, thisArg, [kValue, F(k)]));
+      mappedValue = Q(yield* (Call(mapfn, thisArg, [kValue, F(k)])));
     } else {
       mappedValue = kValue;
     }
@@ -171,13 +171,13 @@ function Array_isArray([arg = Value.undefined]) {
 }
 
 // 22.1.2.3 #sec-array.of
-function Array_of(items, { thisValue }) {
+function* Array_of(items, { thisValue }) {
   const len = items.length;
   // Let items be the List of arguments passed to this function.
   const C = thisValue;
   let A;
   if (IsConstructor(C) === Value.true) {
-    A = Q(Construct(C, [F(len)]));
+    A = Q(yield* Construct(C, [F(len)]));
   } else {
     A = Q(ArrayCreate(len));
   }

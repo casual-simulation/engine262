@@ -35,7 +35,7 @@ export function WeakRefDeref(weakRef) {
 }
 
 // #sec-cleanup-finalization-registry
-export function CleanupFinalizationRegistry(finalizationRegistry, callback) {
+export function* CleanupFinalizationRegistry(finalizationRegistry, callback) {
   // 1. Assert: finalizationRegistry has [[Cells]] and [[CleanupCallback]] internal slots.
   Assert('Cells' in finalizationRegistry && 'CleanupCallback' in finalizationRegistry);
   // 2. Set callback to finalizationRegistry.[[CleanupCallback]].
@@ -53,7 +53,7 @@ export function CleanupFinalizationRegistry(finalizationRegistry, callback) {
     finalizationRegistry.Cells.splice(i, 1);
     i -= 1;
     // c. Perform ? HostCallJobCallback(callback, undefined, « cell.[[HeldValue]] »).
-    Q(HostCallJobCallback(callback, Value.undefined, [cell.HeldValue]));
+    Q(yield* HostCallJobCallback(callback, Value.undefined, [cell.HeldValue]));
   }
   // 4. Return NormalCompletion(undefined).
   return NormalCompletion(Value.undefined);

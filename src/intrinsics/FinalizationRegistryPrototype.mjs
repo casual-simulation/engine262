@@ -10,7 +10,7 @@ import { Q } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-finalization-registry.prototype.cleanupSome
-function FinalizationRegistryProto_cleanupSome([callback = Value.undefined], { thisValue }) {
+function* FinalizationRegistryProto_cleanupSome([callback = Value.undefined], { thisValue }) {
   // 1. Let finalizationRegistry be the this value.
   const finalizationRegistry = thisValue;
   // 2. Perform ? RequireInternalSlot(finalizationRegistry, [[Cells]]).
@@ -20,7 +20,7 @@ function FinalizationRegistryProto_cleanupSome([callback = Value.undefined], { t
     return surroundingAgent.Throw('TypeError', 'NotAFunction', callback);
   }
   // 4. Perform ? CleanupFinalizationRegistry(finalizationRegistry, callback).
-  Q(CleanupFinalizationRegistry(finalizationRegistry, callback));
+  Q(yield* CleanupFinalizationRegistry(finalizationRegistry, callback));
   // 5. Return *undefined*.
   return Value.undefined;
 }

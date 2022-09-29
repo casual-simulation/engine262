@@ -148,7 +148,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
   // 14. If constructor is empty, then
   if (constructor === undefined) {
     // a. Let defaultConstructor be a new Abstract Closure with no parameters that captures nothing and performs the following steps when called:
-    const defaultConstructor = (args, { NewTarget }) => {
+    const defaultConstructor = function*(args, { NewTarget }) {
       // i. Let args be the List of arguments that was passed to this function by [[Call]] or [[Construct]].
       // ii. If NewTarget is undefined, throw a TypeError exception.
       if (NewTarget === Value.undefined) {
@@ -169,7 +169,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
           return surroundingAgent.Throw('TypeError', 'NotAConstructor', func);
         }
         // 4. Let result be ? Construct(func, args, NewTarget).
-        result = Q(Construct(func, args, NewTarget));
+        result = Q(yield* Construct(func, args, NewTarget));
       } else { // v. Else,
         // 1. NOTE: This branch behaves similarly to `constructor() {}`.
         // 2. Let result be ? OrdinaryCreateFromConstructor(NewTarget, "%Object.prototype%").
@@ -315,7 +315,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
       // i. Assert: elementRecord is a ClassStaticBlockDefinition Record.
       Assert(elementRecord instanceof ClassStaticBlockDefinitionRecord);
       // ii. Let result be Completion(Call(elementRecord.[[BodyFunction]], F)).
-      result = Completion(Call(elementRecord.BodyFunction, F));
+      result = Completion(yield* Call(elementRecord.BodyFunction, F));
     }
     // c. If result is an abrupt completion, then
     if (result instanceof AbruptCompletion) {

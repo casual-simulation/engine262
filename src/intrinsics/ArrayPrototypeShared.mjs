@@ -113,7 +113,7 @@ export function ArrayProto_sortBody(obj, len, SortCompare, internalMethodsRestri
 export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluatingAlgorithm, objectToLength) {
   // 22.1.3.5 #sec-array.prototype.every
   // 22.2.3.7 #sec-%typedarray%.prototype.every
-  function ArrayProto_every([callbackFn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_every([callbackFn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -126,7 +126,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
         const kValue = Q(Get(O, Pk));
-        const testResult = ToBoolean(Q(Call(callbackFn, thisArg, [kValue, F(k), O])));
+        const testResult = ToBoolean(Q(yield* (Call(callbackFn, thisArg, [kValue, F(k), O]))));
         if (testResult === Value.false) {
           return Value.false;
         }
@@ -138,7 +138,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.8 #sec-array.prototype.find
   // 22.2.3.10 #sec-%typedarray%.prototype.find
-  function ArrayProto_find([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_find([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -149,7 +149,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
     while (k < len) {
       const Pk = X(ToString(F(k)));
       const kValue = Q(Get(O, Pk));
-      const testResult = ToBoolean(Q(Call(predicate, thisArg, [kValue, F(k), O])));
+      const testResult = ToBoolean(Q(yield* (Call(predicate, thisArg, [kValue, F(k), O]))));
       if (testResult === Value.true) {
         return kValue;
       }
@@ -160,7 +160,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.9 #sec-array.prototype.findindex
   // 22.2.3.11 #sec-%typedarray%.prototype.findindex
-  function ArrayProto_findIndex([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_findIndex([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -171,7 +171,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
     while (k < len) {
       const Pk = X(ToString(F(k)));
       const kValue = Q(Get(O, Pk));
-      const testResult = ToBoolean(Q(Call(predicate, thisArg, [kValue, F(k), O])));
+      const testResult = ToBoolean(Q(yield* (Call(predicate, thisArg, [kValue, F(k), O]))));
       if (testResult === Value.true) {
         return F(k);
       }
@@ -182,7 +182,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // #sec-array.prototype.findlast
   // #sec-%typedarray%.prototype.findlast
-  function ArrayProto_findLast([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_findLast([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     // Let O be ? ToObject(this value).
     const O = Q(ToObject(thisValue));
@@ -201,7 +201,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       // b. Let kValue be ? Get(O, Pk).
       const kValue = Q(Get(O, Pk));
       // c. Let testResult be ToBoolean(? Call(predicate, thisArg, « kValue, 𝔽(k), O »)).
-      const testResult = ToBoolean(Q(Call(predicate, thisArg, [kValue, F(k), O])));
+      const testResult = ToBoolean(Q(yield* (Call(predicate, thisArg, [kValue, F(k), O]))));
       // d. If testResult is true, return kValue.
       if (testResult === Value.true) {
         return kValue;
@@ -215,7 +215,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // #sec-array.prototype.findlastindex
   // #sec-%typedarray%.prototype.findlastindex
-  function ArrayProto_findLastIndex([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_findLastIndex([predicate = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     // Let O be ? ToObject(this value).
     const O = Q(ToObject(thisValue));
@@ -234,7 +234,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       // b. Let kValue be ? Get(O, Pk).
       const kValue = Q(Get(O, Pk));
       // c. Let testResult be ToBoolean(? Call(predicate, thisArg, « kValue, 𝔽(k), O »)).
-      const testResult = ToBoolean(Q(Call(predicate, thisArg, [kValue, F(k), O])));
+      const testResult = ToBoolean(Q(yield* (Call(predicate, thisArg, [kValue, F(k), O]))));
       // d. If testResult is true, return 𝔽(k).
       if (testResult === Value.true) {
         return F(k);
@@ -261,7 +261,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
         const kValue = Q(Get(O, Pk));
-        Q(Call(callbackfn, thisArg, [kValue, F(k), O]));
+        Q(unwind(Call(callbackfn, thisArg, [kValue, F(k), O])));
       }
       k += 1;
     }
@@ -411,7 +411,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.21 #sec-array.prototype.reduce
   // 22.2.3.20 #sec-%typedarray%.prototype.reduce
-  function ArrayProto_reduce([callbackfn = Value.undefined, initialValue], { thisValue }) {
+  function* ArrayProto_reduce([callbackfn = Value.undefined, initialValue], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -444,7 +444,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
         const kValue = Q(Get(O, Pk));
-        accumulator = Q(Call(callbackfn, Value.undefined, [accumulator, kValue, F(k), O]));
+        accumulator = Q(yield* (Call(callbackfn, Value.undefined, [accumulator, kValue, F(k), O])));
       }
       k += 1;
     }
@@ -453,7 +453,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.22 #sec-array.prototype.reduceright
   // 22.2.3.21 #sec-%typedarray%.prototype.reduceright
-  function ArrayProto_reduceRight([callbackfn = Value.undefined, initialValue], { thisValue }) {
+  function* ArrayProto_reduceRight([callbackfn = Value.undefined, initialValue], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -486,7 +486,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
         const kValue = Q(Get(O, Pk));
-        accumulator = Q(Call(callbackfn, Value.undefined, [accumulator, kValue, F(k), O]));
+        accumulator = Q(yield* (Call(callbackfn, Value.undefined, [accumulator, kValue, F(k), O])));
       }
       k -= 1;
     }
@@ -534,7 +534,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.26 #sec-array.prototype.some
   // 22.2.3.25 #sec-%typedarray%.prototype.some
-  function ArrayProto_some([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+  function* ArrayProto_some([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const O = Q(ToObject(thisValue));
     const len = Q(objectToLength(O));
@@ -547,7 +547,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
         const kValue = Q(Get(O, Pk));
-        const testResult = ToBoolean(Q(Call(callbackfn, thisArg, [kValue, F(k), O])));
+        const testResult = ToBoolean(Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O]))));
         if (testResult === Value.true) {
           return Value.true;
         }
@@ -559,7 +559,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
 
   // 22.1.3.29 #sec-array.prototype.tolocalestring
   // 22.2.3.28 #sec-%typedarray%.prototype.tolocalestring
-  function ArrayProto_toLocaleString(args, { thisValue }) {
+  function* ArrayProto_toLocaleString(args, { thisValue }) {
     Q(priorToEvaluatingAlgorithm(thisValue));
     const array = Q(ToObject(thisValue));
     const len = Q(objectToLength(array));
@@ -573,7 +573,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kStr = X(ToString(F(k)));
       const nextElement = Q(Get(array, kStr));
       if (nextElement !== Value.undefined && nextElement !== Value.null) {
-        const S = Q(ToString(Q(Invoke(nextElement, new Value('toLocaleString'))))).stringValue();
+        const S = Q(ToString(Q(yield* Invoke(nextElement, new Value('toLocaleString'))))).stringValue();
         R = `${R}${S}`;
       }
       k += 1;

@@ -69,7 +69,7 @@ function* EvaluateBody_AsyncConciseBody({ ExpressionBody }, functionObject, argu
     X(AsyncFunctionStart(promiseCapability, ExpressionBody));
   } else { // 4. Else
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « declResult.[[Value]] »).
-    X(Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));
+    X(yield* Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));
   }
   // 5. Return Completion { [[Type]]: return, [[Value]]: promiseCapability.[[Promise]], [[Target]]: empty }.
   return new Completion({ Type: 'return', Value: promiseCapability.Promise, Target: undefined });
@@ -123,7 +123,7 @@ export function* EvaluateBody_AsyncFunctionBody(FunctionBody, functionObject, ar
     X(AsyncFunctionStart(promiseCapability, FunctionBody));
   } else { // 4. Else,
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « declResult.[[Value]] »).
-    X(Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));
+    X(yield* Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));
   }
   // 5. Return Completion { [[Type]]: return, [[Value]]: promiseCapability.[[Promise]], [[Target]]: empty }.
   return new Completion({ Type: 'return', Value: promiseCapability.Promise, Target: undefined });

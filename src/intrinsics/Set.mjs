@@ -13,7 +13,7 @@ import { IfAbruptCloseIterator, Q } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-set-iterable
-function SetConstructor([iterable = Value.undefined], { NewTarget }) {
+function* SetConstructor([iterable = Value.undefined], { NewTarget }) {
   // 1. If NewTarget is undefined, throw a TypeError exception.
   if (NewTarget === Value.undefined) {
     return surroundingAgent.Throw('TypeError', 'ConstructorNonCallable', this);
@@ -45,7 +45,7 @@ function SetConstructor([iterable = Value.undefined], { NewTarget }) {
     // c. Let nextValue be ? IteratorValue(next).
     const nextValue = Q(IteratorValue(next));
     // d. Let status be Call(adder, set, « nextValue »).
-    const status = Call(adder, set, [nextValue]);
+    const status = yield* Call(adder, set, [nextValue]);
     // e. IfAbruptCloseIterator(status, iteratorRecord).
     IfAbruptCloseIterator(status, iteratorRecord);
   }

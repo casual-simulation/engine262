@@ -166,7 +166,7 @@ function ArrayProto_fill([value = Value.undefined, start = Value.undefined, end 
 }
 
 // 22.1.3.7 #sec-array.prototype.filter
-function ArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* ArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (IsCallable(callbackfn) === Value.false) {
@@ -180,7 +180,7 @@ function ArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefi
     const kPresent = Q(HasProperty(O, Pk));
     if (kPresent === Value.true) {
       const kValue = Q(Get(O, Pk));
-      const selected = ToBoolean(Q(Call(callbackfn, thisArg, [kValue, F(k), O])));
+      const selected = ToBoolean(Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O]))));
       if (selected === Value.true) {
         Q(CreateDataPropertyOrThrow(A, X(ToString(F(to))), kValue));
         to += 1;
@@ -192,7 +192,7 @@ function ArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.undefi
 }
 
 // 22.1.3.10.1 #sec-flattenintoarray
-function FlattenIntoArray(target, source, sourceLen, start, depth, mapperFunction, thisArg) {
+function* FlattenIntoArray(target, source, sourceLen, start, depth, mapperFunction, thisArg) {
   Assert(Type(target) === 'Object');
   Assert(Type(source) === 'Object');
   Assert(sourceLen >= 0);
@@ -208,7 +208,7 @@ function FlattenIntoArray(target, source, sourceLen, start, depth, mapperFunctio
       let element = Q(Get(source, P));
       if (mapperFunction) {
         Assert(thisArg);
-        element = Q(Call(mapperFunction, thisArg, [element, F(sourceIndex), source]));
+        element = Q(yield* (Call(mapperFunction, thisArg, [element, F(sourceIndex), source])));
       }
       let shouldFlatten = Value.false;
       if (depth > 0) {
@@ -262,7 +262,7 @@ function ArrayProto_keys(args, { thisValue }) {
 }
 
 // 22.1.3.18 #sec-array.prototype.map
-function ArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* ArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (IsCallable(callbackfn) === Value.false) {
@@ -275,7 +275,7 @@ function ArrayProto_map([callbackfn = Value.undefined, thisArg = Value.undefined
     const kPresent = Q(HasProperty(O, Pk));
     if (kPresent === Value.true) {
       const kValue = Q(Get(O, Pk));
-      const mappedValue = Q(Call(callbackfn, thisArg, [kValue, F(k), O]));
+      const mappedValue = Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O])));
       Q(CreateDataPropertyOrThrow(A, Pk, mappedValue));
     }
     k += 1;
@@ -482,13 +482,13 @@ function ArrayProto_splice(args, { thisValue }) {
 }
 
 // 22.1.3.30 #sec-array.prototype.tostring
-function ArrayProto_toString(a, { thisValue }) {
+function* ArrayProto_toString(a, { thisValue }) {
   const array = Q(ToObject(thisValue));
   let func = Q(Get(array, new Value('join')));
   if (IsCallable(func) === Value.false) {
     func = surroundingAgent.intrinsic('%Object.prototype.toString%');
   }
-  return Q(Call(func, array));
+  return Q(yield* (Call(func, array)));
 }
 
 // 22.1.3.31 #sec-array.prototype.unshift

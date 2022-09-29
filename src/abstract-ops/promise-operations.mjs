@@ -27,6 +27,7 @@ import {
   GetFunctionRealm,
   isFunctionObject,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // This file covers abstract operations defined in
 // 25.6 #sec-promise-objects
@@ -100,18 +101,18 @@ function PromiseRejectFunctions([reason = Value.undefined]) {
 }
 
 // #sec-newpromiseresolvethenablejob
-function NewPromiseResolveThenableJob(promiseToResolve, thenable, then) {
+function* NewPromiseResolveThenableJob(promiseToResolve, thenable, then) {
   // 1. Let job be a new Job abstract closure with no parameters that captures
   //    promiseToResolve, thenable, and then and performs the following steps when called:
-  const job = () => {
+  const job = function*() {
     // a. Let resolvingFunctions be CreateResolvingFunctions(promiseToResolve).
     const resolvingFunctions = CreateResolvingFunctions(promiseToResolve);
     // b. Let thenCallResult be HostCallJobCallback(then, thenable, « resolvingFunctions.[[Resolve]], resolvingFunctions.[[Reject]] »).
-    const thenCallResult = HostCallJobCallback(then, thenable, [resolvingFunctions.Resolve, resolvingFunctions.Reject]);
+    const thenCallResult = yield* HostCallJobCallback(then, thenable, [resolvingFunctions.Resolve, resolvingFunctions.Reject]);
     // c. If thenCallResult is an abrupt completion, then
     if (thenCallResult instanceof AbruptCompletion) {
       // i .Let status be Call(resolvingFunctions.[[Reject]], undefined, « thenCallResult.[[Value]] »).
-      const status = Call(resolvingFunctions.Reject, Value.undefined, [thenCallResult.Value]);
+      const status = yield* Call(resolvingFunctions.Reject, Value.undefined, [thenCallResult.Value]);
       // ii. Return Completion(status).
       return Completion(status);
     }
@@ -197,7 +198,7 @@ function FulfillPromise(promise, value) {
 }
 
 // 25.6.1.5 #sec-newpromisecapability
-export function NewPromiseCapability(C) {
+export function* NewPromiseCapability(C) {
   // 1. If IsConstructor(C) is false, throw a TypeError exception.
   if (IsConstructor(C) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', C);
@@ -225,7 +226,7 @@ export function NewPromiseCapability(C) {
   // 5. Let executor be ! CreateBuiltinFunction(executorClosure, 2, "", « »).
   const executor = X(CreateBuiltinFunction(executorClosure, 2, new Value(''), []));
   // 8. Let promise be ? Construct(C, « executor »).
-  const promise = Q(Construct(C, [executor]));
+  const promise = Q(yield* Construct(C, [executor]));
   // 9. If IsCallable(promiseCapability.[[Resolve]]) is false, throw a TypeError exception.
   if (IsCallable(promiseCapability.Resolve) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'PromiseResolveFunction', promiseCapability.Resolve);
@@ -279,7 +280,7 @@ function TriggerPromiseReactions(reactions, argument) {
 }
 
 // 25.6.4.5.1 #sec-promise-resolve
-export function PromiseResolve(C, x) {
+export function* PromiseResolve(C, x) {
   Assert(Type(C) === 'Object');
   if (IsPromise(x) === Value.true) {
     const xConstructor = Q(Get(x, new Value('constructor')));
@@ -288,7 +289,7 @@ export function PromiseResolve(C, x) {
     }
   }
   const promiseCapability = Q(NewPromiseCapability(C));
-  Q(Call(promiseCapability.Resolve, Value.undefined, [x]));
+  Q(yield* Call(promiseCapability.Resolve, Value.undefined, [x]));
   return promiseCapability.Promise;
 }
 
@@ -296,7 +297,7 @@ export function PromiseResolve(C, x) {
 function NewPromiseReactionJob(reaction, argument) {
   // 1. Let job be a new Job abstract closure with no parameters that captures
   //    reaction and argument and performs the following steps when called:
-  const job = () => {
+  const job = function*() {
     // a. Assert: reaction is a PromiseReaction Record.
     Assert(reaction instanceof PromiseReactionRecord);
     // b. Let promiseCapability be reaction.[[Capability]].
@@ -319,7 +320,7 @@ function NewPromiseReactionJob(reaction, argument) {
       }
     } else {
       // f. Else, let handlerResult be HostCallJobCallback(handler, undefined, « argument »).
-      handlerResult = HostCallJobCallback(handler, Value.undefined, [argument]);
+      handlerResult = yield* HostCallJobCallback(handler, Value.undefined, [argument]);
     }
     // g. If promiseCapability is undefined, then
     if (promiseCapability === Value.undefined) {
@@ -332,10 +333,10 @@ function NewPromiseReactionJob(reaction, argument) {
     // h. If handlerResult is an abrupt completion, then
     if (handlerResult instanceof AbruptCompletion) {
       // i. Let status be Call(promiseCapability.[[Reject]], undefined, « handlerResult.[[Value]] »).
-      status = Call(promiseCapability.Reject, Value.undefined, [handlerResult.Value]);
+      status = yield* (Call(promiseCapability.Reject, Value.undefined, [handlerResult.Value]));
     } else {
       // ii. Let status be Call(promiseCapability.[[Resolve]], undefined, « handlerResult.[[Value]] »).
-      status = Call(promiseCapability.Resolve, Value.undefined, [handlerResult.Value]);
+      status = yield* (Call(promiseCapability.Resolve, Value.undefined, [handlerResult.Value]));
     }
     // j. Return Completion(status).
     return Completion(status);

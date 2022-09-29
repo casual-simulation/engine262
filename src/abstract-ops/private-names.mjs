@@ -3,6 +3,7 @@ import { surroundingAgent } from '../engine.mjs';
 import { Q, X } from '../completion.mjs';
 import { PrivateElementRecord } from '../runtime-semantics/all.mjs';
 import { Assert, Call } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-privateelementfind
 export function PrivateElementFind(P, O) {
@@ -18,7 +19,7 @@ export function PrivateElementFind(P, O) {
 }
 
 // #sec-privateget
-export function PrivateGet(P, O) {
+export function* PrivateGet(P, O) {
   // 1. Let entry be ! PrivateElementFind(P, O).
   const entry = X(PrivateElementFind(P, O));
   // 2. If entry is empty, throw a TypeError exception.
@@ -39,10 +40,10 @@ export function PrivateGet(P, O) {
   // 6. Let getter be entry.[[Get]].
   const getter = entry.Get;
   // 7. Return ? Call(getter, O).
-  return Q(Call(getter, O));
+  return Q(yield* Call(getter, O));
 }
 
-export function PrivateSet(P, O, value) {
+export function* PrivateSet(P, O, value) {
   // 1. Let entry be ! PrivateElementFind(P, O).
   const entry = X(PrivateElementFind(P, O));
   // 2. If entry is empty, throw a TypeError exception.
@@ -66,7 +67,7 @@ export function PrivateSet(P, O, value) {
     // c. Let setter be entry.[[Set]].
     const setter = entry.Set;
     // d. Perform ? Call(setter, O, « value »).
-    Q(Call(setter, O, [value]));
+    Q(yield* Call(setter, O, [value]));
   }
 }
 

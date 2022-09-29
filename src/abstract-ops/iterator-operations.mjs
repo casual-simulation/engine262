@@ -27,6 +27,7 @@ import {
   Yield,
   CreateIteratorFromClosure,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // This file covers abstract operations defined in
 // 7.4 #sec-operations-on-iterator-objects
@@ -34,7 +35,7 @@ import {
 // 25.1 #sec-iteration
 
 // 7.4.1 #sec-getiterator
-export function GetIterator(obj, hint, method) {
+export function* GetIterator(obj, hint, method) {
   if (!hint) {
     hint = 'sync';
   }
@@ -51,7 +52,7 @@ export function GetIterator(obj, hint, method) {
       method = Q(GetMethod(obj, wellKnownSymbols.iterator));
     }
   }
-  const iterator = Q(Call(method, obj));
+  const iterator = Q(yield* Call(method, obj));
   if (Type(iterator) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', iterator);
   }
@@ -65,12 +66,12 @@ export function GetIterator(obj, hint, method) {
 }
 
 // 7.4.2 #sec-iteratornext
-export function IteratorNext(iteratorRecord, value) {
+export function* IteratorNext(iteratorRecord, value) {
   let result;
   if (!value) {
-    result = Q(Call(iteratorRecord.NextMethod, iteratorRecord.Iterator));
+    result = Q(yield* Call(iteratorRecord.NextMethod, iteratorRecord.Iterator));
   } else {
-    result = Q(Call(iteratorRecord.NextMethod, iteratorRecord.Iterator, [value]));
+    result = Q(yield* Call(iteratorRecord.NextMethod, iteratorRecord.Iterator, [value]));
   }
   if (Type(result) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', result);
@@ -101,7 +102,7 @@ export function IteratorStep(iteratorRecord) {
 }
 
 // #sec-iteratorclose
-export function IteratorClose(iteratorRecord, completion) {
+export function* IteratorClose(iteratorRecord, completion) {
   // 1. Assert: Type(iteratorRecord.[[Iterator]]) is Object.
   Assert(Type(iteratorRecord.Iterator) === 'Object');
   // 2. Assert: completion is a Completion Record.
@@ -121,7 +122,7 @@ export function IteratorClose(iteratorRecord, completion) {
       return Completion(completion);
     }
     // c. Set innerResult to Call(return, iterator).
-    innerResult = Call(ret, iterator);
+    innerResult = yield* Call(ret, iterator);
   }
   // 6. If completion.[[Type]] is throw, return Completion(completion).
   if (completion.Type === 'throw') {
@@ -158,7 +159,7 @@ export function* AsyncIteratorClose(iteratorRecord, completion) {
       return Completion(completion);
     }
     // c. Set innerResult to Call(return, iterator).
-    innerResult = Call(ret, iterator);
+    innerResult = yield* Call(ret, iterator);
     // d. If innerResult.[[Type]] is normal, set innerResult to Await(innerResult.[[Value]]).
     if (innerResult.Type === 'normal') {
       innerResult = EnsureCompletion(yield* Await(innerResult.Value));

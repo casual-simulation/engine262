@@ -32,7 +32,7 @@ function* EvaluateNew(constructExpr, args) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', constructor);
   }
   // 8. Return ? Construct(constructor, argList).
-  return Q(Construct(constructor, argList));
+  return Q(yield* Construct(constructor, argList));
 }
 
 // #sec-new-operator-runtime-semantics-evaluation

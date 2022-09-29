@@ -116,9 +116,9 @@ export function ValidateTypedArray(O) {
 }
 
 // #typedarray-create
-export function TypedArrayCreate(constructor, argumentList) {
+export function* TypedArrayCreate(constructor, argumentList) {
   // 1. Let newTypedArray be ? Construct(constructor, argumentList).
-  const newTypedArray = Q(Construct(constructor, argumentList));
+  const newTypedArray = Q(yield* Construct(constructor, argumentList));
   // 2. Perform ? ValidateTypedArray(newTypedArray).
   Q(ValidateTypedArray(newTypedArray));
   // 3. If argumentList is a List of a single Number, then

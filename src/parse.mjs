@@ -170,11 +170,11 @@ export function ParseModule(sourceText, realm, hostDefined = {}) {
 }
 
 // #sec-parsejsonmodule
-export function ParseJSONModule(sourceText, realm, hostDefined) {
+export function* ParseJSONModule(sourceText, realm, hostDefined) {
   // 1. Let jsonParse be realm's intrinsic object named "%JSON.parse%".
   const jsonParse = realm.Intrinsics['%JSON.parse%'];
   // 1. Let json be ? Call(jsonParse, undefined, « sourceText »).
-  const json = Q(Call(jsonParse, Value.undefined, [sourceText]));
+  const json = Q(yield* Call(jsonParse, Value.undefined, [sourceText]));
   // 1. Return CreateDefaultExportSyntheticModule(json, realm, hostDefined).
   return CreateDefaultExportSyntheticModule(json, realm, hostDefined);
 }

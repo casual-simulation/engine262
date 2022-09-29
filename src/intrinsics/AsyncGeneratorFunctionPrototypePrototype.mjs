@@ -20,7 +20,7 @@ import {
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-asyncgenerator-prototype-next
-function AsyncGeneratorPrototype_next([value = Value.undefined], { thisValue }) {
+function* AsyncGeneratorPrototype_next([value = Value.undefined], { thisValue }) {
   // 1. Let generator be the this value.
   const generator = thisValue;
   // 2. Let promiseCapability be ! NewPromiseCapability(%Promise%).
@@ -36,7 +36,7 @@ function AsyncGeneratorPrototype_next([value = Value.undefined], { thisValue }) 
     // a. Let iteratorResult be ! CreateIterResultObject(undefined, true).
     const iteratorResult = X(CreateIterResultObject(Value.undefined, Value.true));
     // b. Perform ! Call(promiseCapability.[[Resolve]], undefined, « iteratorResult »).
-    X(Call(promiseCapability.Resolve, Value.undefined, [iteratorResult]));
+    X(yield* (Call(promiseCapability.Resolve, Value.undefined, [iteratorResult])));
     // c. Return promiseCapability.[[Promise]].
     return promiseCapability.Promise;
   }
@@ -90,7 +90,7 @@ function AsyncGeneratorPrototype_return([value = Value.undefined], { thisValue }
 }
 
 // #sec-asyncgenerator-prototype-throw
-function AsyncGeneratorPrototype_throw([exception = Value.undefined], { thisValue }) {
+function* AsyncGeneratorPrototype_throw([exception = Value.undefined], { thisValue }) {
   // 1. Let generator be the this value.
   const generator = thisValue;
   // 2. Let promiseCapability be ! NewPromiseCapability(%Promise%).
@@ -111,7 +111,7 @@ function AsyncGeneratorPrototype_throw([exception = Value.undefined], { thisValu
   // 7. If state is completed, then
   if (state === 'completed') {
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « exception »).
-    X(Call(promiseCapability.Reject, Value.undefined, [exception]));
+    X(yield* (Call(promiseCapability.Reject, Value.undefined, [exception])));
     // b. Return promiseCapability.[[Promise]].
     return promiseCapability.Promise;
   }

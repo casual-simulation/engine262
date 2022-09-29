@@ -71,11 +71,11 @@ function ObjectProto_propertyIsEnumerable([V = Value.undefined], { thisValue }) 
 }
 
 // #sec-object.prototype.tolocalestring
-function ObjectProto_toLocaleString(argList, { thisValue }) {
+function* ObjectProto_toLocaleString(argList, { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Return ? Invoke(O, "toString").
-  return Q(Invoke(O, new Value('toString')));
+  return Q(yield* Invoke(O, new Value('toString')));
 }
 
 // #sec-object.prototype.tostring

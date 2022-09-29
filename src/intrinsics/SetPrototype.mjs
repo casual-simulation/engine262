@@ -90,7 +90,7 @@ function SetProto_entries(args, { thisValue }) {
 }
 
 // #sec-set.prototype.foreach
-function SetProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* SetProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   // 1. Let S be the this value.
   const S = thisValue;
   // 2. Perform ? RequireInternalSlot(S, [[SetData]]).
@@ -106,7 +106,7 @@ function SetProto_forEach([callbackfn = Value.undefined, thisArg = Value.undefin
     // a. If e is not empty, then
     if (e !== undefined) {
       // i. Perform ? Call(callbackfn, thisArg, « e, e, S »).
-      Q(Call(callbackfn, thisArg, [e, e, S]));
+      Q(yield* (Call(callbackfn, thisArg, [e, e, S])));
     }
   }
   // 6. Return undefined.

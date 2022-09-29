@@ -18,15 +18,15 @@ import { Q, ThrowCompletion, X } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-promise.prototype.catch
-function PromiseProto_catch([onRejected = Value.undefined], { thisValue }) {
+function* PromiseProto_catch([onRejected = Value.undefined], { thisValue }) {
   // 1. Let promise be the this value.
   const promise = thisValue;
   // 2. Return ? Invoke(promise, "then", « undefined, onRejected »).
-  return Q(Invoke(promise, new Value('then'), [Value.undefined, onRejected]));
+  return Q(yield* Invoke(promise, new Value('then'), [Value.undefined, onRejected]));
 }
 
 // #sec-promise.prototype.finally
-function PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
+function* PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
   // 1. Let promise be the this value.
   const promise = thisValue;
   // 2. If Type(promise) is not Object, throw a TypeError exception.
@@ -47,9 +47,9 @@ function PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
     catchFinally = onFinally;
   } else { // 6. Else,
     // a. Let thenFinallyClosure be a new Abstract Closure with parameters (value) that captures onFinally and C and performs the following steps when called:
-    const thenFinallyClosure = ([value = Value.undefined]) => {
+    const thenFinallyClosure = function*([value = Value.undefined]) {
       // i. Let result be ? Call(onFinally, undefined).
-      const result = Q(Call(onFinally, Value.undefined));
+      const result = Q(yield* (Call(onFinally, Value.undefined)));
       // ii. Let promise be ? PromiseResolve(C, result).
       const promiseInner = Q(PromiseResolve(C, result));
       // iii. Let returnValue be a new Abstract Closure with no parameters that captures value and performs the following steps when called:
@@ -58,14 +58,14 @@ function PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
       // iv. Let valueThunk be ! CreateBuiltinFunction(returnValue, 0, "", « »).
       const valueThunk = X(CreateBuiltinFunction(returnValue, 0, new Value(''), []));
       // v. Return ? Invoke(promise, "then", « valueThunk »).
-      return Q(Invoke(promiseInner, new Value('then'), [valueThunk]));
+      return Q(yield* Invoke(promiseInner, new Value('then'), [valueThunk]));
     };
     // b. Let thenFinally be ! CreateBuiltinFunction(thenFinallyClosure, 1, "", « »).
     thenFinally = X(CreateBuiltinFunction(thenFinallyClosure, 1, new Value(''), []));
     // c. Let catchFinallyClosure be a new Abstract Closure with parameters (reason) that captures onFinally and C and performs the following steps when called:
-    const catchFinallyClosure = ([reason = Value.undefined]) => {
+    const catchFinallyClosure = function*([reason = Value.undefined]) {
       // i. Let result be ? Call(onFinally, undefined).
-      const result = Q(Call(onFinally, Value.undefined));
+      const result = Q(yield* (Call(onFinally, Value.undefined)));
       // ii. Let promise be ? PromiseResolve(C, result).
       const promiseInner = Q(PromiseResolve(C, result));
       // iii. Let throwReason be a new Abstract Closure with no parameters that captures reason and performs the following steps when called:
@@ -74,13 +74,13 @@ function PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
       // iv. Let thrower be ! CreateBuiltinFunction(throwReason, 0, "", « »).
       const thrower = X(CreateBuiltinFunction(throwReason, 0, new Value(''), []));
       // v. Return ? Invoke(promise, "then", « thrower »).
-      return Q(Invoke(promiseInner, new Value('then'), [thrower]));
+      return Q(yield* Invoke(promiseInner, new Value('then'), [thrower]));
     };
     // d. Let catchFinally be ! CreateBuiltinFunction(catchFinallyClosure, 1, "", « »).
     catchFinally = X(CreateBuiltinFunction(catchFinallyClosure, 1, new Value(''), []));
   }
   // 7. Return ? Invoke(promise, "then", « thenFinally, catchFinally »).
-  return Q(Invoke(promise, new Value('then'), [thenFinally, catchFinally]));
+  return Q(yield* Invoke(promise, new Value('then'), [thenFinally, catchFinally]));
 }
 
 // #sec-promise.prototype.then

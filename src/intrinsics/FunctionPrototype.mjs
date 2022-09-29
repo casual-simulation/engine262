@@ -35,7 +35,7 @@ function FunctionProto(_args, _meta) {
 }
 
 // #sec-function.prototype.apply
-function FunctionProto_apply([thisArg = Value.undefined, argArray = Value.undefined], { thisValue }) {
+function* FunctionProto_apply([thisArg = Value.undefined, argArray = Value.undefined], { thisValue }) {
   // 1. Let func be the this value.
   const func = thisValue;
   // 2. If IsCallable(func) is false, throw a TypeError exception.
@@ -47,27 +47,27 @@ function FunctionProto_apply([thisArg = Value.undefined, argArray = Value.undefi
     // a. Perform PrepareForTailCall().
     PrepareForTailCall();
     // b. Return ? Call(func, thisArg).
-    return Q(Call(func, thisArg));
+    return Q(yield* (Call(func, thisArg)));
   }
   // 4. Let argList be ? CreateListFromArrayLike(argArray).
   const argList = Q(CreateListFromArrayLike(argArray));
   // 5. Perform PrepareForTailCall().
   PrepareForTailCall();
   // 6. Return ? Call(func, thisArg, argList).
-  return Q(Call(func, thisArg, argList));
+  return Q(yield* (Call(func, thisArg, argList)));
 }
 
-function BoundFunctionExoticObjectCall(thisArgument, argumentsList) {
+function* BoundFunctionExoticObjectCall(thisArgument, argumentsList) {
   const F = this;
 
   const target = F.BoundTargetFunction;
   const boundThis = F.BoundThis;
   const boundArgs = F.BoundArguments;
   const args = [...boundArgs, ...argumentsList];
-  return Q(Call(target, boundThis, args));
+  return Q(yield* Call(target, boundThis, args));
 }
 
-function BoundFunctionExoticObjectConstruct(argumentsList, newTarget) {
+function* BoundFunctionExoticObjectConstruct(argumentsList, newTarget) {
   const F = this;
 
   const target = F.BoundTargetFunction;
@@ -77,7 +77,7 @@ function BoundFunctionExoticObjectConstruct(argumentsList, newTarget) {
   if (SameValue(F, newTarget) === Value.true) {
     newTarget = target;
   }
-  return Q(Construct(target, args, newTarget));
+  return Q(yield* Construct(target, args, newTarget));
 }
 
 // #sec-boundfunctioncreate
@@ -167,7 +167,7 @@ function FunctionProto_bind([thisArg = Value.undefined, ...args], { thisValue })
 }
 
 // #sec-function.prototype.call
-function FunctionProto_call([thisArg = Value.undefined, ...args], { thisValue }) {
+function* FunctionProto_call([thisArg = Value.undefined, ...args], { thisValue }) {
   // 1. Let func be the this value.
   const func = thisValue;
   // 2. If IsCallable(func) is false, throw a TypeError exception.
@@ -183,7 +183,7 @@ function FunctionProto_call([thisArg = Value.undefined, ...args], { thisValue })
   // 5. Perform PrepareForTailCall().
   PrepareForTailCall();
   // 6. Return ? Call(func, thisArg, argList).
-  return Q(Call(func, thisArg, argList));
+  return Q(yield* (Call(func, thisArg, argList)));
 }
 
 // #sec-function.prototype.tostring

@@ -40,7 +40,7 @@ import {
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-promise-executor
-function PromiseConstructor([executor = Value.undefined], { NewTarget }) {
+function* PromiseConstructor([executor = Value.undefined], { NewTarget }) {
   // 1. If NewTarget is undefined, throw a TypeError exception.
   if (NewTarget === Value.undefined) {
     return surroundingAgent.Throw('TypeError', 'ConstructorNonCallable', this);
@@ -68,20 +68,20 @@ function PromiseConstructor([executor = Value.undefined], { NewTarget }) {
   // 8. Let resolvingFunctions be CreateResolvingFunctions(promise).
   const resolvingFunctions = CreateResolvingFunctions(promise);
   // 9. Let completion be Call(executor, undefined, « resolvingFunctions.[[Resolve]], resolvingFunctions.[[Reject]] »).
-  const completion = Call(executor, Value.undefined, [
+  const completion = yield* (Call(executor, Value.undefined, [
     resolvingFunctions.Resolve, resolvingFunctions.Reject,
-  ]);
+  ]));
   // 10. If completion is an abrupt completion, then
   if (completion instanceof AbruptCompletion) {
     // a. Perform ? Call(resolvingFunctions.[[Reject]], undefined, « completion.[[Value]] »).
-    Q(Call(resolvingFunctions.Reject, Value.undefined, [completion.Value]));
+    Q(yield* (Call(resolvingFunctions.Reject, Value.undefined, [completion.Value])));
   }
   // 11. Return promise.
   return promise;
 }
 
 // #sec-promise.all-resolve-element-functions
-function PromiseAllResolveElementFunctions([x = Value.undefined]) {
+function* PromiseAllResolveElementFunctions([x = Value.undefined]) {
   const F = surroundingAgent.activeFunctionObject;
   const alreadyCalled = F.AlreadyCalled;
   if (alreadyCalled.Value === true) {
@@ -96,7 +96,7 @@ function PromiseAllResolveElementFunctions([x = Value.undefined]) {
   remainingElementsCount.Value -= 1;
   if (remainingElementsCount.Value === 0) {
     const valuesArray = CreateArrayFromList(values);
-    return Q(Call(promiseCapability.Resolve, Value.undefined, [valuesArray]));
+    return Q(yield* Call(promiseCapability.Resolve, Value.undefined, [valuesArray]));
   }
   return Value.undefined;
 }
@@ -116,7 +116,7 @@ function GetPromiseResolve(promiseConstructor) {
 }
 
 // #sec-performpromiseall
-function PerformPromiseAll(iteratorRecord, constructor, resultCapability, promiseResolve) {
+function* PerformPromiseAll(iteratorRecord, constructor, resultCapability, promiseResolve) {
   // 1. Assert: IsConstructor(constructor) is true.
   Assert(IsConstructor(constructor) === Value.true);
   // 2. Assert: resultCapability is a PromiseCapability Record.
@@ -150,7 +150,7 @@ function PerformPromiseAll(iteratorRecord, constructor, resultCapability, promis
         // 1. Let valuesArray be ! CreateArrayFromList(values).
         const valuesArray = CreateArrayFromList(values);
         // 2. Perform ? Call(resultCapability.[[Resolve]], undefined, « valuesArray »).
-        Q(Call(resultCapability.Resolve, Value.undefined, [valuesArray]));
+        Q(yield* (Call(resultCapability.Resolve, Value.undefined, [valuesArray])));
       }
       // iv. Return resultCapability.[[Promise]].
       return resultCapability.Promise;
@@ -166,7 +166,7 @@ function PerformPromiseAll(iteratorRecord, constructor, resultCapability, promis
     // h. Append undefined to values.
     values.push(Value.undefined);
     // i. Let nextPromise be ? Call(promiseResolve, constructor, « nextValue »).
-    const nextPromise = Q(Call(promiseResolve, constructor, [nextValue]));
+    const nextPromise = Q(yield* (Call(promiseResolve, constructor, [nextValue])));
     // j. Let steps be the algorithm steps defined in Promise.all Resolve Element Functions.
     const steps = PromiseAllResolveElementFunctions;
     // k. Let length be the number of non-optional parameters of the function definition in Promise.all Resolve Element Functions.
@@ -188,7 +188,7 @@ function PerformPromiseAll(iteratorRecord, constructor, resultCapability, promis
     // r. Set remainingElementsCount.[[Value]] to remainingElementsCount.[[Value]] + 1.
     remainingElementsCount.Value += 1;
     // s. Perform ? Invoke(nextPromise, "then", « onFulfilled, resultCapability.[[Reject]] »).
-    Q(Invoke(nextPromise, new Value('then'), [onFulfilled, resultCapability.Reject]));
+    Q(yield* Invoke(nextPromise, new Value('then'), [onFulfilled, resultCapability.Reject]));
     // t. Set index to index + 1.
     index += 1;
   }
@@ -223,7 +223,7 @@ function Promise_all([iterable = Value.undefined], { thisValue }) {
   return Completion(result);
 }
 
-function PromiseAllSettledResolveElementFunctions([x = Value.undefined]) {
+function* PromiseAllSettledResolveElementFunctions([x = Value.undefined]) {
   const F = surroundingAgent.activeFunctionObject;
   const alreadyCalled = F.AlreadyCalled;
   if (alreadyCalled.Value === true) {
@@ -241,12 +241,12 @@ function PromiseAllSettledResolveElementFunctions([x = Value.undefined]) {
   remainingElementsCount.Value -= 1;
   if (remainingElementsCount.Value === 0) {
     const valuesArray = X(CreateArrayFromList(values));
-    return Q(Call(promiseCapability.Resolve, Value.undefined, [valuesArray]));
+    return Q(yield* (Call(promiseCapability.Resolve, Value.undefined, [valuesArray])));
   }
   return Value.undefined;
 }
 
-function PromiseAllSettledRejectElementFunctions([x = Value.undefined]) {
+function* PromiseAllSettledRejectElementFunctions([x = Value.undefined]) {
   const F = surroundingAgent.activeFunctionObject;
   const alreadyCalled = F.AlreadyCalled;
   if (alreadyCalled.Value === true) {
@@ -264,13 +264,13 @@ function PromiseAllSettledRejectElementFunctions([x = Value.undefined]) {
   remainingElementsCount.Value -= 1;
   if (remainingElementsCount.Value === 0) {
     const valuesArray = X(CreateArrayFromList(values));
-    return Q(Call(promiseCapability.Resolve, Value.undefined, [valuesArray]));
+    return Q(yield* (Call(promiseCapability.Resolve, Value.undefined, [valuesArray])));
   }
   return Value.undefined;
 }
 
 // #sec-performpromiseallsettled
-function PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability, promiseResolve) {
+function* PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability, promiseResolve) {
   // 1. Assert: ! IsConstructor(constructor) is true.
   Assert(X(IsConstructor(constructor) === Value.true));
   // 2. Assert: resultCapability is a PromiseCapability Record.
@@ -304,7 +304,7 @@ function PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability,
         // 1. Let valuesArray be ! CreateArrayFromList(values).
         const valuesArray = X(CreateArrayFromList(values));
         // 2. Perform ? Call(resultCapability.[[Resolve]], undefined, « valuesArray »).
-        Q(Call(resultCapability.Resolve, Value.undefined, [valuesArray]));
+        Q(yield* (Call(resultCapability.Resolve, Value.undefined, [valuesArray])));
       }
       // iv. Return resultCapability.[[Promise]].
       return resultCapability.Promise;
@@ -320,7 +320,7 @@ function PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability,
     // h. Append undefined to values.
     values.push(Value.undefined);
     // i. Let nextPromise be ? Call(promiseResolve, constructor, « nextValue »).
-    const nextPromise = Q(Call(promiseResolve, constructor, [nextValue]));
+    const nextPromise = Q(yield* (Call(promiseResolve, constructor, [nextValue])));
     // j. Let stepsFulfilled be the algorithm steps defined in Promise.allSettled Resolve Element Functions.
     const stepsFulfilled = PromiseAllSettledResolveElementFunctions;
     // k. Let lengthFulfilled be the number of non-optional parameters of the function definition in Promise.allSettled Resolve Element Functions.
@@ -370,7 +370,7 @@ function PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability,
     // aa. Set remainingElementsCount.[[Value]] to remainingElementsCount.[[Value]] + 1.
     remainingElementsCount.Value += 1;
     // ab. Perform ? Invoke(nextPromise, "then", « onFulfilled, onRejected »).
-    Q(Invoke(nextPromise, new Value('then'), [onFulfilled, onRejected]));
+    Q(yield* Invoke(nextPromise, new Value('then'), [onFulfilled, onRejected]));
     // ac. Set index to index + 1.
     index += 1;
   }
@@ -406,7 +406,7 @@ function Promise_allSettled([iterable = Value.undefined], { thisValue }) {
 }
 
 // #sec-promise.any-reject-element-functions
-function PromiseAnyRejectElementFunctions([x = Value.undefined]) {
+function* PromiseAnyRejectElementFunctions([x = Value.undefined]) {
   // 1. Let F be the active function object.
   const F = surroundingAgent.activeFunctionObject;
   // 2. Let alreadyCalled be F.[[AlreadyCalled]].
@@ -441,14 +441,14 @@ function PromiseAnyRejectElementFunctions([x = Value.undefined]) {
       Value: X(CreateArrayFromList(errors)),
     })));
     // c. Return ? Call(promiseCapability.[[Reject]], undefined, « error »).
-    return Q(Call(promiseCapability.Reject, Value.undefined, [error]));
+    return Q(yield* (Call(promiseCapability.Reject, Value.undefined, [error])));
   }
   // 12. Return undefined.
   return Value.undefined;
 }
 
 // #sec-performpromiseany
-function PerformPromiseAny(iteratorRecord, constructor, resultCapability, promiseResolve) {
+function* PerformPromiseAny(iteratorRecord, constructor, resultCapability, promiseResolve) {
   // 1. Assert: ! IsConstructor(constructor) is true.
   Assert(X(IsConstructor(constructor)) === Value.true);
   // 2. Assert: resultCapability is a PromiseCapability Record.
@@ -505,7 +505,7 @@ function PerformPromiseAny(iteratorRecord, constructor, resultCapability, promis
     // h. Append undefined to errors.
     errors.push(Value.undefined);
     // i. Let nextPromise be ? Call(promiseResolve, constructor, « nextValue »).
-    const nextPromise = Q(Call(promiseResolve, constructor, [nextValue]));
+    const nextPromise = Q(yield* (Call(promiseResolve, constructor, [nextValue])));
     // j. Let stepsRejected be the algorithm steps defined in Promise.any Reject Element Functions.
     const stepsRejected = PromiseAnyRejectElementFunctions;
     // k. Let lengthRejected be the number of non-optional parameters of the function definition in Promise.any Reject Element Functions.
@@ -525,7 +525,7 @@ function PerformPromiseAny(iteratorRecord, constructor, resultCapability, promis
     // r. Set remainingElementsCount.[[Value]] to remainingElementsCount.[[Value]] + 1.
     remainingElementsCount.Value += 1;
     // s. Perform ? Invoke(nextPromise, "then", « resultCapability.[[Resolve]], onRejected »).
-    Q(Invoke(nextPromise, new Value('then'), [resultCapability.Resolve, onRejected]));
+    Q(yield* Invoke(nextPromise, new Value('then'), [resultCapability.Resolve, onRejected]));
     // t. Increase index by 1.
     index += 1;
   }
@@ -560,7 +560,7 @@ function Promise_any([iterable = Value.undefined], { thisValue }) {
   return Completion(result);
 }
 
-function PerformPromiseRace(iteratorRecord, constructor, resultCapability, promiseResolve) {
+function* PerformPromiseRace(iteratorRecord, constructor, resultCapability, promiseResolve) {
   // 1. Assert: IsConstructor(constructor) is true.
   Assert(IsConstructor(constructor) === Value.true);
   // 2. Assert: resultCapability is a PromiseCapability Record.
@@ -593,9 +593,9 @@ function PerformPromiseRace(iteratorRecord, constructor, resultCapability, promi
     // g. ReturnIfAbrupt(nextValue).
     ReturnIfAbrupt(nextValue);
     // h. Let nextPromise be ? Call(promiseResolve, constructor, « nextValue »).
-    const nextPromise = Q(Call(promiseResolve, constructor, [nextValue]));
+    const nextPromise = Q(yield* (Call(promiseResolve, constructor, [nextValue])));
     // i. Perform ? Invoke(nextPromise, "then", « resultCapability.[[Resolve]], resultCapability.[[Reject]] »).
-    Q(Invoke(nextPromise, new Value('then'), [resultCapability.Resolve, resultCapability.Reject]));
+    Q(yield* Invoke(nextPromise, new Value('then'), [resultCapability.Resolve, resultCapability.Reject]));
   }
 }
 
@@ -629,13 +629,13 @@ function Promise_race([iterable = Value.undefined], { thisValue }) {
 }
 
 // #sec-promise.reject
-function Promise_reject([r = Value.undefined], { thisValue }) {
+function* Promise_reject([r = Value.undefined], { thisValue }) {
   // 1. Let C be this value.
   const C = thisValue;
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
   const promiseCapability = Q(NewPromiseCapability(C));
   // 3. Perform ? Call(promiseCapability.[[Reject]], undefined, « r »).
-  Q(Call(promiseCapability.Reject, Value.undefined, [r]));
+  Q(yield* (Call(promiseCapability.Reject, Value.undefined, [r])));
   // 4. Return promiseCapability.[[Promise]].
   return promiseCapability.Promise;
 }

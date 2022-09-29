@@ -18,12 +18,12 @@ export function AsyncBlockStart(promiseCapability, asyncBody, asyncContext) {
     // Assert: If we return here, the async function either threw an exception or performed an implicit or explicit return; all awaiting is done.
     surroundingAgent.executionContextStack.pop(asyncContext);
     if (result.Type === 'normal') {
-      X(Call(promiseCapability.Resolve, Value.undefined, [Value.undefined]));
+      X(yield* Call(promiseCapability.Resolve, Value.undefined, [Value.undefined]));
     } else if (result.Type === 'return') {
-      X(Call(promiseCapability.Resolve, Value.undefined, [result.Value]));
+      X(yield* Call(promiseCapability.Resolve, Value.undefined, [result.Value]));
     } else {
       Assert(result.Type === 'throw');
-      X(Call(promiseCapability.Reject, Value.undefined, [result.Value]));
+      X(yield* Call(promiseCapability.Reject, Value.undefined, [result.Value]));
     }
     return Value.undefined;
   }());

@@ -230,7 +230,7 @@ class JSONValidator {
   }
 }
 
-function InternalizeJSONProperty(holder, name, reviver) {
+function* InternalizeJSONProperty(holder, name, reviver) {
   const val = Q(Get(holder, name));
   if (Type(val) === 'Object') {
     const isArray = Q(IsArray(val));
@@ -259,7 +259,7 @@ function InternalizeJSONProperty(holder, name, reviver) {
       }
     }
   }
-  return Q(Call(reviver, holder, [name, val]));
+  return Q(yield* (Call(reviver, holder, [name, val])));
 }
 
 // #sec-json.parse
@@ -310,16 +310,16 @@ const codeUnitTable = new Map([
 ]);
 
 // #sec-serializejsonproperty
-function SerializeJSONProperty(state, key, holder) {
+function* SerializeJSONProperty(state, key, holder) {
   let value = Q(Get(holder, key)); // eslint-disable-line no-shadow
   if (Type(value) === 'Object' || Type(value) === 'BigInt') {
     const toJSON = Q(GetV(value, new Value('toJSON')));
     if (IsCallable(toJSON) === Value.true) {
-      value = Q(Call(toJSON, value, [key]));
+      value = Q(yield* (Call(toJSON, value, [key])));
     }
   }
   if (state.ReplacerFunction !== Value.undefined) {
-    value = Q(Call(state.ReplacerFunction, holder, [key, value]));
+    value = Q(yield* (Call(state.ReplacerFunction, holder, [key, value])));
   }
   if (Type(value) === 'Object') {
     if ('NumberData' in value) {

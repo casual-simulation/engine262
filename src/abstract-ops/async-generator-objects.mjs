@@ -24,6 +24,7 @@ import {
   RequireInternalSlot,
   SameValue,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // This file covers abstract operations defined in
 // #sec-asyncgenerator-objects
@@ -122,7 +123,7 @@ export function AsyncGeneratorEnqueue(generator, completion, promiseCapability) 
 }
 
 // #sec-asyncgeneratorcompletestep
-function AsyncGeneratorCompleteStep(generator, completion, done, realm) {
+function* AsyncGeneratorCompleteStep(generator, completion, done, realm) {
   // 1. Let queue be generator.[[AsyncGeneratorQueue]].
   const queue = generator.AsyncGeneratorQueue;
   // 2. Assert: queue is not empty.
@@ -137,7 +138,7 @@ function AsyncGeneratorCompleteStep(generator, completion, done, realm) {
   // 7. If completion.[[Type]] is throw, then
   if (completion.Type === 'throw') {
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « value »).
-    X(Call(promiseCapability.Reject, Value.undefined, [value]));
+    X(yield* Call(promiseCapability.Reject, Value.undefined, [value]));
   } else { // 8. Else,
     // a. Assert: completion.[[Type]] is normal.
     Assert(completion.Type === 'normal');
@@ -157,7 +158,7 @@ function AsyncGeneratorCompleteStep(generator, completion, done, realm) {
       iteratorResult = X(CreateIterResultObject(value, done));
     }
     // d. Perform ! Call(promiseCapability.[[Resolve]], undefined, « iteratorResult »).
-    X(Call(promiseCapability.Resolve, Value.undefined, [iteratorResult]));
+    X(yield* Call(promiseCapability.Resolve, Value.undefined, [iteratorResult]));
   }
 }
 

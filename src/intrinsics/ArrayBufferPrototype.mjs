@@ -29,7 +29,7 @@ function ArrayBufferProto_byteLength(args, { thisValue }) {
 }
 
 // #sec-arraybuffer.prototype.slice
-function ArrayBufferProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
+function* ArrayBufferProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? RequireInternalSlot(O, [[ArrayBufferData]]).
@@ -72,7 +72,7 @@ function ArrayBufferProto_slice([start = Value.undefined, end = Value.undefined]
   // 11. Let ctor be ? SpeciesConstructor(O, %ArrayBuffer%).
   const ctor = Q(SpeciesConstructor(O, surroundingAgent.intrinsic('%ArrayBuffer%')));
   // 12. Let new be ? Construct(ctor, « newLen »).
-  const newO = Q(Construct(ctor, [F(newLen)]));
+  const newO = Q(yield* Construct(ctor, [F(newLen)]));
   // 13. Perform ? RequireInternalSlot(new, [[ArrayBufferData]]).
   Q(RequireInternalSlot(newO, 'ArrayBufferData'));
   // 14. If IsSharedArrayBuffer(new) is true, throw a TypeError exception.

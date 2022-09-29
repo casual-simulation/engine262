@@ -48,7 +48,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
       // a. If received.[[Type]] is normal, then
       if (received.Type === 'normal') {
         // i. Let innerResult be ? Call(iteratorRecord.[[NextMethod]], iteratorRecord.[[Iterator]], « received.[[Value]] »).
-        let innerResult = Q(Call(iteratorRecord.NextMethod, iteratorRecord.Iterator, [received.Value]));
+        let innerResult = Q(yield* Call(iteratorRecord.NextMethod, iteratorRecord.Iterator, [received.Value]));
         // ii. If generatorKind is async, then set innerResult to ? Await(innerResult).
         if (generatorKind === 'async') {
           innerResult = Q(yield* Await(innerResult));
@@ -76,7 +76,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
         // ii. If throw is not undefined, then
         if (thr !== Value.undefined) {
           // 1. Let innerResult be ? Call(throw, iterator, « received.[[Value]] »).
-          let innerResult = Q(Call(thr, iterator, [received.Value]));
+          let innerResult = Q(yield* Call(thr, iterator, [received.Value]));
           // 2. If generatorKind is async, then set innerResult to ? Await(innerResult).
           if (generatorKind === 'async') {
             innerResult = Q(yield* Await(innerResult));
@@ -129,7 +129,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
           return Completion(received);
         }
         // iv. Let innerReturnResult be ? Call(return, iterator, « received.[[Value]] »).
-        let innerReturnResult = Q(Call(ret, iterator, [received.Value]));
+        let innerReturnResult = Q(yield* Call(ret, iterator, [received.Value]));
         // v. If generatorKind is async, then set innerReturnResult to ? Await(innerReturnResult).
         if (generatorKind === 'async') {
           innerReturnResult = Q(yield* Await(innerReturnResult));

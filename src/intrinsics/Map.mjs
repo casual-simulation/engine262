@@ -21,7 +21,7 @@ import {
 } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
-export function AddEntriesFromIterable(target, iterable, adder) {
+export function* AddEntriesFromIterable(target, iterable, adder) {
   if (IsCallable(adder) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', adder);
   }
@@ -46,7 +46,7 @@ export function AddEntriesFromIterable(target, iterable, adder) {
     // h. IfAbruptCloseIterator(v, iteratorRecord).
     IfAbruptCloseIterator(v, iteratorRecord);
     // i. Let status be Call(adder, target, « k, v »).
-    const status = Call(adder, target, [k, v]);
+    const status = yield* (Call(adder, target, [k, v]));
     // j. IfAbruptCloseIterator(status, iteratorRecord).
     IfAbruptCloseIterator(status, iteratorRecord);
   }

@@ -106,7 +106,7 @@ export class Agent {
   }
 
   // Generate a throw completion using message templates
-  Throw(type, template, ...templateArgs) {
+  *Throw(type, template, ...templateArgs) {
     if (type instanceof Value) {
       return ThrowCompletion(type);
     }
@@ -114,12 +114,12 @@ export class Agent {
     const cons = this.currentRealmRecord.Intrinsics[`%${type}%`];
     let error;
     if (type === 'AggregateError') {
-      error = X(Construct(cons, [
+      error = X(yield* Construct(cons, [
         X(CreateArrayFromList([])),
         new Value(message),
       ]));
     } else {
-      error = X(Construct(cons, [new Value(message)]));
+      error = X(yield* Construct(cons, [new Value(message)]));
     }
     return ThrowCompletion(error);
   }
@@ -207,7 +207,7 @@ export class ExecutionContext {
 }
 
 // 15.1.10 #sec-runtime-semantics-scriptevaluation
-export function ScriptEvaluation(scriptRecord) {
+export function* ScriptEvaluation(scriptRecord) {
   if (surroundingAgent.hostDefinedOptions.boost?.evaluateScript) {
     return surroundingAgent.hostDefinedOptions.boost.evaluateScript(scriptRecord);
   }
@@ -227,7 +227,7 @@ export function ScriptEvaluation(scriptRecord) {
   let result = EnsureCompletion(GlobalDeclarationInstantiation(scriptBody, globalEnv));
 
   if (result.Type === 'normal') {
-    result = EnsureCompletion(unwind(Evaluate(scriptBody)));
+    result = EnsureCompletion(yield* Evaluate(scriptBody));
   }
 
   if (result.Type === 'normal' && !result.Value) {
@@ -296,10 +296,10 @@ export function HostResolveImportedModule(referencingScriptOrModule, specifier) 
   return surroundingAgent.Throw('Error', 'CouldNotResolveModule', specifier);
 }
 
-function FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapability, completion) {
+function* FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapability, completion) {
   // 1. If completion is an abrupt completion, then perform ! Call(promiseCapability.[[Reject]], undefined, « completion.[[Value]] »).
   if (completion instanceof AbruptCompletion) {
-    X(Call(promiseCapability.Reject, Value.undefined, [completion.Value]));
+    X(yield* Call(promiseCapability.Reject, Value.undefined, [completion.Value]));
   } else { // 2. Else,
     // a. Assert: completion is a normal completion and completion.[[Value]] is undefined.
     Assert(completion instanceof NormalCompletion);
@@ -310,37 +310,37 @@ function FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapabi
     const namespace = EnsureCompletion(GetModuleNamespace(moduleRecord));
     // e. If namespace is an abrupt completion, perform ! Call(promiseCapability.[[Reject]], undefined, « namespace.[[Value]] »).
     if (namespace instanceof AbruptCompletion) {
-      X(Call(promiseCapability.Reject, Value.undefined, [namespace.Value]));
+      X(yield* Call(promiseCapability.Reject, Value.undefined, [namespace.Value]));
     } else {
       // f. Else, perform ! Call(promiseCapability.[[Resolve]], undefined, « namespace.[[Value]] »).
-      X(Call(promiseCapability.Resolve, Value.undefined, [namespace.Value]));
+      X(yield* Call(promiseCapability.Resolve, Value.undefined, [namespace.Value]));
     }
   }
 }
 
-export function HostImportModuleDynamically(referencingScriptOrModule, specifier, promiseCapability) {
-  surroundingAgent.queueJob('ImportModuleDynamicallyJobs', () => {
+export function* HostImportModuleDynamically(referencingScriptOrModule, specifier, promiseCapability) {
+  surroundingAgent.queueJob('ImportModuleDynamicallyJobs', function*() {
     const finish = (c) => FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapability, c);
-    const c = (() => {
+    const c = (function*() {
       const module = Q(HostResolveImportedModule(referencingScriptOrModule, specifier));
       Q(module.Link());
       const maybePromise = Q(module.Evaluate());
       if (module instanceof CyclicModuleRecord) {
-        const onFulfilled = CreateBuiltinFunction(([v = Value.undefined]) => {
-          finish(NormalCompletion(v));
+        const onFulfilled = CreateBuiltinFunction(function*([v = Value.undefined]) {
+          yield* finish(NormalCompletion(v));
           return Value.undefined;
         }, 1, new Value(''), []);
-        const onRejected = CreateBuiltinFunction(([r = Value.undefined]) => {
-          finish(ThrowCompletion(r));
+        const onRejected = CreateBuiltinFunction(function*([r = Value.undefined]) {
+          yield* finish(ThrowCompletion(r));
           return Value.undefined;
         }, 1, new Value(''), []);
         PerformPromiseThen(maybePromise, onFulfilled, onRejected);
       } else {
-        finish(NormalCompletion(undefined));
+        yield* finish(NormalCompletion(undefined));
       }
     })();
     if (c instanceof AbruptCompletion) {
-      finish(c);
+      yield* finish(c);
     }
   });
   return NormalCompletion(Value.undefined);
@@ -371,9 +371,9 @@ export function HostEnqueueFinalizationRegistryCleanupJob(fg) {
   } else {
     if (!surroundingAgent.scheduledForCleanup.has(fg)) {
       surroundingAgent.scheduledForCleanup.add(fg);
-      surroundingAgent.queueJob('FinalizationCleanup', () => {
+      surroundingAgent.queueJob('FinalizationCleanup', function*() {
         surroundingAgent.scheduledForCleanup.delete(fg);
-        CleanupFinalizationRegistry(fg);
+        yield* CleanupFinalizationRegistry(fg);
       });
     }
   }
@@ -389,9 +389,9 @@ export function HostMakeJobCallback(callback) {
 }
 
 // #sec-hostcalljobcallback
-export function HostCallJobCallback(jobCallback, V, argumentsList) {
+export function* HostCallJobCallback(jobCallback, V, argumentsList) {
   // 1. Assert: IsCallable(jobCallback.[[Callback]]) is true.
   Assert(IsCallable(jobCallback.Callback) === Value.true);
   // 1. Return ? Call(jobCallback.[[Callback]], V, argumentsList).
-  return Q(Call(jobCallback.Callback, V, argumentsList));
+  return Q(yield* Call(jobCallback.Callback, V, argumentsList));
 }

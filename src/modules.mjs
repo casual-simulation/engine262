@@ -120,7 +120,7 @@ export class CyclicModuleRecord extends AbstractModuleRecord {
   }
 
   // #sec-moduleevaluation
-  Evaluate() {
+  *Evaluate() {
     // 1. Assert: This call to Evaluate is not happening at the same time as another call to Evaluate within the surrounding agent.
     // 2. Let module be this Cyclic Module Record.
     let module = this;
@@ -158,14 +158,14 @@ export class CyclicModuleRecord extends AbstractModuleRecord {
       Assert(module.Status === 'evaluated' && module.EvaluationError === result);
       // c. Return result.
       // c. (*TopLevelAwait) Perform ! Call(capability.[[Reject]], undefined, «result.[[Value]]»).
-      X(Call(capability.Reject, Value.undefined, [result.Value]));
+      X(yield* Call(capability.Reject, Value.undefined, [result.Value]));
     } else { // (*TopLevelAwait) 10. Otherwise,
       // a. Assert: module.[[Status]] is "evaluated" and module.[[EvaluationError]] is undefined.
       Assert(module.Status === 'evaluated' && module.EvaluationError === Value.undefined);
       // b. If module.[[AsyncEvaluating]] is false, then
       if (module.AsyncEvaluating === Value.false) {
         // i. Perform ! Call(capability.[[Resolve]], undefined, «undefined»).
-        X(Call(capability.Resolve, Value.undefined, [Value.undefined]));
+        X(yield* Call(capability.Resolve, Value.undefined, [Value.undefined]));
       }
       // c. Assert: stack is empty.
       Assert(stack.length === 0);
@@ -572,7 +572,7 @@ export class SyntheticModuleRecord extends AbstractModuleRecord {
   }
 
   // #sec-synthetic-module-record-evaluate
-  Evaluate() {
+  *Evaluate() {
     const module = this;
     // 1. Suspend the currently running execution context.
     // 2. Let moduleContext be a new ECMAScript code execution context.

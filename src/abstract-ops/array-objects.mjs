@@ -96,7 +96,7 @@ export function ArrayCreate(length, proto) {
 }
 
 // 9.4.2.3 #sec-arrayspeciescreate
-export function ArraySpeciesCreate(originalArray, length) {
+export function* ArraySpeciesCreate(originalArray, length) {
   Assert(typeof length === 'number' && Number.isInteger(length) && length >= 0);
   if (Object.is(length, -0)) {
     length = +0;
@@ -127,7 +127,7 @@ export function ArraySpeciesCreate(originalArray, length) {
   if (IsConstructor(C) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', C);
   }
-  return Q(Construct(C, [F(length)]));
+  return Q(yield* Construct(C, [F(length)]));
 }
 
 // 9.4.2.4 #sec-arraysetlength
@@ -201,7 +201,7 @@ export function IsConcatSpreadable(O) {
 }
 
 // 22.1.3.27.1 #sec-sortcompare
-export function SortCompare(x, y, comparefn) {
+export function* SortCompare(x, y, comparefn) {
   // 1. If x and y are both undefined, return +0𝔽.
   if (x === Value.undefined && y === Value.undefined) {
     return F(+0);
@@ -217,7 +217,7 @@ export function SortCompare(x, y, comparefn) {
   // 4. If comparefn is not undefined, then
   if (comparefn !== Value.undefined) {
     // a. Let v be ? ToNumber(? Call(comparefn, undefined, « x, y »)).
-    const v = Q(ToNumber(Q(Call(comparefn, Value.undefined, [x, y]))));
+    const v = Q(ToNumber(Q(yield* Call(comparefn, Value.undefined, [x, y]))));
     // b. If v is NaN, return +0𝔽.
     if (v.isNaN()) {
       return F(+0);

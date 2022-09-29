@@ -21,6 +21,7 @@ import {
   MakeBasicObject,
   isArrayIndex,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // 9.1.1.1 OrdinaryGetPrototypeOf
 export function OrdinaryGetPrototypeOf(O) {
@@ -240,7 +241,7 @@ export function OrdinaryHasProperty(O, P) {
 }
 
 // 9.1.8.1
-export function OrdinaryGet(O, P, Receiver) {
+export function* OrdinaryGet(O, P, Receiver) {
   Assert(IsPropertyKey(P));
 
   const desc = Q(O.GetOwnProperty(P));
@@ -259,7 +260,7 @@ export function OrdinaryGet(O, P, Receiver) {
   if (Type(getter) === 'Undefined') {
     return Value.undefined;
   }
-  return Q(Call(getter, Receiver));
+  return Q(yield* Call(getter, Receiver));
 }
 
 // 9.1.9.1 OrdinarySet
@@ -270,7 +271,7 @@ export function OrdinarySet(O, P, V, Receiver) {
 }
 
 // 9.1.9.2 OrdinarySetWithOwnDescriptor
-export function OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc) {
+export function* OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc) {
   Assert(IsPropertyKey(P));
 
   if (Type(ownDesc) === 'Undefined') {
@@ -313,7 +314,7 @@ export function OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc) {
   if (setter === undefined || Type(setter) === 'Undefined') {
     return Value.false;
   }
-  Q(Call(setter, Receiver, [V]));
+  Q(yield* Call(setter, Receiver, [V]));
   return Value.true;
 }
 

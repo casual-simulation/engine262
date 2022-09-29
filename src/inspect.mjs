@@ -5,6 +5,7 @@ import {
   EscapeRegExpPattern,
 } from './abstract-ops/all.mjs';
 import { Q, X } from './completion.mjs';
+import { wrap } from './helpers.mjs';
 
 const bareKeyRe = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
@@ -26,12 +27,12 @@ const getObjectTag = (value, wrap) => {
   return '';
 };
 
-const compactObject = (realm, value) => {
+const compactObject = function*(realm, value) {
   try {
     const toString = X(Get(value, new Value('toString')));
     const objectToString = realm.Intrinsics['%Object.prototype.toString%'];
     if (toString.nativeFunction === objectToString.nativeFunction) {
-      return X(Call(toString, value)).stringValue();
+      return X(yield* Call(toString, value)).stringValue();
     } else {
       const tag = getObjectTag(value, false) || 'Unknown';
       const ctor = X(Get(value, new Value('constructor')));
@@ -68,7 +69,7 @@ const INSPECTORS = {
   },
   Symbol: (v) => `Symbol(${v.Description === Value.undefined ? '' : v.Description.stringValue()})`,
   PrivateName: (v) => v.Description.stringValue(),
-  Object: (v, ctx, i) => {
+  Object: function*(v, ctx, i) {
     if (ctx.inspected.includes(v)) {
       return '[Circular]';
     }
@@ -94,7 +95,7 @@ const INSPECTORS = {
       let e = Q(Get(v, new Value('stack')));
       if (!e.stringValue) {
         const toString = Q(Get(v, new Value('toString')));
-        e = X(Call(toString, v));
+        e = X(yield* Call(toString, v));
       }
       return e.stringValue();
     }
@@ -191,7 +192,7 @@ const INSPECTORS = {
         return `${out} }`;
       }
     } catch {
-      return compactObject(ctx, v);
+      return yield* compactObject(ctx, v);
     } finally {
       ctx.indent -= 1;
       ctx.inspected.pop();

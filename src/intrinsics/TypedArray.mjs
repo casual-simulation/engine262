@@ -25,7 +25,7 @@ function TypedArrayConstructor() {
 }
 
 // #sec-%typedarray%.from
-function TypedArray_from([source = Value.undefined, mapfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. If IsConstructor(C) is false, throw a TypeError exception.
@@ -57,7 +57,7 @@ function TypedArray_from([source = Value.undefined, mapfn = Value.undefined, thi
       const kValue = values.shift();
       let mappedValue;
       if (mapping) {
-        mappedValue = Q(Call(mapfn, thisArg, [kValue, F(k)]));
+        mappedValue = Q(yield* Call(mapfn, thisArg, [kValue, F(k)]));
       } else {
         mappedValue = kValue;
       }
@@ -86,7 +86,7 @@ function TypedArray_from([source = Value.undefined, mapfn = Value.undefined, thi
     // c. If mapping is true, then
     if (mapping) {
       // i. Let mappedValue be ? Call(mapfn, thisArg, « kValue, 𝔽(k) »).
-      mappedValue = Q(Call(mapfn, thisArg, [kValue, F(k)]));
+      mappedValue = Q(yield* Call(mapfn, thisArg, [kValue, F(k)]));
     } else {
       // d. Else, let mappedValue be kValue.
       mappedValue = kValue;
