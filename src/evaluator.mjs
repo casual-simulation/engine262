@@ -79,6 +79,9 @@ export function* Evaluate(node) {
   if (surroundingAgent.hostDefinedOptions.onNodeEvaluation) {
     surroundingAgent.hostDefinedOptions.onNodeEvaluation(node, surroundingAgent.currentRealmRecord);
   }
+  if (surroundingAgent.hostDefinedOptions.yieldEachNode) {
+    yield node;
+  }
 
   switch (node.type) {
     // Language
