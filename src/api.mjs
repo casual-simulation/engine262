@@ -24,6 +24,7 @@ import {
   ParseJSONModule,
 } from './parse.mjs';
 import { SourceTextModuleRecord } from './modules.mjs';
+import { Evaluate } from './evaluator.mjs';
 
 export * from './value.mjs';
 export * from './engine.mjs';
@@ -35,6 +36,7 @@ export * from './environment.mjs';
 export * from './parse.mjs';
 export * from './modules.mjs';
 export * from './inspect.mjs';
+export { Evaluate };
 
 export function Throw(...args) {
   return surroundingAgent.Throw(...args);
