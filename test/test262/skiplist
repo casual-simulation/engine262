@@ -102,3 +102,5 @@ built-ins/TypedArray/prototype/reduceRight/BigInt/callbackfn-detachbuffer.js
 built-ins/TypedArray/prototype/reduceRight/callbackfn-detachbuffer.js
 built-ins/TypedArray/prototype/some/BigInt/callbackfn-detachbuffer.js
 built-ins/TypedArray/prototype/some/callbackfn-detachbuffer.js
+
+built-ins/Array/prototype/*/callbackfn-resize-arraybuffer.js
