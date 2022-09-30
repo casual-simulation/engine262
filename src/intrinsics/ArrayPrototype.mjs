@@ -117,8 +117,8 @@ function ArrayProto_copyWithin([target = Value.undefined, start = Value.undefine
     const toKey = X(ToString(F(to)));
     const fromPresent = Q(HasProperty(O, fromKey));
     if (fromPresent === Value.true) {
-      const fromVal = Q(Get(O, fromKey));
-      Q(Set(O, toKey, fromVal, Value.true));
+      const fromVal = Q(unwind(Get(O, fromKey)));
+      Q(unwind(Set(O, toKey, fromVal, Value.true)));
     } else {
       Q(DeletePropertyOrThrow(O, toKey));
     }
@@ -217,7 +217,7 @@ function* FlattenIntoArray(target, source, sourceLen, start, depth, mapperFuncti
       }
       if (shouldFlatten === Value.true) {
         const elementLen = Q(LengthOfArrayLike(element));
-        targetIndex = Q(FlattenIntoArray(target, element, elementLen, targetIndex, depth - 1));
+        targetIndex = Q(yield* FlattenIntoArray(target, element, elementLen, targetIndex, depth - 1));
       } else {
         if (targetIndex >= (2 ** 53) - 1) {
           return surroundingAgent.Throw('TypeError', 'OutOfRange', targetIndex);
@@ -232,7 +232,7 @@ function* FlattenIntoArray(target, source, sourceLen, start, depth, mapperFuncti
 }
 
 // 22.1.3.10 #sec-array.prototype.flat
-function ArrayProto_flat([depth = Value.undefined], { thisValue }) {
+function* ArrayProto_flat([depth = Value.undefined], { thisValue }) {
   const O = Q(ToObject(thisValue));
   const sourceLen = Q(LengthOfArrayLike(O));
   let depthNum = 1;
@@ -240,19 +240,19 @@ function ArrayProto_flat([depth = Value.undefined], { thisValue }) {
     depthNum = Q(ToIntegerOrInfinity(depth));
   }
   const A = Q(ArraySpeciesCreate(O, 0));
-  Q(FlattenIntoArray(A, O, sourceLen, 0, depthNum));
+  Q(yield* FlattenIntoArray(A, O, sourceLen, 0, depthNum));
   return A;
 }
 
 // 22.1.3.11 #sec-array.prototype.flatmap
-function ArrayProto_flatMap([mapperFunction = Value.undefined, thisArg = Value.undefined], { thisValue }) {
+function* ArrayProto_flatMap([mapperFunction = Value.undefined, thisArg = Value.undefined], { thisValue }) {
   const O = Q(ToObject(thisValue));
   const sourceLen = Q(LengthOfArrayLike(O));
   if (X(IsCallable(mapperFunction)) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', mapperFunction);
   }
   const A = Q(ArraySpeciesCreate(O, 0));
-  Q(FlattenIntoArray(A, O, sourceLen, 0, 1, mapperFunction, thisArg));
+  Q(yield* FlattenIntoArray(A, O, sourceLen, 0, 1, mapperFunction, thisArg));
   return A;
 }
 
@@ -475,7 +475,7 @@ function* ArrayProto_splice(args, { thisValue }) {
   k = actualStart;
   while (items.length > 0) {
     const E = items.shift();
-    Q(Set(O, X(ToString(F(k))), E, Value.true));
+    Q(unwind(Set(O, X(ToString(F(k))), E, Value.true)));
     k += 1;
   }
   Q(unwind(Set(O, new Value('length'), F(len - actualDeleteCount + itemCount), Value.true)));
@@ -507,7 +507,7 @@ function ArrayProto_unshift(args, { thisValue }) {
       const to = X(ToString(F(k + argCount - 1)));
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
-        const fromValue = Q(Get(O, from));
+        const fromValue = Q(unwind(Get(O, from)));
         Q(unwind(Set(O, to, fromValue, Value.true)));
       } else {
         Q(DeletePropertyOrThrow(O, to));

@@ -6,7 +6,9 @@ import {
   PromiseResolve,
 } from './abstract-ops/all.mjs';
 import { Value } from './value.mjs';
-import { kAsyncContext, resume } from './helpers.mjs';
+import { kAsyncContext, resume, unwind } from './helpers.mjs';
+
+export { unwind };
 
 // #sec-completion-record-specification-type
 export function Completion(init) {

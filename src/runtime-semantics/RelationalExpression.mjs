@@ -22,10 +22,10 @@ import {
 } from '../value.mjs';
 import { Q, X, ReturnIfAbrupt } from '../completion.mjs';
 import { Evaluate } from '../evaluator.mjs';
-import { OutOfRange } from '../helpers.mjs';
+import { OutOfRange, unwind } from '../helpers.mjs';
 
 // #sec-instanceofoperator
-export function* InstanceofOperator(V, target) {
+export function InstanceofOperator(V, target) {
   // 1. If Type(target) is not Object, throw a TypeError exception.
   if (Type(target) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', target);
@@ -35,7 +35,7 @@ export function* InstanceofOperator(V, target) {
   // 3. If instOfHandler is not undefined, then
   if (instOfHandler !== Value.undefined) {
     // a. Return ! ToBoolean(? Call(instOfHandler, target, « V »)).
-    return X(ToBoolean(Q(yield* Call(instOfHandler, target, [V]))));
+    return X(ToBoolean(Q(unwind(Call(instOfHandler, target, [V])))));
   }
   // 4. If IsCallable(target) is false, throw a TypeError exception.
   if (IsCallable(target) === Value.false) {

@@ -151,7 +151,7 @@ function* Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg 
   let k = 0;
   while (k < len) {
     const Pk = X(ToString(F(k)));
-    const kValue = Q(Get(arrayLike, Pk));
+    const kValue = Q(unwind(Get(arrayLike, Pk)));
     let mappedValue;
     if (mapping === true) {
       mappedValue = Q(yield* (Call(mapfn, thisArg, [kValue, F(k)])));

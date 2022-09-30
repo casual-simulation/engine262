@@ -118,20 +118,20 @@ module.exports = ({ types: t, template }) => {
       template: template(`
       /* c8 ignore if */
       if (%%value%% instanceof AbruptCompletion) {
-        return IteratorClose(%%iteratorRecord%%, %%value%%);
+        return unwind(IteratorClose(%%iteratorRecord%%, %%value%%));
       }
       /* c8 ignore if */
       if (%%value%% instanceof Completion) {
         %%value%% = %%value%%.Value;
       }
       `, { preserveComments: true }),
-      imports: ['IteratorClose', 'AbruptCompletion', 'Completion'],
+      imports: ['IteratorClose', 'AbruptCompletion', 'Completion', 'unwind'],
     },
     IfAbruptRejectPromise: {
       template: template(`
       /* c8 ignore if */
       if (ID instanceof AbruptCompletion) {
-        const hygenicTemp2 = Call(CAPABILITY.Reject, Value.undefined, [ID.Value]);
+        const hygenicTemp2 = unwind(Call(CAPABILITY.Reject, Value.undefined, [ID.Value]));
         if (hygenicTemp2 instanceof AbruptCompletion) {
           return hygenicTemp2;
         }
@@ -142,7 +142,7 @@ module.exports = ({ types: t, template }) => {
         ID = ID.Value;
       }
       `, { preserveComments: true }),
-      imports: ['Call', 'Value', 'AbruptCompletion', 'Completion'],
+      imports: ['Call', 'Value', 'AbruptCompletion', 'Completion', 'unwind'],
     },
   };
   MACROS.ReturnIfAbrupt = MACROS.Q;

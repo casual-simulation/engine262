@@ -81,7 +81,7 @@ function* AsyncFromSyncIteratorPrototype_return([value], { thisValue }) {
     return promiseCapability.Promise;
   }
   // 12. Return ! AsyncFromSyncIteratorContinuation(result, promiseCapability).
-  return X(AsyncFromSyncIteratorContinuation(result, promiseCapability));
+  return X(yield* AsyncFromSyncIteratorContinuation(result, promiseCapability));
 }
 
 // #sec-%asyncfromsynciteratorprototype%.throw
@@ -126,7 +126,7 @@ function* AsyncFromSyncIteratorPrototype_throw([value], { thisValue }) {
     return promiseCapability.Promise;
   }
   // 12. Return ! AsyncFromSyncIteratorContinuation(result, promiseCapability).
-  return X(AsyncFromSyncIteratorContinuation(result, promiseCapability));
+  return X(yield* AsyncFromSyncIteratorContinuation(result, promiseCapability));
 }
 
 export function bootstrapAsyncFromSyncIteratorPrototype(realmRec) {

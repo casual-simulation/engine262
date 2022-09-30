@@ -24,6 +24,7 @@ import {
   OrdinaryOwnPropertyKeys,
   GetModuleNamespace,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 function ModuleNamespaceSetPrototypeOf(V) {
   const O = this;
@@ -109,7 +110,7 @@ function ModuleNamespaceGet(P, Receiver) {
   // 2. If Type(P) is Symbol, then
   if (Type(P) === 'Symbol') {
     // a. Return ? OrdinaryGet(O, P, Receiver).
-    return OrdinaryGet(O, P, Receiver);
+    return unwind(OrdinaryGet(O, P, Receiver));
   }
   // 3. Let exports be O.[[Exports]].
   const exports = O.Exports;
@@ -198,7 +199,7 @@ export function ModuleNamespaceCreate(module, exports) {
   M.Module = module;
   // 9. Let sortedExports be a new List containing the same values as the list exports where the values are ordered as if an Array of the same values had been sorted using Array.prototype.sort using undefined as comparefn.
   const sortedExports = [...exports].sort((x, y) => {
-    const result = X(SortCompare(x, y, Value.undefined));
+    const result = X(unwind(SortCompare(x, y, Value.undefined)));
     return result.numberValue();
   });
   // 10. Set M.[[Exports]] to sortedExports.

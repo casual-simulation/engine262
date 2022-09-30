@@ -23,6 +23,7 @@ import {
   typedArrayInfoByName,
   F,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 export function isIntegerIndexedExoticObject(O) {
   return O.GetOwnProperty === IntegerIndexedGetOwnProperty;
@@ -155,7 +156,7 @@ export function IntegerIndexedGet(P, Receiver) {
     }
   }
   // 3. Return ? OrdinaryGet(O, P, Receiver).
-  return Q(OrdinaryGet(O, P, Receiver));
+  return Q(unwind(OrdinaryGet(O, P, Receiver)));
 }
 
 // 9.4.5.5 #sec-integer-indexed-exotic-objects-set-p-v-receiver

@@ -87,7 +87,7 @@ function* Evaluate_UnaryExpression_Typeof({ UnaryExpression }) {
     }
   }
   // 3. Set val to ? GetValue(val).
-  val = Q(GetValue(val));
+  val = Q(yield* GetValue(val));
   // 4. Return a String according to Table 37.
   const type = Type(val);
   switch (type) {

@@ -198,7 +198,7 @@ function FulfillPromise(promise, value) {
 }
 
 // 25.6.1.5 #sec-newpromisecapability
-export function* NewPromiseCapability(C) {
+export function NewPromiseCapability(C) {
   // 1. If IsConstructor(C) is false, throw a TypeError exception.
   if (IsConstructor(C) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', C);
@@ -226,7 +226,7 @@ export function* NewPromiseCapability(C) {
   // 5. Let executor be ! CreateBuiltinFunction(executorClosure, 2, "", « »).
   const executor = X(CreateBuiltinFunction(executorClosure, 2, new Value(''), []));
   // 8. Let promise be ? Construct(C, « executor »).
-  const promise = Q(yield* Construct(C, [executor]));
+  const promise = Q(unwind(Construct(C, [executor])));
   // 9. If IsCallable(promiseCapability.[[Resolve]]) is false, throw a TypeError exception.
   if (IsCallable(promiseCapability.Resolve) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'PromiseResolveFunction', promiseCapability.Resolve);

@@ -34,6 +34,7 @@ import {
   Yield,
   F,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-array-exotic-objects-defineownproperty-p-desc
 function ArrayDefineOwnProperty(P, Desc) {
@@ -96,7 +97,7 @@ export function ArrayCreate(length, proto) {
 }
 
 // 9.4.2.3 #sec-arrayspeciescreate
-export function* ArraySpeciesCreate(originalArray, length) {
+export function ArraySpeciesCreate(originalArray, length) {
   Assert(typeof length === 'number' && Number.isInteger(length) && length >= 0);
   if (Object.is(length, -0)) {
     length = +0;
@@ -105,7 +106,7 @@ export function* ArraySpeciesCreate(originalArray, length) {
   if (isArray === Value.false) {
     return Q(ArrayCreate(length));
   }
-  let C = Q(yield* Get(originalArray, new Value('constructor')));
+  let C = Q(unwind(Get(originalArray, new Value('constructor'))));
   if (IsConstructor(C) === Value.true) {
     const thisRealm = surroundingAgent.currentRealmRecord;
     const realmC = Q(GetFunctionRealm(C));
@@ -116,7 +117,7 @@ export function* ArraySpeciesCreate(originalArray, length) {
     }
   }
   if (Type(C) === 'Object') {
-    C = Q(yield* Get(C, wellKnownSymbols.species));
+    C = Q(unwind(Get(C, wellKnownSymbols.species)));
     if (C === Value.null) {
       C = Value.undefined;
     }
@@ -127,7 +128,7 @@ export function* ArraySpeciesCreate(originalArray, length) {
   if (IsConstructor(C) === Value.false) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', C);
   }
-  return Q(yield* Construct(C, [F(length)]));
+  return Q(unwind(Construct(C, [F(length)])));
 }
 
 // 9.4.2.4 #sec-arraysetlength
@@ -189,11 +190,11 @@ export function ArraySetLength(A, Desc) {
 }
 
 // 22.1.3.1.1 #sec-isconcatspreadable
-export function* IsConcatSpreadable(O) {
+export function IsConcatSpreadable(O) {
   if (Type(O) !== 'Object') {
     return Value.false;
   }
-  const spreadable = Q(yield* Get(O, wellKnownSymbols.isConcatSpreadable));
+  const spreadable = Q(unwind(Get(O, wellKnownSymbols.isConcatSpreadable)));
   if (spreadable !== Value.undefined) {
     return ToBoolean(spreadable);
   }

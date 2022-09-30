@@ -73,7 +73,7 @@ export function* ArrayProto_sortBody(obj, len, SortCompare, internalMethodsRestr
         let r = 0;
         let o = start;
         while (l < sizeLeft && r < sizeRight) {
-          const cmp = Q(SortCompare(lBuffer[l], rBuffer[r])).numberValue();
+          const cmp = Q(yield* SortCompare(lBuffer[l], rBuffer[r])).numberValue();
           if (cmp <= 0) {
             items[o] = lBuffer[l];
             o += 1;
@@ -149,7 +149,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
     let k = 0;
     while (k < len) {
       const Pk = X(ToString(F(k)));
-      const kValue = Q(Get(O, Pk));
+      const kValue = Q(yield* Get(O, Pk));
       const testResult = ToBoolean(Q(yield* (Call(predicate, thisArg, [kValue, F(k), O]))));
       if (testResult === Value.true) {
         return kValue;
@@ -331,7 +331,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const kStr = X(ToString(F(k)));
       const kPresent = Q(HasProperty(O, kStr));
       if (kPresent === Value.true) {
-        const elementK = Q(Get(O, kStr));
+        const elementK = Q(unwind(Get(O, kStr)));
         const same = StrictEqualityComparison(searchElement, elementK);
         if (same === Value.true) {
           return F(k);
@@ -432,7 +432,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
         const Pk = X(ToString(F(k)));
         kPresent = Q(HasProperty(O, Pk)) === Value.true;
         if (kPresent === true) {
-          accumulator = Q(Get(O, Pk));
+          accumulator = Q(unwind(Get(O, Pk)));
         }
         k += 1;
       }
@@ -547,7 +547,7 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
       const Pk = X(ToString(F(k)));
       const kPresent = Q(HasProperty(O, Pk));
       if (kPresent === Value.true) {
-        const kValue = Q(Get(O, Pk));
+        const kValue = Q(unwind(Get(O, Pk)));
         const testResult = ToBoolean(Q(yield* (Call(callbackfn, thisArg, [kValue, F(k), O]))));
         if (testResult === Value.true) {
           return Value.true;

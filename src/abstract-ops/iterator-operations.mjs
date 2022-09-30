@@ -46,7 +46,7 @@ export function* GetIterator(obj, hint, method) {
       if (method === Value.undefined) {
         const syncMethod = Q(GetMethod(obj, wellKnownSymbols.iterator));
         const syncIteratorRecord = Q(yield* GetIterator(obj, 'sync', syncMethod));
-        return Q(CreateAsyncFromSyncIterator(syncIteratorRecord));
+        return Q(yield* CreateAsyncFromSyncIterator(syncIteratorRecord));
       }
     } else {
       method = Q(GetMethod(obj, wellKnownSymbols.iterator));
