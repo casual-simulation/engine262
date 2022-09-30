@@ -285,7 +285,7 @@ function* TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.
     k += 1;
   }
   // 9. Let A be ? TypedArraySpeciesCreate(O, « 𝔽(captured) »).
-  const A = Q(TypedArraySpeciesCreate(O, [F(captured)]));
+  const A = Q(yield* TypedArraySpeciesCreate(O, [F(captured)]));
   // 10. Let n be 0.
   let n = 0;
   // 11. For each element e of kept, do
@@ -342,7 +342,7 @@ function* TypedArrayProto_map([callbackfn = Value.undefined, thisArg = Value.und
     return surroundingAgent.Throw('TypeError', 'NotAFunction', callbackfn);
   }
   // 5. Let A be ? TypedArraySpeciesCreate(O, « 𝔽(len) »).
-  const A = Q(TypedArraySpeciesCreate(O, [F(len)]));
+  const A = Q(yield* TypedArraySpeciesCreate(O, [F(len)]));
   // 6. Let k be 0.
   let k = 0;
   // 7. Repeat, while k < len
@@ -500,7 +500,7 @@ function* SetTypedArrayFromArrayLike(target, targetOffset, source) {
 }
 
 // #sec-%typedarray%.prototype.set-overloaded-offset
-function TypedArrayProto_set([source = Value.undefined, offset = Value.undefined], { thisValue }) {
+function* TypedArrayProto_set([source = Value.undefined, offset = Value.undefined], { thisValue }) {
   // 1. Let target be the this value.
   const target = thisValue;
   // 2. Perform ? RequireInternalSlot(target, [[TypedArrayName]]).
@@ -519,7 +519,7 @@ function TypedArrayProto_set([source = Value.undefined, offset = Value.undefined
     Q(SetTypedArrayFromTypedArray(target, targetOffset, source));
   } else { // 7. Else,
     // a. Perform ? SetTypedArrayFromArrayLike(target, targetOffset, source).
-    Q(SetTypedArrayFromArrayLike(target, targetOffset, source));
+    Q(yield* SetTypedArrayFromArrayLike(target, targetOffset, source));
   }
   // 8. Return undefined.
   return Value.undefined;
@@ -559,7 +559,7 @@ function* TypedArrayProto_slice([start = Value.undefined, end = Value.undefined]
   // 8. Let count be max(final - k, 0).
   const count = Math.max(final - k, 0);
   // 9. Let A be ? TypedArraySpeciesCreate(O, « 𝔽(count) »).
-  const A = Q(TypedArraySpeciesCreate(O, [F(count)]));
+  const A = Q(yield* TypedArraySpeciesCreate(O, [F(count)]));
   // 10. If count > 0, then
   if (count > 0) {
     // a. If IsDetachedBuffer(O.[[ViewedArrayBuffer]]) is true, throw a TypeError exception.
@@ -690,7 +690,7 @@ function* TypedArraySortCompare(x, y, comparefn) {
 }
 
 // #sec-%typedarray%.prototype.subarray
-function TypedArrayProto_subarray([begin = Value.undefined, end = Value.undefined], { thisValue }) {
+function* TypedArrayProto_subarray([begin = Value.undefined, end = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? RequireInternalSlot(O, [[TypedArrayName]]).
@@ -737,7 +737,7 @@ function TypedArrayProto_subarray([begin = Value.undefined, end = Value.undefine
   // 15. Let argumentsList be « buffer, 𝔽(beginByteOffset), 𝔽(newLength) ».
   const argumentsList = [buffer, F(beginByteOffset), F(newLength)];
   // 16. Return ? TypedArraySpeciesCreate(O, argumentsList).
-  return Q(TypedArraySpeciesCreate(O, argumentsList));
+  return Q(yield* TypedArraySpeciesCreate(O, argumentsList));
 }
 
 // #sec-%typedarray%.prototype.values

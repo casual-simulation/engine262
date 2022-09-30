@@ -179,7 +179,7 @@ function* PromiseResolveFunctions([resolution = Value.undefined]) {
   // 13. Let thenJobCallback be HostMakeJobCallback(thenAction).
   const thenJobCallback = HostMakeJobCallback(thenAction);
   // 14. Let job be NewPromiseResolveThenableJob(promise, resolution, thenJobCallback).
-  const job = NewPromiseResolveThenableJob(promise, resolution, thenJobCallback);
+  const job = yield* NewPromiseResolveThenableJob(promise, resolution, thenJobCallback);
   // 15. Perform HostEnqueuePromiseJob(job.[[Job]], job.[[Realm]]).
   HostEnqueuePromiseJob(job.Job, job.Realm);
   // 16. Return undefined.

@@ -142,7 +142,7 @@ export class CyclicModuleRecord extends AbstractModuleRecord {
     // (*TopLevelAwait) 7. Set module.[[TopLevelCapability]] to capability.
     module.TopLevelCapability = capability;
     // 5. Let result be InnerModuleEvaluation(module, stack, 0).
-    const result = InnerModuleEvaluation(module, stack, 0);
+    const result = yield* InnerModuleEvaluation(module, stack, 0);
     // 6. If result is an abrupt completion, then
     if (result instanceof AbruptCompletion) {
       // a. For each Cyclic Module Record m in stack, do
@@ -486,7 +486,7 @@ export class SourceTextModuleRecord extends CyclicModuleRecord {
   }
 
   // #sec-source-text-module-record-execute-module
-  ExecuteModule(capability) {
+  *ExecuteModule(capability) {
     // 1. Let module be this Source Text Module Record.
     const module = this;
     // 2. Suspend the currently running execution context.
@@ -497,7 +497,7 @@ export class SourceTextModuleRecord extends CyclicModuleRecord {
       // 4. Push moduleContext onto the execution context stack; moduleContext is now the running execution context.
       surroundingAgent.executionContextStack.push(moduleContext);
       // 5. Let result be the result of evaluating module.[[ECMAScriptCode]].
-      const result = EnsureCompletion(unwind(Evaluate(module.ECMAScriptCode)));
+      const result = EnsureCompletion(yield* (Evaluate(module.ECMAScriptCode)));
       // 6. Suspend moduleContext and remove it from the execution context stack.
       // 7. Resume the context that is now on the top of the execution context stack as the running execution context.
       surroundingAgent.executionContextStack.pop(moduleContext);

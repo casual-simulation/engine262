@@ -51,7 +51,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
   if (usingIterator !== Value.undefined) {
     const values = Q(yield* IterableToList(source, usingIterator));
     const len = values.length;
-    const targetObj = Q(TypedArrayCreate(C, [F(len)]));
+    const targetObj = Q(yield* TypedArrayCreate(C, [F(len)]));
     let k = 0;
     while (k < len) {
       const Pk = X(ToString(F(k)));
@@ -74,7 +74,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
   // 9. Let len be ? LengthOfArrayLike(arrayLike).
   const len = Q(LengthOfArrayLike(arrayLike));
   // 10. Let targetObj be ? TypedArrayCreate(C, « 𝔽(len) »).
-  const targetObj = Q(TypedArrayCreate(C, [F(len)]));
+  const targetObj = Q(yield* TypedArrayCreate(C, [F(len)]));
   // 11. Let k be 0.
   let k = 0;
   // 12. Repeat, while k < len
@@ -102,7 +102,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
 }
 
 // #sec-%typedarray%.of
-function TypedArray_of(items, { thisValue }) {
+function* TypedArray_of(items, { thisValue }) {
   // 1. Let len be the actual number of arguments passed to this function.
   // 2. Let items be the List of arguments passed to this function.
   const len = items.length;
@@ -113,7 +113,7 @@ function TypedArray_of(items, { thisValue }) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', C);
   }
   // 5. Let newObj be ? TypedArrayCreate(C, « 𝔽(len) »).
-  const newObj = Q(TypedArrayCreate(C, [F(len)]));
+  const newObj = Q(yield* TypedArrayCreate(C, [F(len)]));
   // 6. Let k be 0.
   let k = 0;
   // 7. Repeat, while k < len

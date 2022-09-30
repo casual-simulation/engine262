@@ -46,7 +46,7 @@ export function* Evaluate_CallExpression(CallExpression) {
       // v. Let evalRealm be the current Realm Record.
       const evalRealm = surroundingAgent.currentRealmRecord;
       // vi. Return ? PerformEval(evalText, evalRealm, strictCaller, true).
-      return Q(PerformEval(evalText, evalRealm, strictCaller, true));
+      return Q(yield* PerformEval(evalText, evalRealm, strictCaller, true));
     }
   }
   // 7. Let thisCall be this CallExpression.

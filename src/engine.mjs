@@ -324,7 +324,7 @@ export function* HostImportModuleDynamically(referencingScriptOrModule, specifie
     const c = (function*() {
       const module = Q(HostResolveImportedModule(referencingScriptOrModule, specifier));
       Q(module.Link());
-      const maybePromise = Q(module.Evaluate());
+      const maybePromise = Q(yield* module.Evaluate());
       if (module instanceof CyclicModuleRecord) {
         const onFulfilled = CreateBuiltinFunction(function*([v = Value.undefined]) {
           yield* finish(NormalCompletion(v));

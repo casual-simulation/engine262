@@ -5,6 +5,7 @@ import {
   NormalCompletion,
   ThrowCompletion,
   IfAbruptRejectPromise,
+  unwind
 } from '../completion.mjs';
 import { Value } from '../value.mjs';
 import {
@@ -57,7 +58,7 @@ function* AsyncGeneratorPrototype_next([value = Value.undefined], { thisValue })
 }
 
 // #sec-asyncgenerator-prototype-return
-function AsyncGeneratorPrototype_return([value = Value.undefined], { thisValue }) {
+function* AsyncGeneratorPrototype_return([value = Value.undefined], { thisValue }) {
   // 1. Let generator be the this value.
   const generator = thisValue;
   // 2. Let promiseCapability be ! NewPromiseCapability(%Promise%).
@@ -77,7 +78,7 @@ function AsyncGeneratorPrototype_return([value = Value.undefined], { thisValue }
     // a. Set generator.[[AsyncGeneratorState]] to awaiting-return.
     generator.AsyncGeneratorState = 'awaiting-return';
     // b. Perform ! AsyncGeneratorAwaitReturn(generator).
-    X(AsyncGeneratorAwaitReturn(generator));
+    X(yield* AsyncGeneratorAwaitReturn(generator));
   } else if (state === 'suspendedYield') { // 9. Else if state is suspendedYield, then
     // a. Perform ! AsyncGeneratorResume(generator, completion).
     X(AsyncGeneratorResume(generator, completion));

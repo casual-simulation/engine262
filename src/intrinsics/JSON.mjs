@@ -239,7 +239,7 @@ function* InternalizeJSONProperty(holder, name, reviver) {
       const len = Q(LengthOfArrayLike(val));
       while (I < len) {
         const Istr = X(ToString(F(I)));
-        const newElement = Q(InternalizeJSONProperty(val, Istr, reviver));
+        const newElement = Q(yield* InternalizeJSONProperty(val, Istr, reviver));
         if (Type(newElement) === 'Undefined') {
           Q(val.Delete(Istr));
         } else {
@@ -250,7 +250,7 @@ function* InternalizeJSONProperty(holder, name, reviver) {
     } else {
       const keys = Q(EnumerableOwnPropertyNames(val, 'key'));
       for (const P of keys) {
-        const newElement = Q(InternalizeJSONProperty(val, P, reviver));
+        const newElement = Q(yield* InternalizeJSONProperty(val, P, reviver));
         if (Type(newElement) === 'Undefined') {
           Q(val.Delete(P));
         } else {
@@ -263,7 +263,7 @@ function* InternalizeJSONProperty(holder, name, reviver) {
 }
 
 // #sec-json.parse
-function JSON_parse([text = Value.undefined, reviver = Value.undefined]) {
+function* JSON_parse([text = Value.undefined, reviver = Value.undefined]) {
   // 1. Let jsonString be ? ToString(text).
   const jsonString = Q(ToString(text));
   // 2. Parse ! UTF16DecodeString(jsonString) as a JSON text as specified in ECMA-404.
@@ -292,7 +292,7 @@ function JSON_parse([text = Value.undefined, reviver = Value.undefined]) {
     // c. Perform ! CreateDataPropertyOrThrow(root, rootName, unfiltered).
     X(CreateDataPropertyOrThrow(root, rootName, unfiltered));
     // d. Return ? InternalizeJSONProperty(root, rootName, reviver).
-    return Q(InternalizeJSONProperty(root, rootName, reviver));
+    return Q(yield* InternalizeJSONProperty(root, rootName, reviver));
   } else {
     // a. Return unfiltered.
     return unfiltered;
@@ -356,9 +356,9 @@ function* SerializeJSONProperty(state, key, holder) {
   if (Type(value) === 'Object' && IsCallable(value) === Value.false) {
     const isArray = Q(IsArray(value));
     if (isArray === Value.true) {
-      return Q(SerializeJSONArray(state, value));
+      return Q(yield* SerializeJSONArray(state, value));
     }
-    return Q(SerializeJSONObject(state, value));
+    return Q(yield* SerializeJSONObject(state, value));
   }
   return Value.undefined;
 }
@@ -387,7 +387,7 @@ function QuoteJSONString(value) { // eslint-disable-line no-shadow
 }
 
 // #sec-serializejsonobject
-function SerializeJSONObject(state, value) {
+function* SerializeJSONObject(state, value) {
   if (state.Stack.includes(value)) {
     return surroundingAgent.Throw('TypeError', 'JSONCircular');
   }
@@ -402,7 +402,7 @@ function SerializeJSONObject(state, value) {
   }
   const partial = [];
   for (const P of K) {
-    const strP = Q(SerializeJSONProperty(state, P, value));
+    const strP = Q(yield* SerializeJSONProperty(state, P, value));
     if (strP !== Value.undefined) {
       let member = QuoteJSONString(P).stringValue();
       member = `${member}:`;
@@ -432,7 +432,7 @@ function SerializeJSONObject(state, value) {
 }
 
 // #sec-serializejsonarray
-function SerializeJSONArray(state, value) {
+function* SerializeJSONArray(state, value) {
   if (state.Stack.includes(value)) {
     return surroundingAgent.Throw('TypeError', 'JSONCircular');
   }
@@ -444,7 +444,7 @@ function SerializeJSONArray(state, value) {
   let index = 0;
   while (index < len) {
     const indexStr = X(ToString(F(index)));
-    const strP = Q(SerializeJSONProperty(state, indexStr, value));
+    const strP = Q(yield* SerializeJSONProperty(state, indexStr, value));
     if (strP === Value.undefined) {
       partial.push('null');
     } else {
@@ -535,7 +535,7 @@ function* JSON_stringify([value = Value.undefined, replacer = Value.undefined, s
   const state = {
     ReplacerFunction, Stack: stack, Indent: indent, Gap: gap, PropertyList,
   };
-  return Q(SerializeJSONProperty(state, new Value(''), wrapper));
+  return Q(yield* SerializeJSONProperty(state, new Value(''), wrapper));
 }
 
 export function bootstrapJSON(realmRec) {

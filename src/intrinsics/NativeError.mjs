@@ -31,7 +31,7 @@ export function bootstrapNativeError(realmRec) {
     ], realmRec.Intrinsics['%Error.prototype%']);
 
     // #sec-nativeerror
-    const Constructor = ([message = Value.undefined, options = Value.undefined], { NewTarget }) => {
+    const Constructor = function* ([message = Value.undefined, options = Value.undefined], { NewTarget }) {
       // 1. If NewTarget is undefined, let newTarget be the active function object; else let newTarget be NewTarget.
       let newTarget;
       if (Type(NewTarget) === 'Undefined') {
@@ -56,7 +56,7 @@ export function bootstrapNativeError(realmRec) {
         X(DefinePropertyOrThrow(O, new Value('message'), msgDesc));
       }
       // 4. Perform ? InstallErrorCause(O, options).
-      Q(InstallErrorCause(O, options));
+      Q(yield* InstallErrorCause(O, options));
       // NON-SPEC
       X(captureStack(O));
       // 5. Return O.

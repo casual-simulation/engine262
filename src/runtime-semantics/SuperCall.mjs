@@ -39,7 +39,7 @@ export function* Evaluate_SuperCall({ Arguments }) {
   // 10. Assert: F is an ECMAScript function object.
   Assert(isECMAScriptFunctionObject(F));
   // 11. Perform ? InitializeInstanceElements(result, F).
-  Q(InitializeInstanceElements(result, F));
+  Q(yield* InitializeInstanceElements(result, F));
   // 12. Return result.
   return result;
 }

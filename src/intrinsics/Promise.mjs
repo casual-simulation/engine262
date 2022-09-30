@@ -36,6 +36,7 @@ import {
   ReturnIfAbrupt,
   EnsureCompletion,
   Q, X,
+  unwind,
 } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
@@ -201,7 +202,7 @@ function* Promise_all([iterable = Value.undefined], { thisValue }) {
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
   const promiseCapability = Q(NewPromiseCapability(C));
   // 3. Let promiseResolve be GetPromiseResolve(C).
-  const promiseResolve = GetPromiseResolve(C);
+  const promiseResolve = yield* GetPromiseResolve(C);
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
@@ -383,11 +384,11 @@ function* Promise_allSettled([iterable = Value.undefined], { thisValue }) {
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
   const promiseCapability = Q(NewPromiseCapability(C));
   // 3. Let promiseResolve be GetPromiseResolve(C).
-  const promiseResolve = GetPromiseResolve(C);
+  const promiseResolve = yield* GetPromiseResolve(C);
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
-  const iteratorRecord = GetIterator(iterable);
+  const iteratorRecord = yield* GetIterator(iterable);
   // 6. IfAbruptRejectPromise(iteratorRecord, promiseCapability).
   IfAbruptRejectPromise(iteratorRecord, promiseCapability);
   // 7. Let result be PerformPromiseAllSettled(iteratorRecord, C, promiseCapability, promiseResolve).
@@ -538,7 +539,7 @@ function* Promise_any([iterable = Value.undefined], { thisValue }) {
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
   const promiseCapability = Q(NewPromiseCapability(C));
   // 3. Let promiseResolve be GetPromiseResolve(C).
-  const promiseResolve = GetPromiseResolve(C);
+  const promiseResolve = yield* GetPromiseResolve(C);
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
@@ -606,7 +607,7 @@ function* Promise_race([iterable = Value.undefined], { thisValue }) {
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
   const promiseCapability = Q(NewPromiseCapability(C));
   // 3. Let promiseResolve be GetPromiseResolve(C).
-  const promiseResolve = GetPromiseResolve(C);
+  const promiseResolve = yield* GetPromiseResolve(C);
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).

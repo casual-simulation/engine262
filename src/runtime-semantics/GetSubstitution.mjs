@@ -6,9 +6,10 @@ import {
 } from '../abstract-ops/all.mjs';
 import { Type, Value } from '../value.mjs';
 import { Q } from '../completion.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-getsubstitution
-export function* GetSubstitution(matched, str, position, captures, namedCaptures, replacement) {
+export function GetSubstitution(matched, str, position, captures, namedCaptures, replacement) {
   // 1. Assert: Type(matched) is String.
   Assert(Type(matched) === 'String');
   // 2. Let matchLength be the number of code units in matched.
@@ -94,7 +95,7 @@ export function* GetSubstitution(matched, str, position, captures, namedCaptures
             i += 2;
           } else {
             const groupName = new Value(replacementStr.substring(i + 2, nextSign));
-            const capture = Q(yield* Get(namedCaptures, groupName));
+            const capture = Q(unwind(Get(namedCaptures, groupName)));
             if (capture === Value.undefined) {
               // Replace the text with the empty string
             } else {

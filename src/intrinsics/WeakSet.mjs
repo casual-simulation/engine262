@@ -9,7 +9,7 @@ import {
   IteratorStep,
   IteratorValue,
 } from '../abstract-ops/all.mjs';
-import { IfAbruptCloseIterator, Q } from '../completion.mjs';
+import { IfAbruptCloseIterator, Q, unwind } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-weakset-iterable

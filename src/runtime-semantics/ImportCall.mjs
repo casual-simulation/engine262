@@ -6,7 +6,7 @@ import {
   NewPromiseCapability,
   GetActiveScriptOrModule,
 } from '../abstract-ops/all.mjs';
-import { Q, X, IfAbruptRejectPromise } from '../completion.mjs';
+import { Q, X, IfAbruptRejectPromise, unwind } from '../completion.mjs';
 
 // #sec-import-calls
 // ImportCall : `import` `(` AssignmentExpression `)`

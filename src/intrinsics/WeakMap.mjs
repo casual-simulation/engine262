@@ -29,7 +29,7 @@ function* WeakMapConstructor([iterable = Value.undefined], { NewTarget }) {
   // 5. Let adder be ? Get(map, "set").
   const adder = Q(yield* Get(map, new Value('set')));
   // 6. Return ? AddEntriesFromIterable(map, iterable, adder).
-  return Q(AddEntriesFromIterable(map, iterable, adder));
+  return Q(yield* AddEntriesFromIterable(map, iterable, adder));
 }
 
 export function bootstrapWeakMap(realmRec) {

@@ -9,7 +9,7 @@ import {
   OrdinaryCreateFromConstructor,
 } from '../abstract-ops/all.mjs';
 import { Value, wellKnownSymbols } from '../value.mjs';
-import { IfAbruptCloseIterator, Q } from '../completion.mjs';
+import { IfAbruptCloseIterator, Q, unwind } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-set-iterable

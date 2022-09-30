@@ -9,7 +9,7 @@ import {
   Assert,
 } from '../abstract-ops/all.mjs';
 import { Type, Value } from '../value.mjs';
-import { IfAbruptRejectPromise, X } from '../completion.mjs';
+import { IfAbruptRejectPromise, X, unwind } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-%asyncfromsynciteratorprototype%.next

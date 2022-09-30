@@ -149,7 +149,7 @@ export function gc() {
 }
 
 // https://tc39.es/ecma262/#sec-jobs
-export function runJobQueue() {
+export function* runJobQueue() {
   if (surroundingAgent.executionContextStack.some((e) => e.ScriptOrModule !== Value.null)) {
     return;
   }
@@ -170,7 +170,7 @@ export function runJobQueue() {
     newContext.Realm = callerRealm;
     newContext.ScriptOrModule = callerScriptOrModule;
     // 2. Call the abstract closure.
-    X(abstractClosure());
+    X(yield* wrap(abstractClosure()));
     // 3. Perform any host-defined cleanup steps, after which the execution context stack must be empty.
     ClearKeptObjects();
     gc();
@@ -238,7 +238,7 @@ export class ManagedRealm extends Realm {
     });
 
     if (!(res instanceof AbruptCompletion)) {
-      runJobQueue();
+      unwind(runJobQueue());
     }
 
     return res;
@@ -280,7 +280,7 @@ class ManagedSourceTextModuleRecord extends SourceTextModuleRecord {
   *Evaluate() {
     const r = yield* super.Evaluate();
     if (!(r instanceof AbruptCompletion)) {
-      runJobQueue();
+      yield* runJobQueue();
     }
     return r;
   }

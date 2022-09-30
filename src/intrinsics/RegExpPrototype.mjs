@@ -458,7 +458,7 @@ function RegExpProto_replace([string = Value.undefined, replaceValue = Value.und
   if (functionalReplace === Value.false) {
     replaceValue = Q(ToString(replaceValue));
   }
-  const global = ToBoolean(Q(Get(rx, new Value('global'))));
+  const global = ToBoolean(Q(unwind(Get(rx, new Value('global')))));
   let fullUnicode;
   if (global === Value.true) {
     fullUnicode = ToBoolean(Q(unwind(Get(rx, new Value('unicode')))));

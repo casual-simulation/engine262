@@ -175,7 +175,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
         // 2. Let result be ? OrdinaryCreateFromConstructor(NewTarget, "%Object.prototype%").
         result = Q(OrdinaryCreateFromConstructor(NewTarget, '%Object.prototype%'));
       }
-      Q(InitializeInstanceElements(result, F));
+      Q(yield* InitializeInstanceElements(result, F));
       return result;
     };
     // b. ! CreateBuiltinFunction(defaultConstructor, 0, className, « [[ConstructorKind]], [[SourceText]] », the current Realm Record, constructorParent).
@@ -310,7 +310,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
     // a. If elementRecord is a ClassFieldDefinition Record, then
     if (elementRecord instanceof ClassFieldDefinitionRecord) {
       // a. Let result be DefineField(F, elementRecord).
-      result = DefineField(F, elementRecord);
+      result = yield* DefineField(F, elementRecord);
     } else { // b. Else,
       // i. Assert: elementRecord is a ClassStaticBlockDefinition Record.
       Assert(elementRecord instanceof ClassStaticBlockDefinitionRecord);

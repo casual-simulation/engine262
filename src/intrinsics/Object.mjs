@@ -188,7 +188,7 @@ function Object_freeze([O = Value.undefined]) {
 }
 
 // #sec-object.fromentries
-function Object_fromEntries([iterable = Value.undefined]) {
+function* Object_fromEntries([iterable = Value.undefined]) {
   // 1. Perform ? RequireObjectCoercible(iterable).
   Q(RequireObjectCoercible(iterable));
   // 2. Let obj be ! OrdinaryObjectCreate(%Object.prototype%).
@@ -207,7 +207,7 @@ function Object_fromEntries([iterable = Value.undefined]) {
   // 5. Let adder be ! CreateBuiltinFunction(closure, 2, "", « »).
   const adder = X(CreateBuiltinFunction(closure, 2, new Value(''), []));
   // 6. Return ? AddEntriesFromIterable(obj, iterable, adder).
-  return Q(AddEntriesFromIterable(obj, iterable, adder));
+  return Q(yield* AddEntriesFromIterable(obj, iterable, adder));
 }
 
 // #sec-object.getownpropertydescriptor

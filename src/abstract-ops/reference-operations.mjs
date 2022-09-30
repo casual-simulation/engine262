@@ -116,7 +116,7 @@ export function PutValue(V, W) {
     // b. If IsPrivateReference(V) is true, then
     if (IsPrivateReference(V) === Value.true) {
       // i. Return ? PrivateSet(V.[[ReferencedName]], baseObj, W).
-      return Q(PrivateSet(V.ReferencedName, baseObj, W));
+      return Q(unwind(PrivateSet(V.ReferencedName, baseObj, W)));
     }
     // c. Let succeeded be ? baseObj.[[Set]](V.[[ReferencedName]], W, GetThisValue(V)).
     const succeeded = Q(unwind(wrap(baseObj.Set(V.ReferencedName, W, GetThisValue(V)))));

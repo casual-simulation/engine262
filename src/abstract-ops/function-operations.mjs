@@ -164,7 +164,7 @@ export function* DefineField(receiver, fieldRecord) {
 }
 
 // #sec-initializeinstanceelements
-export function InitializeInstanceElements(O, constructor) {
+export function* InitializeInstanceElements(O, constructor) {
   // 1. Let methods be the value of constructor.[[PrivateMethods]].
   const methods = constructor.PrivateMethods;
   // 2. For each PrivateElement method of methods, do
@@ -177,7 +177,7 @@ export function InitializeInstanceElements(O, constructor) {
   // 4. For each element fieldRecord of fields, do
   for (const fieldRecord of fields) {
     // a. Perform ? DefineField(O, fieldRecord).
-    Q(DefineField(O, fieldRecord));
+    Q(yield* DefineField(O, fieldRecord));
   }
 }
 
@@ -245,7 +245,7 @@ function* FunctionConstructSlot(argumentsList, newTarget) {
     // a. Perform OrdinaryCallBindThis(F, calleeContext, thisArgument).
     OrdinaryCallBindThis(F, calleeContext, thisArgument);
     // b. Let initializeResult be InitializeInstanceElements(thisArgument, F).
-    const initializeResult = InitializeInstanceElements(thisArgument, F);
+    const initializeResult = yield* InitializeInstanceElements(thisArgument, F);
     // c. If initializeResult is an abrupt completion, then
     if (initializeResult instanceof AbruptCompletion) {
       // i. Remove calleeContext from the execution context stack and restore callerContext as the running execution context.

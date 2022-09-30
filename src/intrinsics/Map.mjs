@@ -18,6 +18,7 @@ import {
 import {
   IfAbruptCloseIterator,
   Q,
+  unwind,
 } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
@@ -69,7 +70,7 @@ function* MapConstructor([iterable = Value.undefined], { NewTarget }) {
   // 5. Let adder be ? Get(map, "set").
   const adder = Q(yield* Get(map, new Value('set')));
   // 6. Return ? AddEntriesFromIterable(map, iterable, adder).
-  return Q(AddEntriesFromIterable(map, iterable, adder));
+  return Q(yield* AddEntriesFromIterable(map, iterable, adder));
 }
 
 // #sec-get-map-@@species

@@ -74,9 +74,9 @@ export function AsyncGeneratorStart(generator, generatorBody) {
       result = NormalCompletion(result.Value);
     }
     // h. Perform ! AsyncGeneratorCompleteStep(generator, result, true).
-    X(AsyncGeneratorCompleteStep(generator, result, Value.true));
+    X(yield* AsyncGeneratorCompleteStep(generator, result, Value.true));
     // i. Perform ! AsyncGeneratorDrainQueue(generator).
-    X(AsyncGeneratorDrainQueue(generator));
+    X(yield* AsyncGeneratorDrainQueue(generator));
     // j. Return undefined.
     return Value.undefined;
   }());
@@ -222,7 +222,7 @@ export function* AsyncGeneratorYield(value) {
   // 9. Let previousRealm be previousContext's Realm.
   const previousRealm = previousContext.Realm;
   // 10. Perform ! AsyncGeneratorCompleteStep(generator, completion, false, previousRealm).
-  X(AsyncGeneratorCompleteStep(generator, completion, Value.false, previousRealm));
+  X(yield* AsyncGeneratorCompleteStep(generator, completion, Value.false, previousRealm));
   // 11. Let queue be generator.[[AsyncGeneratorQueue]].
   const queue = generator.AsyncGeneratorQueue;
   // 12. If queue is not empty, then
@@ -251,7 +251,7 @@ export function* AsyncGeneratorYield(value) {
 }
 
 // #sec-asyncgeneratorawaitreturn
-export function AsyncGeneratorAwaitReturn(generator) {
+export function* AsyncGeneratorAwaitReturn(generator) {
   // 1. Let queue be generator.[[AsyncGeneratorQueue]].
   const queue = generator.AsyncGeneratorQueue;
   // 2. Assert: queue is not empty.
@@ -263,32 +263,32 @@ export function AsyncGeneratorAwaitReturn(generator) {
   // 5. Assert: completion.[[Type]] is return.
   Assert(completion.Type === 'return');
   // 6. Let promise be ? PromiseResolve(%Promise%, completion.[[Value]]).
-  const promise = Q(unwind(PromiseResolve(surroundingAgent.intrinsic('%Promise%'), completion.Value)));
+  const promise = Q(yield* (PromiseResolve(surroundingAgent.intrinsic('%Promise%'), completion.Value)));
   // 7. Let fulfilledClosure be a new Abstract Closure with parameters (value) that captures generator and performs the following steps when called:
-  const fulfilledClosure = ([value = Value.undefined]) => {
+  const fulfilledClosure = function* ([value = Value.undefined]) {
     // a. Set generator.[[AsyncGeneratorState]] to completed.
     generator.AsyncGeneratorState = 'completed';
     // b. Let result be NormalCompletion(value).
     const result = NormalCompletion(value);
     // c. Perform ! AsyncGeneratorCompleteStep(generator, result, true).
-    X(AsyncGeneratorCompleteStep(generator, result, Value.true));
+    X(yield* AsyncGeneratorCompleteStep(generator, result, Value.true));
     // d. Perform ! AsyncGeneratorDrainQueue(generator).
-    X(AsyncGeneratorDrainQueue(generator));
+    X(yield* AsyncGeneratorDrainQueue(generator));
     // e. Return undefined.
     return Value.undefined;
   };
   // 8. Let onFulfilled be ! CreateBuiltinFunction(fulfilledClosure, 1, "", « »).
   const onFulfilled = X(CreateBuiltinFunction(fulfilledClosure, 1, new Value(''), []));
   // 9. Let rejectedClosure be a new Abstract Closure with parameters (reason) that captures generator and performs the following steps when called:
-  const rejectedClosure = ([reason = Value.undefined]) => {
+  const rejectedClosure = function* ([reason = Value.undefined]) {
     // a. Set generator.[[AsyncGeneratorState]] to completed.
     generator.AsyncGeneratorState = 'completed';
     // b. Let result be ThrowCompletion(reason).
     const result = ThrowCompletion(reason);
     // c. Perform ! AsyncGeneratorCompleteStep(generator, result, true).
-    X(AsyncGeneratorCompleteStep(generator, result, Value.true));
+    X(yield* AsyncGeneratorCompleteStep(generator, result, Value.true));
     // d. Perform ! AsyncGeneratorDrainQueue(generator).
-    X(AsyncGeneratorDrainQueue(generator));
+    X(yield* AsyncGeneratorDrainQueue(generator));
     // e. Return undefined.
     return Value.undefined;
   };
@@ -299,7 +299,7 @@ export function AsyncGeneratorAwaitReturn(generator) {
 }
 
 // #sec-asyncgeneratordrainqueue
-function AsyncGeneratorDrainQueue(generator) {
+function* AsyncGeneratorDrainQueue(generator) {
   // 1. Assert: generator.[[AsyncGeneratorState]] is completed.
   Assert(generator.AsyncGeneratorState === 'completed');
   // 2. Let queue be generator.[[AsyncGeneratorQueue]].
@@ -321,7 +321,7 @@ function AsyncGeneratorDrainQueue(generator) {
       // i. Set generator.[[AsyncGeneratorState]] to awaiting-return.
       generator.AsyncGeneratorState = 'awaiting-return';
       // ii. Perform ! AsyncGeneratorAwaitReturn(generator).
-      X(AsyncGeneratorAwaitReturn(generator));
+      X(yield* AsyncGeneratorAwaitReturn(generator));
       // iii. Set done to true.
       done = true;
     } else { // d. Else,
@@ -331,7 +331,7 @@ function AsyncGeneratorDrainQueue(generator) {
         completion = NormalCompletion(Value.undefined);
       }
       // ii. Perform ! AsyncGeneratorCompleteStep(generator, completion, true).
-      X(AsyncGeneratorCompleteStep(generator, completion, Value.true));
+      X(yield* AsyncGeneratorCompleteStep(generator, completion, Value.true));
       // iii. If queue is empty, set done to true.
       if (queue.length === 0) {
         done = true;

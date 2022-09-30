@@ -194,7 +194,7 @@ export function AllocateTypedArrayBuffer(O, length) {
 }
 
 // #typedarray-species-create
-export function TypedArraySpeciesCreate(exemplar, argumentList) {
+export function* TypedArraySpeciesCreate(exemplar, argumentList) {
   // 1. Assert: exemplar is an Object that has [[TypedArrayName]] and [[ContentType]] internal slots.
   Assert(Type(exemplar) === 'Object'
          && 'TypedArrayName' in exemplar
@@ -204,7 +204,7 @@ export function TypedArraySpeciesCreate(exemplar, argumentList) {
   // 3. Let constructor be ? SpeciesConstructor(exemplar, defaultConstructor).
   const constructor = Q(SpeciesConstructor(exemplar, defaultConstructor));
   // 4. Let result be ? TypedArrayCreate(constructor, argumentList).
-  const result = Q(TypedArrayCreate(constructor, argumentList));
+  const result = Q(yield* TypedArrayCreate(constructor, argumentList));
   // 5. Assert: result has [[TypedArrayName]] and [[ContentType]] internal slots.
   Assert('TypedArrayName' in result && 'ContentType' in result);
   // 6. If result.[[ContentType]] is not equal to exemplar.[[ContentType]], throw a TypeError exception.

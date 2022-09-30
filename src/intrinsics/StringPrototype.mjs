@@ -264,7 +264,7 @@ function* StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
       }
     }
     // c. Let matcher be ? GetMethod(regexp, @@matchAll).
-    const matcher = Q(yield* GetMethod(regexp, wellKnownSymbols.matchAll));
+    const matcher = Q(GetMethod(regexp, wellKnownSymbols.matchAll));
     // d. If matcher is not undefined, then
     if (matcher !== Value.undefined) {
       // i. Return ? Call(matcher, regexp, « O »).
@@ -335,7 +335,7 @@ function* StringProto_replace([searchValue = Value.undefined, replaceValue = Val
   if (searchValue !== Value.undefined && searchValue !== Value.null) {
     const replacer = Q(GetMethod(searchValue, wellKnownSymbols.replace));
     if (replacer !== Value.undefined) {
-      return Q(Call(replacer, searchValue, [O, replaceValue]));
+      return Q(yield* Call(replacer, searchValue, [O, replaceValue]));
     }
   }
   const string = Q(ToString(O));

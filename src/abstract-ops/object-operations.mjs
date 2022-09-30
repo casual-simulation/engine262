@@ -190,7 +190,7 @@ export function* Call(F, V, argumentsList) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', F);
   }
 
-  return EnsureCompletion(Q(yield* F.Call(V, argumentsList)));
+  return EnsureCompletion(Q(yield* wrap(F.Call(V, argumentsList))));
 }
 
 // 7.3.13 #sec-construct
@@ -203,7 +203,7 @@ export function* Construct(F, argumentsList, newTarget) {
   }
   Assert(IsConstructor(F) === Value.true);
   Assert(IsConstructor(newTarget) === Value.true);
-  return Q(yield* F.Construct(argumentsList, newTarget));
+  return Q(yield* wrap(F.Construct(argumentsList, newTarget)));
 }
 
 // 7.3.14 #sec-setintegritylevel

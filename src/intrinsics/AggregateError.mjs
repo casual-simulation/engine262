@@ -44,7 +44,7 @@ function* AggregateErrorConstructor([errors = Value.undefined, message = Value.u
   })));
 
   // 6. Perform ? InstallErrorCause(O, options).
-  Q(InstallErrorCause(O, options));
+  Q(yield* InstallErrorCause(O, options));
 
   // NON-SPEC
   X(captureStack(O));

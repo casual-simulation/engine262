@@ -88,7 +88,7 @@ export function* InnerModuleEvaluation(module, stack, index) {
   stack.push(module);
   for (const required of module.RequestedModules) {
     let requiredModule = X(HostResolveImportedModule(module, required));
-    index = Q(InnerModuleEvaluation(requiredModule, stack, index));
+    index = Q(yield* InnerModuleEvaluation(requiredModule, stack, index));
     if (requiredModule instanceof CyclicModuleRecord) {
       Assert(requiredModule.Status === 'evaluating' || requiredModule.Status === 'evaluated');
       if (stack.includes(requiredModule)) {
@@ -112,9 +112,9 @@ export function* InnerModuleEvaluation(module, stack, index) {
   if (module.PendingAsyncDependencies > 0) {
     module.AsyncEvaluating = Value.true;
   } else if (module.Async === Value.true) {
-    X(ExecuteAsyncModule(module));
+    X(yield* ExecuteAsyncModule(module));
   } else {
-    Q(module.ExecuteModule());
+    Q(yield* module.ExecuteModule());
   }
   Assert(stack.indexOf(module) === stack.lastIndexOf(module));
   Assert(module.DFSAncestorIndex <= module.DFSIndex);
@@ -133,7 +133,7 @@ export function* InnerModuleEvaluation(module, stack, index) {
 }
 
 // #sec-execute-async-module
-function ExecuteAsyncModule(module) {
+function* ExecuteAsyncModule(module) {
   // 1. Assert: module.[[Status]] is evaluating or evaluated.
   Assert(module.Status === 'evaluating' || module.Status === 'evaluated');
   // 2. Assert: module.[[Async]] is true.
@@ -163,7 +163,7 @@ function ExecuteAsyncModule(module) {
   // 9. Perform ! PerformPromiseThen(capability.[[Promise]], onFulfilled, onRejected).
   X(PerformPromiseThen(capability.Promise, onFulfilled, onRejected));
   // 10. Perform ! module.ExecuteModule(capability).
-  X(module.ExecuteModule(capability));
+  X(yield* module.ExecuteModule(capability));
   // 11. Return.
   return Value.undefined;
 }
@@ -205,9 +205,9 @@ function* AsyncModuleExecutionFulfilled(module) {
         return Value.undefined;
       }
       if (m.Async === Value.true) {
-        X(ExecuteAsyncModule(m));
+        X(yield* ExecuteAsyncModule(m));
       } else {
-        const result = m.ExecuteModule();
+        const result = yield* m.ExecuteModule();
         if (result instanceof NormalCompletion) {
           X(AsyncModuleExecutionFulfilled(m));
         } else {
