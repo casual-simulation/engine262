@@ -11,11 +11,18 @@ const TEST262_TESTS = path.join(TEST262, 'test');
 
 const readList = (name) => {
   const source = fs.readFileSync(path.resolve(__dirname, name), 'utf8');
-  return source.split('\n').filter((l) => l && !l.startsWith('#'));
+  return source.split(/\r?\n/).filter((l) => l && !l.startsWith('#')).map((l) => l.replace(/\\/g, '/'));
 };
-const readListPaths = (name) => readList(name)
-  .flatMap((t) => globby.sync(path.resolve(TEST262, 'test', t), { absolute: true }))
-  .map((f) => path.relative(TEST262_TESTS, f));
+const readListPaths = (name) => {
+  let list = readList(name);
+  return list
+    .flatMap((t) => {
+      let pa = path.resolve(TEST262, 'test', t).replace(/\\/g, '/');
+      let a = globby.sync(pa, { absolute: true });
+      return a;
+    })
+    .map((f) => path.relative(TEST262_TESTS, f));
+}
 
 async function* readdir(dir) {
   for await (const dirent of await fs.promises.opendir(dir)) {
