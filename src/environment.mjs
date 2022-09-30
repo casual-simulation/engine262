@@ -222,7 +222,7 @@ export class ObjectEnvironmentRecord extends EnvironmentRecord {
   }
 
   // #sec-object-environment-records-hasbinding-n
-  *HasBinding(N) {
+  HasBinding(N) {
     // 1. Let envRec be the object Environment Record for which the method was invoked.
     const envRec = this;
     // 2. Let bindings be the binding object for envRec.
@@ -238,11 +238,11 @@ export class ObjectEnvironmentRecord extends EnvironmentRecord {
       return Value.true;
     }
     // 6. Let unscopables be ? Get(bindings, @@unscopables).
-    const unscopables = Q(yield* Get(bindings, wellKnownSymbols.unscopables));
+    const unscopables = Q(unwind(Get(bindings, wellKnownSymbols.unscopables)));
     // 7. If Type(unscopables) is Object, then
     if (Type(unscopables) === 'Object') {
       // a. Let blocked be ! ToBoolean(? Get(unscopables, N)).
-      const blocked = X(ToBoolean(Q(yield* Get(unscopables, N))));
+      const blocked = X(ToBoolean(Q(unwind(Get(unscopables, N)))));
       // b. If blocked is true, return false.
       if (blocked === Value.true) {
         return Value.false;
