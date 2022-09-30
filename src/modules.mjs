@@ -175,6 +175,10 @@ export class CyclicModuleRecord extends AbstractModuleRecord {
     return capability.Promise;
   }
 
+  EvaluateAndUnwind() {
+    return unwind(this.Evaluate());
+  }
+
   mark(m) {
     super.mark(m);
     m(this.EvaluationError);

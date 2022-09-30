@@ -152,7 +152,7 @@ function oneShotEval(source, filename) {
         resolverCache.set(filename, result);
         result = module.Link();
         if (!(result instanceof AbruptCompletion)) {
-          result = module.Evaluate();
+          result = module.EvaluateAndUnwind();
         }
         if (!(result instanceof AbruptCompletion)) {
           if (result.PromiseState === 'rejected') {
