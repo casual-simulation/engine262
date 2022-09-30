@@ -133,6 +133,8 @@ realm.scope(() => {
     return Value.undefined;
   }, 1, new Value('debug'), []);
   CreateDataProperty(console, new Value('debug'), debug);
+
+  CreateDataProperty(realm.GlobalObject, new Value('print'), log);
 });
 
 if (argv.inspector) {
