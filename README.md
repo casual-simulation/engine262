@@ -14,6 +14,16 @@ This project is bound by a [Code of Conduct][COC].
 
 Join us in `#engine262:matrix.org`.
 
+
+## Changes from Mainline
+
+- Additional generators have been added so that it is possible to step through the evaluation by simply calling `.next()` on the returned iterator.
+  - It should be possible to step into most user code, including callbacks from standard library functions.
+  - Scenarios that are mostly not supported are stepping into Proxy getters/setters from within standard library functions.
+    For example, it is currently not possible to step into a Proxy getter when using a proxy as the `thisValue` for standard library functions.
+  - The process for enabling stepping for such features is pretty simple: you look for situations where the `unwind()` function is used and replace it with `yield*`.
+    The tricky part is that using `yield*` forces you to make the containing function to be a generator function, which means that callers of that function now also need to use `yield*` or `unwind()`.
+
 ## Why this exists
 
 While helping develop new features for JavaScript, I've found that one of the
