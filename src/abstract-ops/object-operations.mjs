@@ -30,7 +30,7 @@ import {
   isProxyExoticObject,
   F as toNumberValue,
 } from './all.mjs';
-import { wrap } from '../helpers.mjs';
+import { unwind, wrap } from '../helpers.mjs';
 
 
 // This file covers abstract operations defined in
@@ -76,11 +76,11 @@ export function* GetV(V, P) {
 }
 
 // 7.3.3 #sec-set-o-p-v-throw
-export function Set(O, P, V, Throw) {
+export function* Set(O, P, V, Throw) {
   Assert(Type(O) === 'Object');
   Assert(IsPropertyKey(P));
   Assert(Type(Throw) === 'Boolean');
-  const success = Q(O.Set(P, V, O));
+  const success = Q(yield* wrap(O.Set(P, V, O)));
   if (success === Value.false && Throw === Value.true) {
     return surroundingAgent.Throw('TypeError', 'CannotSetProperty', P, O);
   }
@@ -151,7 +151,7 @@ export function DeletePropertyOrThrow(O, P) {
 // 7.3.9 #sec-getmethod
 export function GetMethod(V, P) {
   Assert(IsPropertyKey(P));
-  const func = Q(GetV(V, P));
+  const func = Q(unwind(GetV(V, P)));
   if (func === Value.null || func === Value.undefined) {
     return Value.undefined;
   }
@@ -329,7 +329,7 @@ export function* Invoke(V, P, argumentsList) {
   if (!argumentsList) {
     argumentsList = [];
   }
-  const func = Q(GetV(V, P));
+  const func = Q(yield* GetV(V, P));
   return Q(yield* Call(func, V, argumentsList));
 }
 

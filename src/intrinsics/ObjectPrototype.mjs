@@ -20,6 +20,7 @@ import {
 } from '../abstract-ops/all.mjs';
 import { Q, X } from '../completion.mjs';
 import { assignProps } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-object.prototype.hasownproperty
 function ObjectProto_hasOwnProperty([V = Value.undefined], { thisValue }) {
@@ -278,6 +279,6 @@ export function bootstrapObjectPrototype(realmRec) {
     ['__proto__', [ObjectProto__proto__Get, ObjectProto__proto__Set]],
   ]);
 
-  realmRec.Intrinsics['%Object.prototype.toString%'] = X(unwrap(Get(proto, new Value('toString'))));
-  realmRec.Intrinsics['%Object.prototype.valueOf%'] = X(unwrap(Get(proto, new Value('valueOf'))));
+  realmRec.Intrinsics['%Object.prototype.toString%'] = X(unwind(Get(proto, new Value('toString'))));
+  realmRec.Intrinsics['%Object.prototype.valueOf%'] = X(unwind(Get(proto, new Value('valueOf'))));
 }

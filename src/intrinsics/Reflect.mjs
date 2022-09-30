@@ -172,7 +172,7 @@ function Reflect_set([target = Value.undefined, propertyKey = Value.undefined, V
     receiver = target;
   }
   // 4. Return ? target.[[Set]](key, V, receiver).
-  return Q(target.Set(key, V, receiver));
+  return Q(unwind(wrap(target.Set(key, V, receiver))));
 }
 
 // #sec-reflect.setprototypeof

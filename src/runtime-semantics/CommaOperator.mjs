@@ -10,7 +10,7 @@ export function* Evaluate_CommaOperator({ ExpressionList }) {
   let result;
   for (const Expression of ExpressionList) {
     const lref = yield* Evaluate(Expression);
-    result = Q(GetValue(lref));
+    result = Q(yield* GetValue(lref));
   }
   return result;
 }

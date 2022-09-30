@@ -21,7 +21,7 @@ import {
   isECMAScriptFunctionObject,
 } from './abstract-ops/all.mjs';
 import { NormalCompletion, Q, X } from './completion.mjs';
-import { ValueMap } from './helpers.mjs';
+import { ValueMap, unwind } from './helpers.mjs';
 
 // #sec-environment-records
 export class EnvironmentRecord {
@@ -295,11 +295,11 @@ export class ObjectEnvironmentRecord extends EnvironmentRecord {
       return surroundingAgent.Throw('ReferenceError', 'NotDefined', N);
     }
     // 5. Return ? Set(bindings, N, V, S).
-    return Q(Set(bindings, N, V, S));
+    return Q(unwind(Set(bindings, N, V, S)));
   }
 
   // #sec-object-environment-records-getbindingvalue-n-s
-  *GetBindingValue(N, S) {
+  GetBindingValue(N, S) {
     // 1. Let envRec be the object Environment Record for which the method was invoked.
     const envRec = this;
     // 2. Let bindings be the binding object for envRec.
@@ -316,7 +316,7 @@ export class ObjectEnvironmentRecord extends EnvironmentRecord {
       }
     }
     // 5. Return ? Get(bindings, N).
-    return Q(yield* Get(bindings, N));
+    return Q(unwind(Get(bindings, N)));
   }
 
   // #sec-object-environment-records-deletebinding-n
@@ -774,7 +774,7 @@ export class GlobalEnvironmentRecord extends EnvironmentRecord {
     Q(DefinePropertyOrThrow(globalObject, N, desc));
     // 8. Record that the binding for N in ObjRec has been initialized.
     // 9. Perform ? Set(globalObject, N, V, false).
-    Q(Set(globalObject, N, V, Value.false));
+    Q(unwind(Set(globalObject, N, V, Value.false)));
     // 10. Let varDeclaredNames be envRec.[[VarNames]].
     const varDeclaredNames = envRec.VarNames;
     // 11. If varDeclaredNames does not contain N, then

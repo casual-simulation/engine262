@@ -13,7 +13,7 @@ import { AddEntriesFromIterable } from './Map.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-weakmap-constructor
-function WeakMapConstructor([iterable = Value.undefined], { NewTarget }) {
+function* WeakMapConstructor([iterable = Value.undefined], { NewTarget }) {
   // 1. If NewTarget is undefined, throw a TypeError exception.
   if (NewTarget === Value.undefined) {
     return surroundingAgent.Throw('TypeError', 'ConstructorNonCallable', this);
@@ -27,7 +27,7 @@ function WeakMapConstructor([iterable = Value.undefined], { NewTarget }) {
     return map;
   }
   // 5. Let adder be ? Get(map, "set").
-  const adder = Q(Get(map, new Value('set')));
+  const adder = Q(yield* Get(map, new Value('set')));
   // 6. Return ? AddEntriesFromIterable(map, iterable, adder).
   return Q(AddEntriesFromIterable(map, iterable, adder));
 }

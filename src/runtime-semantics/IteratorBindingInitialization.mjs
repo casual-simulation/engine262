@@ -107,7 +107,7 @@ function* IteratorBindingInitialization_SingleNameBinding({ BindingIdentifier, I
       v = yield* NamedEvaluation(Initializer, bindingId);
     } else {
       const defaultValue = yield* Evaluate(Initializer);
-      v = Q(GetValue(defaultValue));
+      v = Q(yield* GetValue(defaultValue));
     }
   }
   // 6. If environment is undefined, return ? PutValue(lhs, v).
@@ -248,7 +248,7 @@ function* IteratorBindingInitialization_BindingPattern({ BindingPattern, Initial
     // a. Let defaultValue be the result of evaluating Initializer.
     const defaultValue = yield* Evaluate(Initializer);
     // b. Set v to ? GetValue(defaultValue).
-    v = Q(GetValue(defaultValue));
+    v = Q(yield* GetValue(defaultValue));
   }
   // 4. Return the result of performing BindingInitialization of BindingPattern with v and environment as the arguments.
   return yield* BindingInitialization(BindingPattern, v, environment);

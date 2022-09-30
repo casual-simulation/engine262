@@ -189,7 +189,9 @@ Please report bugs to ${packageJson.bugs.url}
     prompt: '> ',
     eval: (cmd, context, filename, callback) => {
       try {
-        const result = realm.evaluateScript(cmd, { specifier: '(engine262)' });
+        const result = realm.scope(() => {
+          return realm.evaluateScript(cmd, { specifier: '(engine262)' });
+        });
         callback(null, result);
       } catch (e) {
         callback(e, null);

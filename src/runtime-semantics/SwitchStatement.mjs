@@ -24,7 +24,7 @@ function* CaseClauseIsSelected(C, input) {
   // 2. Let exprRef be the result of evaluating the Expression of C.
   const exprRef = yield* Evaluate(C.Expression);
   // 3. Let clauseSelector be ? GetValue(exprRef).
-  const clauseSelector = Q(GetValue(exprRef));
+  const clauseSelector = Q(yield* GetValue(exprRef));
   // 4. Return the result of performing Strict Equality Comparison input === clauseSelector.
   return StrictEqualityComparison(input, clauseSelector);
 }
@@ -184,7 +184,7 @@ export function* Evaluate_SwitchStatement({ Expression, CaseBlock }) {
   // 1. Let exprRef be the result of evaluating Expression.
   const exprRef = yield* Evaluate(Expression);
   // 2. Let switchValue be ? GetValue(exprRef).
-  const switchValue = Q(GetValue(exprRef));
+  const switchValue = Q(yield* GetValue(exprRef));
   // 3. Let oldEnv be the running execution context's LexicalEnvironment.
   const oldEnv = surroundingAgent.runningExecutionContext.LexicalEnvironment;
   // 4. Let blockEnv be NewDeclarativeEnvironment(oldEnv).

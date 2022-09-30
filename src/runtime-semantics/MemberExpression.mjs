@@ -15,7 +15,7 @@ function* Evaluate_MemberExpression_Expression({ strict, MemberExpression, Expre
   // 1. Let baseReference be the result of evaluating |MemberExpression|.
   const baseReference = yield* Evaluate(MemberExpression);
   // 2. Let baseValue be ? GetValue(baseReference).
-  const baseValue = Q(GetValue(baseReference));
+  const baseValue = Q(yield* GetValue(baseReference));
   // 3. If the code matched by this |MemberExpression| is strict mode code, let strict be true; else let strict be false.
   // 4. Return ? EvaluatePropertyAccessWithExpressionKey(baseValue, |Expression|, strict).
   return Q(yield* EvaluatePropertyAccessWithExpressionKey(baseValue, Expression, strict));
@@ -27,8 +27,8 @@ function* Evaluate_MemberExpression_Expression({ strict, MemberExpression, Expre
 function* Evaluate_MemberExpression_IdentifierName({ strict, MemberExpression, IdentifierName }) {
   // 1. Let baseReference be the result of evaluating |MemberExpression|.
   const baseReference = yield* Evaluate(MemberExpression);
-  // 2. Let baseValue be ? GetValue(baseReference).
-  const baseValue = Q(GetValue(baseReference));
+  // 2. Let baseValue be ? yield* baseReference).
+  const baseValue = Q(yield* GetValue(baseReference));
   // 3. If the code matched by this |MemberExpression| is strict mode code, let strict be true; else let strict be false.
   // 4. Return ? EvaluatePropertyAccessWithIdentifierKey(baseValue, |IdentifierName|, strict).
   return Q(EvaluatePropertyAccessWithIdentifierKey(baseValue, IdentifierName, strict));
@@ -41,7 +41,7 @@ function* Evaluate_MemberExpression_PrivateIdentifier({ MemberExpression, Privat
   // 1. Let baseReference be the result of evaluating MemberExpression.
   const baseReference = yield* Evaluate(MemberExpression);
   // 2. Let baseValue be ? GetValue(baseReference).
-  const baseValue = Q(GetValue(baseReference));
+  const baseValue = Q(yield* GetValue(baseReference));
   // 3. Let bv be ? RequireObjectCoercible(baseValue).
   const bv = Q(RequireObjectCoercible(baseValue));
   // 4. Let fieldNameString be the StringValue of PrivateIdentifier.

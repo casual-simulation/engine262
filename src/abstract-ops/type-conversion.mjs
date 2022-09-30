@@ -9,7 +9,7 @@ import {
   surroundingAgent,
 } from '../engine.mjs';
 import { Q, X } from '../completion.mjs';
-import { OutOfRange } from '../helpers.mjs';
+import { OutOfRange, unwind } from '../helpers.mjs';
 import { MV_StringNumericLiteral } from '../runtime-semantics/all.mjs';
 import {
   Assert,
@@ -25,7 +25,7 @@ import {
 } from './all.mjs';
 
 // 7.1.1 #sec-toprimitive
-export function* ToPrimitive(input, preferredType) {
+export function ToPrimitive(input, preferredType) {
   // 1. Assert: input is an ECMAScript language value.
   Assert(input instanceof Value);
   // 2. If Type(input) is Object, then
@@ -47,7 +47,7 @@ export function* ToPrimitive(input, preferredType) {
         hint = new Value('number');
       }
       // iv. Let result be ? Call(exoticToPrim, input, « hint »).
-      const result = Q(yield* (Call(exoticToPrim, input, [hint])));
+      const result = Q(unwind(Call(exoticToPrim, input, [hint])));
       // v. If Type(result) is not Object, return result.
       if (Type(result) !== 'Object') {
         return result;
@@ -67,7 +67,7 @@ export function* ToPrimitive(input, preferredType) {
 }
 
 // 7.1.1.1 #sec-ordinarytoprimitive
-export function* OrdinaryToPrimitive(O, hint) {
+export function OrdinaryToPrimitive(O, hint) {
   // 1. Assert: Type(O) is Object.
   Assert(Type(O) === 'Object');
   // 2. Assert: hint is either string or number.
@@ -84,11 +84,11 @@ export function* OrdinaryToPrimitive(O, hint) {
   // 5. For each element name of methodNames, do
   for (const name of methodNames) {
     // a. Let method be ? Get(O, name).
-    const method = Q(yield* Get(O, name));
+    const method = Q(unwind(Get(O, name)));
     // b. If IsCallable(method) is true, then
     if (IsCallable(method) === Value.true) {
       // i. Let result be ? Call(method, O).
-      const result = Q(yield* (Call(method, O)));
+      const result = Q(unwind(Call(method, O)));
       // ii. If Type(result) is not Object, return result.
       if (Type(result) !== 'Object') {
         return result;

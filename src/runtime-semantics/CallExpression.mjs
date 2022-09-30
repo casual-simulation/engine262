@@ -25,7 +25,7 @@ export function* Evaluate_CallExpression(CallExpression) {
   // 4. Let ref be the result of evaluating memberExpr.
   const ref = yield* Evaluate(memberExpr);
   // 5. Let func be ? GetValue(ref).
-  const func = Q(GetValue(ref));
+  const func = Q(yield* GetValue(ref));
   // 6. If Type(ref) is Reference, IsPropertyReference(ref) is false, and GetReferencedName(ref) is "eval", then
   if (ref instanceof ReferenceRecord
       && IsPropertyReference(ref) === Value.false

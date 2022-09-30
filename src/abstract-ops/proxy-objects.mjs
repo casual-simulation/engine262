@@ -23,7 +23,7 @@ import {
   IsDataDescriptor,
   IsAccessorDescriptor,
 } from './all.mjs';
-import { unwind } from '../helpers.mjs';
+import { unwind, wrap } from '../helpers.mjs';
 
 // #sec-proxy-object-internal-methods-and-internal-slots-getprototypeof
 function* ProxyGetPrototypeOf() {
@@ -363,7 +363,7 @@ function* ProxySet(P, V, Receiver) {
   const target = O.ProxyTarget;
   const trap = Q(GetMethod(handler, new Value('set')));
   if (trap === Value.undefined) {
-    return Q(target.Set(P, V, Receiver));
+    return Q(unwind(wrap(target.Set(P, V, Receiver))));
   }
   const booleanTrapResult = ToBoolean(Q(yield* (Call(trap, handler, [target, P, V, Receiver]))));
   if (booleanTrapResult === Value.false) {

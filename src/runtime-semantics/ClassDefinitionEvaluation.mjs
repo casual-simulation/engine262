@@ -110,7 +110,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
     // c. Set the running execution context's LexicalEnvironment to env.
     surroundingAgent.runningExecutionContext.LexicalEnvironment = env;
     // d. Let superclass be ? GetValue(superclassRef).
-    const superclass = Q(GetValue(superclassRef));
+    const superclass = Q(yield* GetValue(superclassRef));
     // e. If superclass is null, then
     if (superclass === Value.null) {
       // i. Let protoParent be null.
@@ -122,7 +122,7 @@ export function* ClassDefinitionEvaluation(ClassTail, classBinding, className) {
       return surroundingAgent.Throw('TypeError', 'NotAConstructor', superclass);
     } else { // g. Else,
       // i. Let protoParent be ? Get(superclass, "prototype").
-      protoParent = Q(Get(superclass, new Value('prototype')));
+      protoParent = Q(yield* Get(superclass, new Value('prototype')));
       // ii. If Type(protoParent) is neither Object nor Null, throw a TypeError exception.
       if (Type(protoParent) !== 'Object' && Type(protoParent) !== 'Null') {
         return surroundingAgent.Throw('TypeError', 'ObjectPrototypeType');

@@ -16,7 +16,7 @@ import {
   ExportEntries,
   ImportedLocalNames,
 } from './static-semantics/all.mjs';
-import { ValueSet, kInternal, unwrap } from './helpers.mjs';
+import { ValueSet, kInternal, unwind } from './helpers.mjs';
 
 export { Parser, RegExpParser };
 
@@ -25,9 +25,9 @@ function handleError(e) {
     const v = surroundingAgent.Throw('SyntaxError', 'Raw', e.message).Value;
     if (e.decoration) {
       const stackString = new Value('stack');
-      const stack = X(unwrap(Get(v, stackString))).stringValue();
+      const stack = X(unwind(Get(v, stackString))).stringValue();
       const newStackString = `${e.decoration}\n${stack}`;
-      X(Set(v, stackString, new Value(newStackString), Value.true));
+      X(unwind(Set(v, stackString, new Value(newStackString), Value.true)));
     }
     return v;
   } else {

@@ -74,10 +74,10 @@ function String_fromCodePoint(codePoints) {
 }
 
 // 21.1.2.4 #sec-string.raw
-function String_raw([template = Value.undefined, ...substitutions]) {
+function* String_raw([template = Value.undefined, ...substitutions]) {
   const numberOfSubstitutions = substitutions.length;
   const cooked = Q(ToObject(template));
-  const raw = Q(ToObject(Q(Get(cooked, new Value('raw')))));
+  const raw = Q(ToObject(Q(yield* Get(cooked, new Value('raw')))));
   const literalSegments = Q(LengthOfArrayLike(raw));
   if (literalSegments <= 0) {
     return new Value('');
@@ -87,7 +87,7 @@ function String_raw([template = Value.undefined, ...substitutions]) {
   let nextIndex = 0;
   while (true) {
     const nextKey = X(ToString(F(nextIndex)));
-    const nextSeg = Q(ToString(Q(Get(raw, nextKey))));
+    const nextSeg = Q(ToString(Q(yield* Get(raw, nextKey))));
     stringElements.push(nextSeg.stringValue());
     if (nextIndex + 1 === literalSegments) {
       return new Value(stringElements.join(''));

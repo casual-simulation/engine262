@@ -105,7 +105,7 @@ function* ArgumentListEvaluation_TemplateLiteral(TemplateLiteral) {
       const restSub = [];
       for (const Expression of TemplateLiteral.ExpressionList) {
         const subRef = yield* Evaluate(Expression);
-        const subValue = Q(GetValue(subRef));
+        const subValue = Q(yield* GetValue(subRef));
         restSub.push(subValue);
       }
       return [siteObj, ...restSub];
@@ -136,7 +136,7 @@ function* ArgumentListEvaluation_Arguments(Arguments) {
       // 2. Let spreadRef be the result of evaluating AssignmentExpression.
       const spreadRef = yield* Evaluate(AssignmentExpression);
       // 3. Let spreadObj be ? GetValue(spreadRef).
-      const spreadObj = Q(GetValue(spreadRef));
+      const spreadObj = Q(yield* GetValue(spreadRef));
       // 4. Let iteratorRecord be ? GetIterator(spreadObj).
       const iteratorRecord = Q(GetIterator(spreadObj));
       // 5. Repeat,
@@ -157,7 +157,7 @@ function* ArgumentListEvaluation_Arguments(Arguments) {
       // 2. Let ref be the result of evaluating AssignmentExpression.
       const ref = yield* Evaluate(AssignmentExpression);
       // 3. Let arg be ? GetValue(ref).
-      const arg = Q(GetValue(ref));
+      const arg = Q(yield* GetValue(ref));
       // 4. Append arg to the end of precedingArgs.
       precedingArgs.push(arg);
       // 5. Return precedingArgs.

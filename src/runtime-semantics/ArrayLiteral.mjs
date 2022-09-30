@@ -12,6 +12,7 @@ import {
 } from '../abstract-ops/all.mjs';
 import { Evaluate } from '../evaluator.mjs';
 import { ReturnIfAbrupt, Q, X } from '../completion.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-runtime-semantics-arrayaccumulation
 //  Elision :
@@ -30,7 +31,7 @@ function* ArrayAccumulation(ElementList, array, nextIndex) {
     switch (element.type) {
       case 'Elision':
         postIndex += 1;
-        Q(Set(array, new Value('length'), F(postIndex), Value.true));
+        Q(unwind(Set(array, new Value('length'), F(postIndex), Value.true)));
         break;
       case 'SpreadElement':
         postIndex = Q(yield* ArrayAccumulation_SpreadElement(element, array, postIndex));
@@ -48,9 +49,9 @@ function* ArrayAccumulation_SpreadElement({ AssignmentExpression }, array, nextI
   // 1. Let spreadRef be the result of evaluating AssignmentExpression.
   const spreadRef = yield* Evaluate(AssignmentExpression);
   // 2. Let spreadObj be ? GetValue(spreadRef).
-  const spreadObj = Q(GetValue(spreadRef));
+  const spreadObj = Q(yield* GetValue(spreadRef));
   // 3. Let iteratorRecord be ? GetIterator(spreadObj).
-  const iteratorRecord = Q(GetIterator(spreadObj));
+  const iteratorRecord = Q(yield* GetIterator(spreadObj));
   // 4. Repeat,
   while (true) {
     // a. Let next be ? IteratorStep(iteratorRecord).
@@ -60,7 +61,7 @@ function* ArrayAccumulation_SpreadElement({ AssignmentExpression }, array, nextI
       return nextIndex;
     }
     // c. Let nextValue be ? IteratorValue(next).
-    const nextValue = Q(IteratorValue(next));
+    const nextValue = Q(yield* IteratorValue(next));
     // d. Perform ! CreateDataPropertyOrThrow(array, ! ToString(𝔽(nextIndex)), nextValue).
     X(CreateDataPropertyOrThrow(array, X(ToString(F(nextIndex))), nextValue));
     // e. Set nextIndex to nextIndex + 1.
@@ -73,7 +74,7 @@ function* ArrayAccumulation_AssignmentExpression(AssignmentExpression, array, ne
   // 2. Let initResult be the result of evaluating AssignmentExpression.
   const initResult = yield* Evaluate(AssignmentExpression);
   // 3. Let initValue be ? GetValue(initResult).
-  const initValue = Q(GetValue(initResult));
+  const initValue = Q(yield* GetValue(initResult));
   // 4. Let created be ! CreateDataPropertyOrThrow(array, ! ToString(𝔽(nextIndex)), initValue).
   const _created = X(CreateDataPropertyOrThrow(array, X(ToString(F(nextIndex))), initValue));
   // 5. Return nextIndex + 1.

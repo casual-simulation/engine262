@@ -19,6 +19,7 @@ import { Q, X } from '../completion.mjs';
 import { surroundingAgent } from '../engine.mjs';
 import { Type, Value } from '../value.mjs';
 import { assignProps } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // Algorithms and methods shared between %Array.prototype% and
 // %TypedArray.prototype%.
@@ -99,7 +100,7 @@ export function* ArrayProto_sortBody(obj, len, SortCompare, internalMethodsRestr
 
   let j = 0;
   while (j < itemCount) {
-    Q(Set(obj, X(ToString(F(j))), items[j], Value.true));
+    Q(unwind(Set(obj, X(ToString(F(j))), items[j], Value.true)));
     j += 1;
   }
   while (j < len) {
@@ -516,14 +517,14 @@ export function bootstrapArrayPrototypeShared(realmRec, proto, priorToEvaluating
         upperValue = Q(yield* Get(O, upperP));
       }
       if (lowerExists === Value.true && upperExists === Value.true) {
-        Q(Set(O, lowerP, upperValue, Value.true));
-        Q(Set(O, upperP, lowerValue, Value.true));
+        Q(unwind(Set(O, lowerP, upperValue, Value.true)));
+        Q(unwind(Set(O, upperP, lowerValue, Value.true)));
       } else if (lowerExists === Value.false && upperExists === Value.true) {
-        Q(Set(O, lowerP, upperValue, Value.true));
+        Q(unwind(Set(O, lowerP, upperValue, Value.true)));
         Q(DeletePropertyOrThrow(O, upperP));
       } else if (lowerExists === Value.true && upperExists === Value.false) {
         Q(DeletePropertyOrThrow(O, lowerP));
-        Q(Set(O, upperP, lowerValue, Value.true));
+        Q(unwind(Set(O, upperP, lowerValue, Value.true)));
       } else {
         // no further action is required
       }

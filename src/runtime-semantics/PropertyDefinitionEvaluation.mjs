@@ -57,7 +57,7 @@ function* PropertyDefinitionEvaluation_PropertyDefinition(PropertyDefinition, ob
     // 1. Let exprValue be the result of evaluating AssignmentExpression.
     const exprValue = yield* Evaluate(AssignmentExpression);
     // 2. Let fromValue be ? GetValue(exprValue).
-    const fromValue = Q(GetValue(exprValue));
+    const fromValue = Q(yield* GetValue(exprValue));
     // 3. Let excludedNames be a new empty List.
     const excludedNames = [];
     // 4. Return ? CopyDataProperties(object, fromValue, excludedNames).
@@ -87,7 +87,7 @@ function* PropertyDefinitionEvaluation_PropertyDefinition(PropertyDefinition, ob
     // a. Let exprValueRef be the result of evaluating AssignmentExpression.
     const exprValueRef = yield* Evaluate(AssignmentExpression);
     // b. Let propValue be ? GetValue(exprValueRef).
-    propValue = Q(GetValue(exprValueRef));
+    propValue = Q(yield* GetValue(exprValueRef));
   }
   // 7. If isProtoSetter is true, then
   if (isProtoSetter) {
@@ -113,7 +113,7 @@ function* PropertyDefinitionEvaluation_PropertyDefinition_IdentifierReference(Id
   // 2. Let exprValue be the result of evaluating IdentifierReference.
   const exprValue = yield* Evaluate(IdentifierReference);
   // 3. Let propValue be ? GetValue(exprValue).
-  const propValue = Q(GetValue(exprValue));
+  const propValue = Q(yield* GetValue(exprValue));
   // 4. Assert: enumerable is true.
   Assert(enumerable === Value.true);
   // 5. Assert: object is an ordinary, extensible object with no non-configurable properties.

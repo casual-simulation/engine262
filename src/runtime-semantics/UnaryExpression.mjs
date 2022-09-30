@@ -69,7 +69,7 @@ function* Evaluate_UnaryExpression_Void({ UnaryExpression }) {
   // 1. Let expr be the result of evaluating UnaryExpression.
   const expr = yield* Evaluate(UnaryExpression);
   // 2. Perform ? GetValue(expr).
-  Q(GetValue(expr));
+  Q(yield* GetValue(expr));
   // 3. Return undefined.
   return Value.undefined;
 }
@@ -121,7 +121,7 @@ function* Evaluate_UnaryExpression_Plus({ UnaryExpression }) {
   // 1. Let expr be the result of evaluating UnaryExpression.
   const expr = yield* Evaluate(UnaryExpression);
   // 2. Return ? ToNumber(? GetValue(expr)).
-  return Q(ToNumber(Q(GetValue(expr))));
+  return Q(ToNumber(Q(yield* GetValue(expr))));
 }
 
 // #sec-unary-minus-operator-runtime-semantics-evaluation
@@ -130,7 +130,7 @@ function* Evaluate_UnaryExpression_Minus({ UnaryExpression }) {
   // 1. Let expr be the result of evaluating UnaryExpression.
   const expr = yield* Evaluate(UnaryExpression);
   // 2. Let oldValue be ? ToNumeric(? GetValue(expr)).
-  const oldValue = Q(ToNumeric(Q(GetValue(expr))));
+  const oldValue = Q(ToNumeric(Q(yield* GetValue(expr))));
   // 3. Let T be Type(oldValue).
   const T = TypeForMethod(oldValue);
   // 4. Return ! T::unaryMinus(oldValue).
@@ -143,7 +143,7 @@ function* Evaluate_UnaryExpression_Tilde({ UnaryExpression }) {
   // 1. Let expr be the result of evaluating UnaryExpression.
   const expr = yield* Evaluate(UnaryExpression);
   // 2. Let oldValue be ? ToNumeric(? GetValue(expr)).
-  const oldValue = Q(ToNumeric(Q(GetValue(expr))));
+  const oldValue = Q(ToNumeric(Q(yield* GetValue(expr))));
   // 3. Let T be Type(oldValue).
   const T = TypeForMethod(oldValue);
   // 4. Return ! T::bitwiseNOT(oldValue).
@@ -156,7 +156,7 @@ function* Evaluate_UnaryExpression_Bang({ UnaryExpression }) {
   // 1. Let expr be the result of evaluating UnaryExpression.
   const expr = yield* Evaluate(UnaryExpression);
   // 2. Let oldValue be ! ToBoolean(? GetValue(expr)).
-  const oldValue = ToBoolean(Q(GetValue(expr)));
+  const oldValue = ToBoolean(Q(yield* GetValue(expr)));
   // 3. If oldValue is true, return false.
   if (oldValue === Value.true) {
     return Value.false;

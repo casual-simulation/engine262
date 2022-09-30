@@ -8,11 +8,11 @@ export function* EvaluateStringOrNumericBinaryExpression(leftOperand, opText, ri
   // 1. Let lref be the result of evaluating leftOperand.
   const lref = yield* Evaluate(leftOperand);
   // 2. Let lval be ? GetValue(lref).
-  const lval = Q(GetValue(lref));
+  const lval = Q(yield* GetValue(lref));
   // 3. Let rref be the result of evaluating rightOperand.
   const rref = yield* Evaluate(rightOperand);
   // 4. Let rval be ? GetValue(rref).
-  const rval = Q(GetValue(rref));
+  const rval = Q(yield* GetValue(rref));
   // 5. Return ? ApplyStringOrNumericBinaryOperator(lval, opText, rval).
   return Q(ApplyStringOrNumericBinaryOperator(lval, opText, rval));
 }

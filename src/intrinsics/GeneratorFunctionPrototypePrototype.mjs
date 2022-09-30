@@ -7,6 +7,7 @@ import {
   ThrowCompletion,
   Q,
 } from '../completion.mjs';
+import { unwind, wrap } from '../helpers.mjs';
 import { Value } from '../value.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
@@ -48,5 +49,5 @@ export function bootstrapGeneratorFunctionPrototypePrototype(realmRec) {
   realmRec.Intrinsics['%GeneratorFunction.prototype.prototype%'] = generatorPrototype;
 
   // Used by `CreateListIteratorRecord`:
-  realmRec.Intrinsics['%GeneratorFunction.prototype.prototype.next%'] = unwrap(wrap(generatorPrototype.Get(new Value('next'))));
+  realmRec.Intrinsics['%GeneratorFunction.prototype.prototype.next%'] = unwind(wrap(generatorPrototype.Get(new Value('next'))));
 }

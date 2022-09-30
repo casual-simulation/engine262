@@ -159,7 +159,7 @@ export function IntegerIndexedGet(P, Receiver) {
 }
 
 // 9.4.5.5 #sec-integer-indexed-exotic-objects-set-p-v-receiver
-export function IntegerIndexedSet(P, V, Receiver) {
+export function* IntegerIndexedSet(P, V, Receiver) {
   const O = this;
   // 1. Assert: IsPropertyKey(P) is true.
   Assert(IsPropertyKey(P));
@@ -176,7 +176,7 @@ export function IntegerIndexedSet(P, V, Receiver) {
     }
   }
   // 3. Return ? OrdinarySet(O, P, V, Receiver).
-  return Q(OrdinarySet(O, P, V, Receiver));
+  return Q(yield* OrdinarySet(O, P, V, Receiver));
 }
 
 // #sec-integer-indexed-exotic-objects-delete-p

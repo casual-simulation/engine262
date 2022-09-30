@@ -42,7 +42,7 @@ export function* Evaluate_ExpressionBody({ AssignmentExpression }) {
   // 1. Let exprRef be the result of evaluating AssignmentExpression.
   const exprRef = yield* Evaluate(AssignmentExpression);
   // 2. Let exprValue be ? GetValue(exprRef).
-  const exprValue = Q(GetValue(exprRef));
+  const exprValue = Q(yield* GetValue(exprRef));
   // 3. Return Completion { [[Type]]: return, [[Value]]: exprValue, [[Target]]: empty }.
   return new Completion({ Type: 'return', Value: exprValue, Target: undefined });
 }
@@ -145,7 +145,7 @@ export function* EvaluateBody_AssignmentExpression(AssignmentExpression, functio
     // a. Let rhs be the result of evaluating AssignmentExpression.
     const rhs = yield* Evaluate(AssignmentExpression);
     // b. Let value be ? GetValue(rhs).
-    value = Q(GetValue(rhs));
+    value = Q(yield* GetValue(rhs));
   }
   // 5. Return Completion { [[Type]]: return, [[Value]]: value, [[Target]]: empty }.
   return new Completion({ Type: 'return', Value: value, Target: undefined });

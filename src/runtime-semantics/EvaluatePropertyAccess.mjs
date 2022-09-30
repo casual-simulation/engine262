@@ -14,7 +14,7 @@ export function* EvaluatePropertyAccessWithExpressionKey(baseValue, expression, 
   // 1. Let propertyNameReference be the result of evaluating expression.
   const propertyNameReference = yield* Evaluate(expression);
   // 2. Let propertyNameValue be ? GetValue(propertyNameReference).
-  const propertyNameValue = Q(GetValue(propertyNameReference));
+  const propertyNameValue = Q(yield* GetValue(propertyNameReference));
   // 3. Let bv be ? RequireObjectCoercible(baseValue).
   const bv = Q(RequireObjectCoercible(baseValue));
   // 4. Let propertyKey be ? ToPropertyKey(propertyNameValue).

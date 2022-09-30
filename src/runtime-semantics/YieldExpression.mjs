@@ -36,7 +36,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
     // 2. Let exprRef be the result of evaluating AssignmentExpression.
     const exprRef = yield* Evaluate(AssignmentExpression);
     // 3. Let value be ? GetValue(exprRef).
-    const value = Q(GetValue(exprRef));
+    const value = Q(yield* GetValue(exprRef));
     // 4. Let iteratorRecord be ? GetIterator(value, generatorKind).
     const iteratorRecord = Q(GetIterator(value, generatorKind));
     // 5. Let iterator be iteratorRecord.[[Iterator]].
@@ -161,7 +161,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
     // 1. Let exprRef be the result of evaluating AssignmentExpression.
     const exprRef = yield* Evaluate(AssignmentExpression);
     // 2. Let value be ? GetValue(exprRef).
-    const value = Q(GetValue(exprRef));
+    const value = Q(yield* GetValue(exprRef));
     // 3. Return ? Yield(value).
     return Q(yield* Yield(value));
   }

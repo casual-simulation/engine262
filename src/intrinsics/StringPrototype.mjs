@@ -255,7 +255,7 @@ function* StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
     // b. If isRegExp is true, then
     if (isRegExp === Value.true) {
       // i. Let flags be ? Get(regexp, "flags").
-      const flags = Q(Get(regexp, new Value('flags')));
+      const flags = Q(yield* Get(regexp, new Value('flags')));
       // ii. Perform ? RequireObjectCoercible(flags).
       Q(RequireObjectCoercible(flags));
       // iii. If ? ToString(flags) does not contain "g", throw a TypeError exception.
@@ -264,7 +264,7 @@ function* StringProto_matchAll([regexp = Value.undefined], { thisValue }) {
       }
     }
     // c. Let matcher be ? GetMethod(regexp, @@matchAll).
-    const matcher = Q(GetMethod(regexp, wellKnownSymbols.matchAll));
+    const matcher = Q(yield* GetMethod(regexp, wellKnownSymbols.matchAll));
     // d. If matcher is not undefined, then
     if (matcher !== Value.undefined) {
       // i. Return ? Call(matcher, regexp, « O »).
@@ -373,7 +373,7 @@ function* StringProto_replaceAll([searchValue = Value.undefined, replaceValue = 
     // b. If isRegExp is true, then
     if (isRegExp === Value.true) {
       // i. Let flags be ? Get(searchValue, "flags").
-      const flags = Q(Get(searchValue, new Value('flags')));
+      const flags = Q(yield* Get(searchValue, new Value('flags')));
       // ii. Perform ? RequireObjectCoercible(flags).
       Q(RequireObjectCoercible(flags));
       // iii. If ? ToString(flags) does not contain "g", throw a TypeError exception.

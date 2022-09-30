@@ -32,6 +32,7 @@ import {
 import { Q, X } from '../completion.mjs';
 import { assignProps } from './bootstrap.mjs';
 import { ArrayProto_sortBody, bootstrapArrayPrototypeShared } from './ArrayPrototypeShared.mjs';
+import { unwind } from '../helpers.mjs';
 
 // 22.1.3.1 #sec-array.prototype.concat
 function* ArrayProto_concat(args, { thisValue }) {
@@ -68,7 +69,7 @@ function* ArrayProto_concat(args, { thisValue }) {
       n += 1;
     }
   }
-  Q(Set(A, new Value('length'), F(n), Value.true));
+  Q(yield* Set(A, new Value('length'), F(n), Value.true));
   return A;
 }
 
@@ -159,7 +160,7 @@ function ArrayProto_fill([value = Value.undefined, start = Value.undefined, end 
   }
   while (k < final) {
     const Pk = X(ToString(F(k)));
-    Q(Set(O, Pk, value, Value.true));
+    Q(unwind(Set(O, Pk, value, Value.true)));
     k += 1;
   }
   return O;
@@ -288,14 +289,14 @@ function* ArrayProto_pop(args, { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (len === 0) {
-    Q(Set(O, new Value('length'), F(+0), Value.true));
+    Q(unwind(Set(O, new Value('length'), F(+0), Value.true)));
     return Value.undefined;
   } else {
     const newLen = len - 1;
     const index = Q(ToString(F(newLen)));
     const element = Q(yield* Get(O, index));
     Q(DeletePropertyOrThrow(O, index));
-    Q(Set(O, new Value('length'), F(newLen), Value.true));
+    Q(unwind(Set(O, new Value('length'), F(newLen), Value.true)));
     return element;
   }
 }
@@ -310,10 +311,10 @@ function ArrayProto_push(items, { thisValue }) {
   }
   while (items.length > 0) {
     const E = items.shift();
-    Q(Set(O, X(ToString(F(len))), E, Value.true));
+    Q(unwind(Set(O, X(ToString(F(len))), E, Value.true)));
     len += 1;
   }
-  Q(Set(O, new Value('length'), F(len), Value.true));
+  Q(unwind(Set(O, new Value('length'), F(len), Value.true)));
   return F(len);
 }
 
@@ -322,7 +323,7 @@ function* ArrayProto_shift(args, { thisValue }) {
   const O = Q(ToObject(thisValue));
   const len = Q(LengthOfArrayLike(O));
   if (len === 0) {
-    Q(Set(O, new Value('length'), F(+0), Value.true));
+    Q(unwind(Set(O, new Value('length'), F(+0), Value.true)));
     return Value.undefined;
   }
   const first = Q(yield* Get(O, new Value('0')));
@@ -333,14 +334,14 @@ function* ArrayProto_shift(args, { thisValue }) {
     const fromPresent = Q(HasProperty(O, from));
     if (fromPresent === Value.true) {
       const fromVal = Q(yield* Get(O, from));
-      Q(Set(O, to, fromVal, Value.true));
+      Q(unwind(Set(O, to, fromVal, Value.true)));
     } else {
       Q(DeletePropertyOrThrow(O, to));
     }
     k += 1;
   }
   Q(DeletePropertyOrThrow(O, X(ToString(F(len - 1)))));
-  Q(Set(O, new Value('length'), F(len - 1), Value.true));
+  Q(unwind(Set(O, new Value('length'), F(len - 1), Value.true)));
   return first;
 }
 
@@ -381,7 +382,7 @@ function* ArrayProto_slice([start = Value.undefined, end = Value.undefined], { t
     k += 1;
     n += 1;
   }
-  Q(Set(A, new Value('length'), F(n), Value.true));
+  Q(unwind(Set(A, new Value('length'), F(n), Value.true)));
   return A;
 }
 
@@ -435,7 +436,7 @@ function* ArrayProto_splice(args, { thisValue }) {
     }
     k += 1;
   }
-  Q(Set(A, new Value('length'), F(actualDeleteCount), Value.true));
+  Q(unwind(Set(A, new Value('length'), F(actualDeleteCount), Value.true)));
   const itemCount = items.length;
   if (itemCount < actualDeleteCount) {
     k = actualStart;
@@ -445,7 +446,7 @@ function* ArrayProto_splice(args, { thisValue }) {
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
         const fromValue = Q(yield* Get(O, from));
-        Q(Set(O, to, fromValue, Value.true));
+        Q(unwind(Set(O, to, fromValue, Value.true)));
       } else {
         Q(DeletePropertyOrThrow(O, to));
       }
@@ -464,7 +465,7 @@ function* ArrayProto_splice(args, { thisValue }) {
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
         const fromValue = Q(yield* Get(O, from));
-        Q(Set(O, to, fromValue, Value.true));
+        Q(unwind(Set(O, to, fromValue, Value.true)));
       } else {
         Q(DeletePropertyOrThrow(O, to));
       }
@@ -477,7 +478,7 @@ function* ArrayProto_splice(args, { thisValue }) {
     Q(Set(O, X(ToString(F(k))), E, Value.true));
     k += 1;
   }
-  Q(Set(O, new Value('length'), F(len - actualDeleteCount + itemCount), Value.true));
+  Q(unwind(Set(O, new Value('length'), F(len - actualDeleteCount + itemCount), Value.true)));
   return A;
 }
 
@@ -507,7 +508,7 @@ function ArrayProto_unshift(args, { thisValue }) {
       const fromPresent = Q(HasProperty(O, from));
       if (fromPresent === Value.true) {
         const fromValue = Q(Get(O, from));
-        Q(Set(O, to, fromValue, Value.true));
+        Q(unwind(Set(O, to, fromValue, Value.true)));
       } else {
         Q(DeletePropertyOrThrow(O, to));
       }
@@ -518,11 +519,11 @@ function ArrayProto_unshift(args, { thisValue }) {
     while (items.length !== 0) {
       const E = items.shift();
       const jStr = X(ToString(F(j)));
-      Q(Set(O, jStr, E, Value.true));
+      Q(unwind(Set(O, jStr, E, Value.true)));
       j += 1;
     }
   }
-  Q(Set(O, new Value('length'), F(len + argCount), Value.true));
+  Q(unwind(Set(O, new Value('length'), F(len + argCount), Value.true)));
   return F(len + argCount);
 }
 
@@ -614,7 +615,7 @@ export function bootstrapArrayPrototype(realmRec) {
   }
 
   // Used in `arguments` objects.
-  realmRec.Intrinsics['%Array.prototype.values%'] = X(unwrap(Get(proto, new Value('values'))));
+  realmRec.Intrinsics['%Array.prototype.values%'] = X(unwind(Get(proto, new Value('values'))));
 
   realmRec.Intrinsics['%Array.prototype%'] = proto;
 }

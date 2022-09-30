@@ -16,7 +16,7 @@ export function* Evaluate_ImportCall({ AssignmentExpression }) {
   // 2. Let argRef be the result of evaluating AssignmentExpression.
   const argRef = yield* Evaluate(AssignmentExpression);
   // 3. Let specifier be ? GetValue(argRef).
-  const specifier = Q(GetValue(argRef));
+  const specifier = Q(yield* GetValue(argRef));
   // 4. Let promiseCapability be ! NewPromiseCapability(%Promise%).
   const promiseCapability = X(NewPromiseCapability(surroundingAgent.intrinsic('%Promise%')));
   // 5. Let specifierString be ToString(specifier).

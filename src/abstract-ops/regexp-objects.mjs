@@ -17,6 +17,7 @@ import {
   ToString,
   F as toNumberValue,
 } from './all.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-regexpalloc
 export function RegExpAlloc(newTarget) {
@@ -78,7 +79,7 @@ export function RegExpInitialize(obj, pattern, flags) {
   const evaluatePattern = surroundingAgent.hostDefinedOptions.boost?.evaluatePattern || Evaluate_Pattern;
   obj.RegExpMatcher = evaluatePattern(parseResult, F.stringValue());
   // 15. Perform ? Set(obj, "lastIndex", +0𝔽, true).
-  Q(Set(obj, new Value('lastIndex'), toNumberValue(+0), Value.true));
+  Q(unwind(Set(obj, new Value('lastIndex'), toNumberValue(+0), Value.true)));
   // 16. Return obj.
   return obj;
 }

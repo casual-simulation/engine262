@@ -184,7 +184,7 @@ export function evaluateScript(sourceText, realm, hostDefined) {
     return ThrowCompletion(s[0]);
   }
 
-  return EnsureCompletion(ScriptEvaluation(s));
+  return EnsureCompletion(unwind(ScriptEvaluation(s)));
 }
 
 export class ManagedRealm extends Realm {

@@ -313,7 +313,7 @@ const codeUnitTable = new Map([
 function* SerializeJSONProperty(state, key, holder) {
   let value = Q(yield* Get(holder, key)); // eslint-disable-line no-shadow
   if (Type(value) === 'Object' || Type(value) === 'BigInt') {
-    const toJSON = Q(GetV(value, new Value('toJSON')));
+    const toJSON = Q(yield* GetV(value, new Value('toJSON')));
     if (IsCallable(toJSON) === Value.true) {
       value = Q(yield* (Call(toJSON, value, [key])));
     }

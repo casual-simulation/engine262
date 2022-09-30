@@ -56,7 +56,7 @@ export function* GetIterator(obj, hint, method) {
   if (Type(iterator) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', iterator);
   }
-  const nextMethod = Q(GetV(iterator, new Value('next')));
+  const nextMethod = Q(yield* GetV(iterator, new Value('next')));
   const iteratorRecord = {
     Iterator: iterator,
     NextMethod: nextMethod,

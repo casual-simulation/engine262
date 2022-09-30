@@ -52,7 +52,7 @@ export function* Evaluate_RelationalExpression_PrivateIdentifier({ PrivateIdenti
   // 2. Let rref be the result of evaluating ShiftExpression.
   const rref = yield* Evaluate(ShiftExpression);
   // 3. Let rval be ? GetValue(rref).
-  const rval = Q(GetValue(rref));
+  const rval = Q(yield* GetValue(rref));
   // 4. If Type(rval) is not Object, throw a TypeError exception.
   if (Type(rval) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', rval);
@@ -88,11 +88,11 @@ export function* Evaluate_RelationalExpression(expr) {
   // 1. Let lref be the result of evaluating RelationalExpression.
   const lref = yield* Evaluate(RelationalExpression);
   // 2. Let lval be ? GetValue(lref).
-  const lval = Q(GetValue(lref));
+  const lval = Q(yield* GetValue(lref));
   // 3. Let rref be the result of evaluating ShiftExpression.
   const rref = yield* Evaluate(ShiftExpression);
   // 4. Let rval be ? GetValue(rref).
-  const rval = Q(GetValue(rref));
+  const rval = Q(yield* GetValue(rref));
   switch (operator) {
     case '<': {
       // 5. Let r be the result of performing Abstract Relational Comparison lval < rval.

@@ -33,7 +33,7 @@ function* Evaluate_VariableDeclaration({ BindingIdentifier, Initializer, Binding
       // a. Let rhs be the result of evaluating Initializer.
       const rhs = yield* Evaluate(Initializer);
       // b. Let value be ? GetValue(rhs).
-      value = Q(GetValue(rhs));
+      value = Q(yield* GetValue(rhs));
     }
     // 5. Return ? PutValue(lhs, value).
     return Q(PutValue(lhs, value));
@@ -41,7 +41,7 @@ function* Evaluate_VariableDeclaration({ BindingIdentifier, Initializer, Binding
   // 1. Let rhs be the result of evaluating Initializer.
   const rhs = yield* Evaluate(Initializer);
   // 2. Let rval be ? GetValue(rhs).
-  const rval = Q(GetValue(rhs));
+  const rval = Q(yield* GetValue(rhs));
   // 3. Return the result of performing BindingInitialization for BindingPattern passing rval and undefined as arguments.
   return yield* BindingInitialization(BindingPattern, rval, Value.undefined);
 }

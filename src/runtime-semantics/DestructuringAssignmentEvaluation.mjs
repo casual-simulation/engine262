@@ -79,7 +79,7 @@ function* PropertyDestructuringAssignmentEvaluation(AssignmentPropertyList, valu
       // 2. Let lref be ? ResolveBinding(P).
       const lref = Q(ResolveBinding(P, undefined, AssignmentProperty.IdentifierReference.strict));
       // 3. Let v be ? GetV(value, P).
-      let v = Q(GetV(value, P));
+      let v = Q(yield* GetV(value, P));
       // 4. If Initializer? is present and v is undefined, then
       if (AssignmentProperty.Initializer && v === Value.undefined) {
         // a. If IsAnonymousFunctionDefinition(Initializer) is true, then
@@ -90,7 +90,7 @@ function* PropertyDestructuringAssignmentEvaluation(AssignmentPropertyList, valu
           // i. Let defaultValue be the result of evaluating Initializer.
           const defaultValue = yield* Evaluate(AssignmentProperty.Initializer);
           // ii. Set v to ? GetValue(defaultValue)
-          v = Q(GetValue(defaultValue));
+          v = Q(yield* GetValue(defaultValue));
         }
       }
       // 5. Perform ? PutValue(lref, v).
@@ -126,7 +126,7 @@ function* KeyedDestructuringAssignmentEvaluation({
     ReturnIfAbrupt(lref);
   }
   // 2. Let v be ? GetV(value, propertyName).
-  const v = Q(GetV(value, propertyName));
+  const v = Q(yield* GetV(value, propertyName));
   // 3. If Initializer is present and v is undefined, then
   let rhsValue;
   if (Initializer && v === Value.undefined) {
@@ -138,7 +138,7 @@ function* KeyedDestructuringAssignmentEvaluation({
       // i. Let defaultValue be the result of evaluating Initializer.
       const defaultValue = yield* Evaluate(Initializer);
       // ii. Let rhsValue be ? GetValue(defaultValue).
-      rhsValue = Q(GetValue(defaultValue));
+      rhsValue = Q(yield* GetValue(defaultValue));
     }
   } else { // 4. Else, let rhsValue be v.
     rhsValue = v;
@@ -262,7 +262,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
           // i. Let defaultValue be the result of evaluating Initializer.
           const defaultValue = yield* Evaluate(Initializer);
           // ii. Let v be ? GetValue(defaultValue).
-          v = Q(GetValue(defaultValue));
+          v = Q(yield* GetValue(defaultValue));
         }
       } else { // 5. Else, let v be value.
         v = value;

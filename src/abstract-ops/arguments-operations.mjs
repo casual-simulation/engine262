@@ -6,7 +6,7 @@ import {
 } from '../value.mjs';
 import { BoundNames } from '../static-semantics/all.mjs';
 import { Q, X } from '../completion.mjs';
-import { ValueSet } from '../helpers.mjs';
+import { ValueSet, unwind } from '../helpers.mjs';
 import {
   Assert,
   CreateBuiltinFunction,
@@ -67,7 +67,7 @@ function* ArgumentsDefineOwnProperty(P, Desc) {
       map.Delete(P);
     } else {
       if (Desc.Value !== undefined) {
-        const setStatus = Set(map, P, Desc.Value, Value.false);
+        const setStatus = unwind(Set(map, P, Desc.Value, Value.false));
         Assert(setStatus === Value.true);
       }
       if (Desc.Writable !== undefined && Desc.Writable === Value.false) {
@@ -100,7 +100,7 @@ function* ArgumentsSet(P, V, Receiver) {
     isMapped = X(HasOwnProperty(map, P)) === Value.true;
   }
   if (isMapped) {
-    const setStatus = Set(map, P, V, Value.false);
+    const setStatus = unwind(Set(map, P, V, Value.false));
     Assert(setStatus === Value.true);
   }
   return Q(yield* OrdinarySet(args, P, V, Receiver));

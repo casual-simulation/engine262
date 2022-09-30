@@ -7,7 +7,7 @@ import {
   Descriptor,
   wellKnownSymbols,
 } from '../value.mjs';
-import { ValueSet } from '../helpers.mjs';
+import { ValueSet, wrap } from '../helpers.mjs';
 import {
   Assert,
   SortCompare,
@@ -24,7 +24,6 @@ import {
   OrdinaryOwnPropertyKeys,
   GetModuleNamespace,
 } from './all.mjs';
-
 
 function ModuleNamespaceSetPrototypeOf(V) {
   const O = this;

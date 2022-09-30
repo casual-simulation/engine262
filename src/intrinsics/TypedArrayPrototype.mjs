@@ -33,6 +33,7 @@ import {
 } from '../value.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 import { ArrayProto_sortBody, bootstrapArrayPrototypeShared } from './ArrayPrototypeShared.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-get-%typedarray%.prototype.buffer
 function TypedArrayProto_buffer(args, { thisValue }) {
@@ -239,7 +240,7 @@ function TypedArrayProto_fill([value = Value.undefined, start = Value.undefined,
     // a. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // b. Perform ! Set(O, Pk, value, true).
-    X(Set(O, Pk, value, Value.true));
+    X(unwind(Set(O, Pk, value, Value.true)));
     // c. Set k to k + 1.
     k += 1;
   }
@@ -270,7 +271,7 @@ function* TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.
     // a. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // b. Let kValue be ? Get(O, Pk).
-    const kValue = Q(Get(O, Pk));
+    const kValue = Q(yield* Get(O, Pk));
     // c. Let selected be ! ToBoolean(? Call(callbackfn, thisArg, « kValue, 𝔽(k), O »)).
     const selected = ToBoolean(Q(yield* Call(callbackfn, thisArg, [kValue, F(k), O])));
     // d. If selected is true, then
@@ -290,7 +291,7 @@ function* TypedArrayProto_filter([callbackfn = Value.undefined, thisArg = Value.
   // 11. For each element e of kept, do
   for (const e of kept) {
     // a. Perform ! Set(A, ! ToString(𝔽(n)), e, true).
-    X(Set(A, X(ToString(F(n))), e, Value.true));
+    X(unwind(Set(A, X(ToString(F(n))), e, Value.true)));
     // b. Set n to n + 1.
     n += 1;
   }
@@ -349,11 +350,11 @@ function* TypedArrayProto_map([callbackfn = Value.undefined, thisArg = Value.und
     // a. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // b. Let kValue be ? Get(O, Pk).
-    const kValue = Q(Get(O, Pk));
+    const kValue = Q(yield* Get(O, Pk));
     // c. Let mappedValue be ? Call(callbackfn, thisArg, « kValue, 𝔽(k), O »).
     const mappedValue = Q(yield* Call(callbackfn, thisArg, [kValue, F(k), O]));
     // d. Perform ? Set(A, Pk, mappedValue, true).
-    Q(Set(A, Pk, mappedValue, Value.true));
+    Q(unwind(Set(A, Pk, mappedValue, Value.true)));
     // e. Set k to k + 1.
     k += 1;
   }
@@ -459,7 +460,7 @@ function SetTypedArrayFromTypedArray(target, targetOffset, source) {
 }
 
 // #sec-settypedarrayfromarraylike
-function SetTypedArrayFromArrayLike(target, targetOffset, source) {
+function* SetTypedArrayFromArrayLike(target, targetOffset, source) {
   // 1. Let targetBuffer be target.[[ViewedArrayBuffer]].
   const targetBuffer = target.ViewedArrayBuffer;
   // 2. If IsDetachedBuffer(targetBuffer) is true, throw a TypeError exception.
@@ -487,7 +488,7 @@ function SetTypedArrayFromArrayLike(target, targetOffset, source) {
     // a. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // b. Let value be ? Get(src, Pk).
-    const value = Q(Get(src, Pk));
+    const value = Q(yield* Get(src, Pk));
     // c. Let targetIndex be 𝔽(targetOffset + k).
     const targetIndex = F(targetOffset + k);
     // d. Perform ? IntegerIndexedElementSet(target, targetIndex, value).
@@ -525,7 +526,7 @@ function TypedArrayProto_set([source = Value.undefined, offset = Value.undefined
 }
 
 // #sec-%typedarray%.prototype.slice
-function TypedArrayProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
+function* TypedArrayProto_slice([start = Value.undefined, end = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? ValidateTypedArray(O).
@@ -582,9 +583,9 @@ function TypedArrayProto_slice([start = Value.undefined, end = Value.undefined],
         // 1. Let Pk be ! ToString(𝔽(k)).
         const Pk = X(ToString(F(k)));
         // 2. Let kValue be ! Get(O, Pk).
-        const kValue = X(Get(O, Pk));
+        const kValue = X(yield* Get(O, Pk));
         // 3. Perform ! Set(A, ! ToString(𝔽(n)), kValue, true).
-        X(Set(A, X(ToString(F(n))), kValue, Value.true));
+        X(unwind(Set(A, X(ToString(F(n))), kValue, Value.true)));
         // 4. Set k to k + 1.
         k += 1;
         // 5. Set n to n + 1.
@@ -770,7 +771,7 @@ function TypedArrayProto_toStringTag(args, { thisValue }) {
 }
 
 // #sec-%typedarray%.prototype.at
-function TypedArrayProto_at([index = Value.undefined], { thisValue }) {
+function* TypedArrayProto_at([index = Value.undefined], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Perform ? ValidateTypedArray(O).
@@ -793,11 +794,11 @@ function TypedArrayProto_at([index = Value.undefined], { thisValue }) {
     return Value.undefined;
   }
   // 8. Return ? Get(O, ! ToString(𝔽(k))).
-  return Q(Get(O, X(ToString(F(k)))));
+  return Q(yield* Get(O, X(ToString(F(k)))));
 }
 
 export function bootstrapTypedArrayPrototype(realmRec) {
-  const ArrayProto_toString = X(Get(realmRec.Intrinsics['%Array.prototype%'], new Value('toString')));
+  const ArrayProto_toString = X(unwind(Get(realmRec.Intrinsics['%Array.prototype%'], new Value('toString'))));
   console.log(ArrayProto_toString);
   Assert(Type(ArrayProto_toString) === 'Object');
 
@@ -833,7 +834,7 @@ export function bootstrapTypedArrayPrototype(realmRec) {
 
   // 22.2.3.31 #sec-%typedarray%.prototype-@@iterator
   {
-    const fn = X(Get(proto, new Value('values')));
+    const fn = X(unwind(Get(proto, new Value('values'))));
     X(proto.DefineOwnProperty(wellKnownSymbols.iterator, Descriptor({
       Value: fn,
       Writable: Value.true,

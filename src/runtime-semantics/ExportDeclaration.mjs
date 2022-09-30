@@ -75,7 +75,7 @@ export function* Evaluate_ExportDeclaration(ExportDeclaration) {
       // a. Let rhs be the result of evaluating AssignmentExpression.
       const rhs = yield* Evaluate(AssignmentExpression);
       // a. Let value be ? GetValue(rhs).
-      value = Q(GetValue(rhs));
+      value = Q(yield* GetValue(rhs));
     }
     // 3. Let env be the running execution context's LexicalEnvironment.
     const env = surroundingAgent.runningExecutionContext.LexicalEnvironment;

@@ -39,7 +39,7 @@ export function* Evaluate_SuperProperty({ Expression, IdentifierName, strict }) 
     // 3. Let propertyNameReference be the result of evaluating Expression.
     const propertyNameReference = yield* Evaluate(Expression);
     // 4. Let propertyNameReference be the result of evaluating Expression.
-    const propertyNameValue = Q(GetValue(propertyNameReference));
+    const propertyNameValue = Q(yield* GetValue(propertyNameReference));
     // 5. Let propertyNameValue be ? GetValue(propertyNameReference).
     const propertyKey = Q(ToPropertyKey(propertyNameValue));
     // 6. If the code matched by this SuperProperty is strict mode code, let strict be true; else let strict be false.

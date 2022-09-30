@@ -12,7 +12,7 @@ export function* Evaluate_TaggedTemplateExpression(node) {
   // 1. Let tagRef be the result of evaluating MemberExpression.
   const tagRef = yield* Evaluate(MemberExpression);
   // 1. Let tagFunc be ? GetValue(tagRef).
-  const tagFunc = Q(GetValue(tagRef));
+  const tagFunc = Q(yield* GetValue(tagRef));
   // 1. Let thisCall be this MemberExpression.
   const thisCall = node;
   // 1. Let tailCall be IsInTailPosition(thisCall).

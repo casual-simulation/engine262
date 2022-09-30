@@ -35,7 +35,7 @@ import {
   Value,
   wellKnownSymbols,
 } from '../value.mjs';
-import { OutOfRange } from '../helpers.mjs';
+import { OutOfRange, unwind } from '../helpers.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // 22.1.1 #sec-array-constructor
@@ -69,7 +69,7 @@ function* ArrayConstructor(argumentsList, { NewTarget }) {
         return surroundingAgent.Throw('RangeError', 'InvalidArrayLength', len);
       }
     }
-    Set(array, new Value('length'), intLen, Value.true);
+    unwind(Set(array, new Value('length'), intLen, Value.true));
     return array;
   } else if (numberOfArgs >= 2) {
     // 22.1.1.3 #sec-array-items
@@ -125,7 +125,7 @@ function* Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg 
       const Pk = X(ToString(F(k)));
       const next = Q(IteratorStep(iteratorRecord));
       if (next === Value.false) {
-        Q(Set(A, new Value('length'), F(k), Value.true));
+        Q(unwind(Set(A, new Value('length'), F(k), Value.true)));
         return A;
       }
       const nextValue = Q(IteratorValue(next));
@@ -161,7 +161,7 @@ function* Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg 
     Q(CreateDataPropertyOrThrow(A, Pk, mappedValue));
     k += 1;
   }
-  Q(Set(A, new Value('length'), F(len), Value.true));
+  Q(unwind(Set(A, new Value('length'), F(len), Value.true)));
   return A;
 }
 
@@ -188,7 +188,7 @@ function* Array_of(items, { thisValue }) {
     Q(CreateDataPropertyOrThrow(A, Pk, kValue));
     k += 1;
   }
-  Q(Set(A, new Value('length'), F(len), Value.true));
+  Q(unwind(Set(A, new Value('length'), F(len), Value.true)));
   return A;
 }
 

@@ -18,7 +18,7 @@ function* EvaluateNew(constructExpr, args) {
   // 3. Let ref be the result of evaluating constructExpr.
   const ref = yield* Evaluate(constructExpr);
   // 4. Let constructor be ? GetValue(ref).
-  const constructor = Q(GetValue(ref));
+  const constructor = Q(yield* GetValue(ref));
   let argList;
   // 5. If arguments is empty, let argList be a new empty List.
   if (args === undefined) {

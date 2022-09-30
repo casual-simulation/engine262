@@ -9,5 +9,5 @@ export function* Evaluate_ExpressionStatement({ Expression }) {
   // 1. Let exprRef be the result of evaluating Expression.
   const exprRef = yield* Evaluate(Expression);
   // 2. Return ? GetValue(exprRef).
-  return Q(GetValue(exprRef));
+  return Q(yield* GetValue(exprRef));
 }

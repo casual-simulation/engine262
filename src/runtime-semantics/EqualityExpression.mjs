@@ -18,11 +18,11 @@ export function* Evaluate_EqualityExpression({ EqualityExpression, operator, Rel
   // 1. Let lref be the result of evaluating EqualityExpression.
   const lref = yield* Evaluate(EqualityExpression);
   // 2. Let lval be ? GetValue(lref).
-  const lval = Q(GetValue(lref));
+  const lval = Q(yield* GetValue(lref));
   // 3. Let rref be the result of evaluating RelationalExpression.
   const rref = yield* Evaluate(RelationalExpression);
   // 4. Let rval be ? GetValue(rref).
-  const rval = Q(GetValue(rref));
+  const rval = Q(yield* GetValue(rref));
   switch (operator) {
     case '==':
       // 5. Return the result of performing Abstract Equality Comparison rval == lval.

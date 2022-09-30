@@ -17,6 +17,7 @@ import {
   F,
 } from '../abstract-ops/all.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-%typedarray%-intrinsic-object
 function TypedArrayConstructor() {
@@ -61,7 +62,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
       } else {
         mappedValue = kValue;
       }
-      Q(Set(targetObj, Pk, mappedValue, Value.true));
+      Q(unwind(Set(targetObj, Pk, mappedValue, Value.true)));
       k += 1;
     }
     Assert(values.length === 0);
@@ -81,7 +82,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
     // a. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // b. Let kValue be ? Get(arrayLike, Pk).
-    const kValue = Q(Get(arrayLike, Pk));
+    const kValue = Q(yield* Get(arrayLike, Pk));
     let mappedValue;
     // c. If mapping is true, then
     if (mapping) {
@@ -92,7 +93,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
       mappedValue = kValue;
     }
     // e. Perform ? Set(targetObj, Pk, mappedValue, true).
-    Q(Set(targetObj, Pk, mappedValue, Value.true));
+    Q(unwind(Set(targetObj, Pk, mappedValue, Value.true)));
     // f. Set k to k + 1.
     k += 1;
   }
@@ -122,7 +123,7 @@ function TypedArray_of(items, { thisValue }) {
     // b. Let Pk be ! ToString(𝔽(k)).
     const Pk = X(ToString(F(k)));
     // c. Perform ? Set(newObj, Pk, kValue, true).
-    Q(Set(newObj, Pk, kValue, Value.true));
+    Q(unwind(Set(newObj, Pk, kValue, Value.true)));
     // d. Set k to k + 1.
     k += 1;
   }

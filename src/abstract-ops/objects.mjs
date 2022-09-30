@@ -264,10 +264,10 @@ export function* OrdinaryGet(O, P, Receiver) {
 }
 
 // 9.1.9.1 OrdinarySet
-export function OrdinarySet(O, P, V, Receiver) {
+export function* OrdinarySet(O, P, V, Receiver) {
   Assert(IsPropertyKey(P));
   const ownDesc = Q(O.GetOwnProperty(P));
-  return OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc);
+  return yield* OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc);
 }
 
 // 9.1.9.2 OrdinarySetWithOwnDescriptor
@@ -277,7 +277,7 @@ export function* OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc) {
   if (Type(ownDesc) === 'Undefined') {
     const parent = Q(O.GetPrototypeOf());
     if (Type(parent) !== 'Null') {
-      return Q(parent.Set(P, V, Receiver));
+      return Q(unwind(wrap(parent.Set(P, V, Receiver))));
     }
     ownDesc = Descriptor({
       Value: Value.undefined,
@@ -390,11 +390,11 @@ export function OrdinaryCreateFromConstructor(constructor, intrinsicDefaultProto
 }
 
 // 9.1.14 GetPrototypeFromConstructor
-export function* GetPrototypeFromConstructor(constructor, intrinsicDefaultProto) {
+export function GetPrototypeFromConstructor(constructor, intrinsicDefaultProto) {
   // Assert: intrinsicDefaultProto is a String value that
   // is this specification's name of an intrinsic object.
   Assert(IsCallable(constructor) === Value.true);
-  let proto = Q(yield* Get(constructor, new Value('prototype')));
+  let proto = Q(unwind(Get(constructor, new Value('prototype'))));
   if (Type(proto) !== 'Object') {
     const realm = Q(GetFunctionRealm(constructor));
     proto = realm.Intrinsics[intrinsicDefaultProto];

@@ -20,7 +20,7 @@ export function* Evaluate_UpdateExpression({ LeftHandSideExpression, operator, U
       // 1. Let lhs be the result of evaluating LeftHandSideExpression.
       const lhs = yield* Evaluate(LeftHandSideExpression);
       // 2. Let oldValue be ? ToNumeric(? GetValue(lhs)).
-      const oldValue = Q(ToNumeric(Q(GetValue(lhs))));
+      const oldValue = Q(ToNumeric(Q(yield* GetValue(lhs))));
       // 3. Let newValue be ! Type(oldvalue)::add(oldValue, Type(oldValue)::unit).
       const newValue = X(TypeForMethod(oldValue).add(oldValue, TypeForMethod(oldValue).unit));
       // 4. Perform ? PutValue(lhs, newValue).
@@ -34,7 +34,7 @@ export function* Evaluate_UpdateExpression({ LeftHandSideExpression, operator, U
       // 1. Let lhs be the result of evaluating LeftHandSideExpression.
       const lhs = yield* Evaluate(LeftHandSideExpression);
       // 2. Let oldValue be ? ToNumeric(? GetValue(lhs)).
-      const oldValue = Q(ToNumeric(Q(GetValue(lhs))));
+      const oldValue = Q(ToNumeric(Q(yield* GetValue(lhs))));
       // 3. Let newValue be ! Type(oldvalue)::subtract(oldValue, Type(oldValue)::unit).
       const newValue = X(TypeForMethod(oldValue).subtract(oldValue, TypeForMethod(oldValue).unit));
       // 4. Perform ? PutValue(lhs, newValue).
@@ -48,7 +48,7 @@ export function* Evaluate_UpdateExpression({ LeftHandSideExpression, operator, U
       // 1. Let expr be the result of evaluating UnaryExpression.
       const expr = yield* Evaluate(UnaryExpression);
       // 2. Let oldValue be ? ToNumeric(? GetValue(expr)).
-      const oldValue = Q(ToNumeric(Q(GetValue(expr))));
+      const oldValue = Q(ToNumeric(Q(yield* GetValue(expr))));
       // 3. Let newValue be ! Type(oldvalue)::add(oldValue, Type(oldValue)::unit).
       const newValue = X(TypeForMethod(oldValue).add(oldValue, TypeForMethod(oldValue).unit));
       // 4. Perform ? PutValue(expr, newValue).
@@ -62,7 +62,7 @@ export function* Evaluate_UpdateExpression({ LeftHandSideExpression, operator, U
       // 1. Let expr be the result of evaluating UnaryExpression.
       const expr = yield* Evaluate(UnaryExpression);
       // 2. Let oldValue be ? ToNumeric(? GetValue(expr)).
-      const oldValue = Q(ToNumeric(Q(GetValue(expr))));
+      const oldValue = Q(ToNumeric(Q(yield* GetValue(expr))));
       // 3. Let newValue be ! Type(oldvalue)::subtract(oldValue, Type(oldValue)::unit).
       const newValue = X(TypeForMethod(oldValue).subtract(oldValue, TypeForMethod(oldValue).unit));
       // 4. Perform ? PutValue(expr, newValue).

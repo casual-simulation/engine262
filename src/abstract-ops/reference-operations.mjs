@@ -19,6 +19,7 @@ import {
   PrivateGet,
   PrivateSet,
 } from './all.mjs';
+import { wrap, unwind } from '../helpers.mjs';
 
 // #sec-ispropertyreference
 export function IsPropertyReference(V) {
@@ -106,7 +107,7 @@ export function PutValue(V, W) {
     // b. Let globalObj be GetGlobalObject().
     const globalObj = GetGlobalObject();
     // c. Return ? Set(globalObj, V.[[ReferencedName]], W, false).
-    return Q(Set(globalObj, V.ReferencedName, W, Value.false));
+    return Q(unwind(Set(globalObj, V.ReferencedName, W, Value.false)));
   }
   // 5. If IsPropertyReference(V) is true, then
   if (IsPropertyReference(V) === Value.true) {
@@ -118,7 +119,7 @@ export function PutValue(V, W) {
       return Q(PrivateSet(V.ReferencedName, baseObj, W));
     }
     // c. Let succeeded be ? baseObj.[[Set]](V.[[ReferencedName]], W, GetThisValue(V)).
-    const succeeded = Q(baseObj.Set(V.ReferencedName, W, GetThisValue(V)));
+    const succeeded = Q(unwind(wrap(baseObj.Set(V.ReferencedName, W, GetThisValue(V)))));
     // d. If succeeded is false and V.[[Strict]] is true, throw a TypeError exception.
     if (succeeded === Value.false && V.Strict === Value.true) {
       return surroundingAgent.Throw('TypeError', 'CannotSetProperty', V.ReferencedName, V.Base);

@@ -106,7 +106,7 @@ export class Agent {
   }
 
   // Generate a throw completion using message templates
-  *Throw(type, template, ...templateArgs) {
+  Throw(type, template, ...templateArgs) {
     if (type instanceof Value) {
       return ThrowCompletion(type);
     }
@@ -114,12 +114,12 @@ export class Agent {
     const cons = this.currentRealmRecord.Intrinsics[`%${type}%`];
     let error;
     if (type === 'AggregateError') {
-      error = X(yield* Construct(cons, [
+      error = X(unwind(Construct(cons, [
         X(CreateArrayFromList([])),
         new Value(message),
-      ]));
+      ])));
     } else {
-      error = X(yield* Construct(cons, [new Value(message)]));
+      error = X(unwind(Construct(cons, [new Value(message)])));
     }
     return ThrowCompletion(error);
   }

@@ -216,7 +216,7 @@ function* LabelledEvaluation_IterationStatement_DoWhileStatement({ Statement, Ex
     // d. Let exprRef be the result of evaluating Expression.
     const exprRef = yield* Evaluate(Expression);
     // e. Let exprValue be ? GetValue(exprRef).
-    const exprValue = Q(GetValue(exprRef));
+    const exprValue = Q(yield* GetValue(exprRef));
     // f. If ! ToBoolean(exprValue) is false, return NormalCompletion(V).
     if (X(ToBoolean(exprValue)) === Value.false) {
       return NormalCompletion(V);
@@ -236,7 +236,7 @@ function* LabelledEvaluation_IterationStatement_WhileStatement({ Expression, Sta
     // a. Let exprRef be the result of evaluating Expression.
     const exprRef = yield* Evaluate(Expression);
     // b. Let exprValue be ? GetValue(exprRef).
-    const exprValue = Q(GetValue(exprRef));
+    const exprValue = Q(yield* GetValue(exprRef));
     // c. If ! ToBoolean(exprValue) is false, return NormalCompletion(V).
     if (X(ToBoolean(exprValue)) === Value.false) {
       return NormalCompletion(V);
@@ -325,7 +325,7 @@ function* LabelledEvaluation_BreakableStatement_ForStatement(ForStatement, label
         // a. Let exprRef be the result of evaluating the first Expression.
         const exprRef = yield* Evaluate(Expression_a);
         // b. Perform ? GetValue(exprRef).
-        Q(GetValue(exprRef));
+        Q(yield* GetValue(exprRef));
       }
       // 2. Return ? ForBodyEvaluation(the second Expression, the third Expression, Statement, « », labelSet).
       return Q(yield* ForBodyEvaluation(Expression_b, Expression_c, Statement, [], labelSet));
@@ -454,7 +454,7 @@ function* ForBodyEvaluation(test, increment, stmt, perIterationBindings, labelSe
       // i. Let testRef be the result of evaluating test.
       const testRef = yield* Evaluate(test);
       // ii. Let testValue be ? GetValue(testRef).
-      const testValue = Q(GetValue(testRef));
+      const testValue = Q(yield* GetValue(testRef));
       // iii. If ! ToBoolean(testValue) is false, return NormalCompletion(V).
       if (X(ToBoolean(testValue)) === Value.false) {
         return NormalCompletion(V);
@@ -477,7 +477,7 @@ function* ForBodyEvaluation(test, increment, stmt, perIterationBindings, labelSe
       // i. Let incRef be the result of evaluating increment.
       const incRef = yield* Evaluate(increment);
       // ii. Perform ? GetValue(incRef).
-      Q(GetValue(incRef));
+      Q(yield* GetValue(incRef));
     }
   }
 }
@@ -532,7 +532,7 @@ function* ForInOfHeadEvaluation(uninitializedBoundNames, expr, iterationKind) {
   // 4. Set the running execution context's LexicalEnvironment to oldEnv.
   surroundingAgent.runningExecutionContext.LexicalEnvironment = oldEnv;
   // 5. Let exprValue be ? GetValue(exprRef).
-  const exprValue = Q(GetValue(exprRef));
+  const exprValue = Q(yield* GetValue(exprRef));
   // 6. If iterationKind is enumerate, then
   if (iterationKind === 'enumerate') {
     // a. If exprValue is undefined or null, then
@@ -545,7 +545,7 @@ function* ForInOfHeadEvaluation(uninitializedBoundNames, expr, iterationKind) {
     // c. Let iterator be ? EnumerateObjectProperties(obj).
     const iterator = Q(EnumerateObjectProperties(obj));
     // d. Let nextMethod be ! GetV(iterator, "next").
-    const nextMethod = X(GetV(iterator, new Value('next')));
+    const nextMethod = X(yield* GetV(iterator, new Value('next')));
     // e. Return the Record { [[Iterator]]: iterator, [[NextMethod]]: nextMethod, [[Done]]: false }.
     return { Iterator: iterator, NextMethod: nextMethod, Done: Value.false };
   } else { // 7. Else,

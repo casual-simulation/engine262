@@ -31,6 +31,7 @@ import {
 import { Q, X } from '../completion.mjs';
 import { AddEntriesFromIterable } from './Map.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 // #sec-object-value
 function ObjectConstructor([value = Value.undefined], { NewTarget }) {
@@ -73,7 +74,7 @@ function* Object_assign([target = Value.undefined, ...sources]) {
           // a. Let propValue be ? Get(from, nextKey).
           const propValue = Q(yield* Get(from, nextKey));
           // b. Perform ? Set(to, nextKey, propValue, true).
-          Q(Set(to, nextKey, propValue, Value.true));
+          Q(unwind(Set(to, nextKey, propValue, Value.true)));
         }
       }
     }

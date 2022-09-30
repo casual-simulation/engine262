@@ -11,7 +11,7 @@ import { Q } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-bigint-constructor
-function BigIntConstructor([value], { NewTarget }) {
+function* BigIntConstructor([value], { NewTarget }) {
   // 1. If NewTarget is not undefined, throw a TypeError exception.
   if (NewTarget !== Value.undefined) {
     return surroundingAgent.Throw('TypeError', 'NotAConstructor', 'BigInt');

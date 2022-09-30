@@ -24,11 +24,12 @@ import {
 } from '../abstract-ops/all.mjs';
 import { Q, X } from '../completion.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
+import { unwind } from '../helpers.mjs';
 
 export function bootstrapTypedArrayConstructors(realmRec) {
   Object.entries(typedArrayInfoByName).forEach(([TypedArray, info]) => {
     // #sec-typedarray-constructors
-    function TypedArrayConstructor(args, { NewTarget }) {
+    function* TypedArrayConstructor(args, { NewTarget }) {
       if (args.length === 0) {
         // #sec-typedarray
         // 1. If NewTarget is undefined, throw a TypeError exception.
@@ -177,7 +178,7 @@ export function bootstrapTypedArrayConstructors(realmRec) {
             // ii. Let kValue be the first element of values and remove that element from values.
             const kValue = values.shift();
             // iii. Perform ? Set(O, Pk, kValue, true).
-            Q(Set(O, Pk, kValue, Value.true));
+            Q(unwind(Set(O, Pk, kValue, Value.true)));
             // iv. Set k to k + 1.
             k += 1;
           }
@@ -200,9 +201,9 @@ export function bootstrapTypedArrayConstructors(realmRec) {
           // a. Let Pk be ! ToString(𝔽(k)).
           const Pk = X(ToString(F(k)));
           // b. Let kValue be ? Get(arrayLike, Pk).
-          const kValue = Q(Get(arrayLike, Pk));
+          const kValue = Q(yield* Get(arrayLike, Pk));
           // c. Perform ? Set(O, Pk, kValue, true).
-          Q(Set(O, Pk, kValue, Value.true));
+          Q(unwind(Set(O, Pk, kValue, Value.true)));
           // d. Set k to k + 1.
           k += 1;
         }
