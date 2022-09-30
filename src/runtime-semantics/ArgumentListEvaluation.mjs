@@ -138,17 +138,17 @@ function* ArgumentListEvaluation_Arguments(Arguments) {
       // 3. Let spreadObj be ? GetValue(spreadRef).
       const spreadObj = Q(yield* GetValue(spreadRef));
       // 4. Let iteratorRecord be ? GetIterator(spreadObj).
-      const iteratorRecord = Q(GetIterator(spreadObj));
+      const iteratorRecord = Q(yield* GetIterator(spreadObj));
       // 5. Repeat,
       while (true) {
         // a. Let next be ? IteratorStep(iteratorRecord).
-        const next = Q(IteratorStep(iteratorRecord));
+        const next = Q(yield* IteratorStep(iteratorRecord));
         // b. If next is false, return list.
         if (next === Value.false) {
           break;
         }
         // c. Let nextArg be ? IteratorValue(next).
-        const nextArg = Q(IteratorValue(next));
+        const nextArg = Q(yield* IteratorValue(next));
         // d. Append nextArg as the last element of list.
         precedingArgs.push(nextArg);
       }

@@ -33,17 +33,17 @@ function* WeakSetConstructor([iterable = Value.undefined], { NewTarget }) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', adder);
   }
   // 7. Let iteratorRecord be ? GetIterator(iterable).
-  const iteratorRecord = Q(GetIterator(iterable));
+  const iteratorRecord = Q(yield* GetIterator(iterable));
   // 8. Repeat,
   while (true) {
     // a. Let next be ? IteratorStep(iteratorRecord).
-    const next = Q(IteratorStep(iteratorRecord));
+    const next = Q(yield* IteratorStep(iteratorRecord));
     // b. If next is false, return set.
     if (next === Value.false) {
       return set;
     }
     // c. Let nextValue be ? IteratorValue(next).
-    const nextValue = Q(IteratorValue(next));
+    const nextValue = Q(yield* IteratorValue(next));
     // d. Let status be Call(adder, set, « nextValue »).
     const status = yield* Call(adder, set, [nextValue]);
     // e. IfAbruptCloseIterator(status, iteratorRecord).

@@ -26,16 +26,16 @@ export function* AddEntriesFromIterable(target, iterable, adder) {
     return surroundingAgent.Throw('TypeError', 'NotAFunction', adder);
   }
   Assert(iterable !== undefined && iterable !== Value.undefined && iterable !== Value.null);
-  const iteratorRecord = Q(GetIterator(iterable));
+  const iteratorRecord = Q(yield* GetIterator(iterable));
   while (true) {
-    const next = Q(IteratorStep(iteratorRecord));
+    const next = Q(yield* IteratorStep(iteratorRecord));
     if (next === Value.false) {
       return target;
     }
-    const nextItem = Q(IteratorValue(next));
+    const nextItem = Q(yield* IteratorValue(next));
     if (Type(nextItem) !== 'Object') {
       const error = surroundingAgent.Throw('TypeError', 'NotAnObject', nextItem);
-      return Q(IteratorClose(iteratorRecord, error));
+      return Q(yield* IteratorClose(iteratorRecord, error));
     }
     // e. Let k be Get(nextItem, "0").
     const k = yield* Get(nextItem, new Value('0'));

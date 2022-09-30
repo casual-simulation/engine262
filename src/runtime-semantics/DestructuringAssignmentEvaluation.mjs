@@ -161,14 +161,14 @@ function* KeyedDestructuringAssignmentEvaluation({
 //   `[` AssignmentElementList `,` AssignmentRestElement? `]`
 function* DestructuringAssignmentEvaluation_ArrayAssignmentPattern({ AssignmentElementList, AssignmentRestElement }, value) {
   // 1. Let iteratorRecord be ? GetIterator(value).
-  const iteratorRecord = Q(GetIterator(value));
+  const iteratorRecord = Q(yield* GetIterator(value));
   // 2. Let status be IteratorDestructuringAssignmentEvaluation of AssignmentElementList with argument iteratorRecord.
   let status = EnsureCompletion(yield* IteratorDestructuringAssignmentEvaluation(AssignmentElementList, iteratorRecord));
   // 3. If status is an abrupt completion, then
   if (status instanceof AbruptCompletion) {
     // a. If iteratorRecord.[[Done]] is false, return ? IteratorClose(iteratorRecord, status).
     if (iteratorRecord.Done === Value.false) {
-      return Q(IteratorClose(iteratorRecord, status));
+      return Q(yield* IteratorClose(iteratorRecord, status));
     }
     // b. Return Completion(status).
     return Completion(status);
@@ -182,7 +182,7 @@ function* DestructuringAssignmentEvaluation_ArrayAssignmentPattern({ AssignmentE
   }
   // 6. If iteratorRecord.[[Done]] is false, return ? IteratorClose(iteratorRecord, status).
   if (iteratorRecord.Done === Value.false) {
-    return Q(IteratorClose(iteratorRecord, status));
+    return Q(yield* IteratorClose(iteratorRecord, status));
   }
   return Completion(status);
 }
@@ -199,7 +199,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
       // 1. If iteratorRecord.[[Done]] is false, then
       if (iteratorRecord.Done === Value.false) {
         // a. Let next be IteratorStep(iteratorRecord).
-        const next = IteratorStep(iteratorRecord);
+        const next = yield* IteratorStep(iteratorRecord);
         // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
         if (next instanceof AbruptCompletion) {
           iteratorRecord.Done = Value.true;
@@ -226,7 +226,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
       // 2. If iteratorRecord.[[Done]] is false, then
       if (iteratorRecord.Done === Value.false) {
         // a. Let next be IteratorStep(iteratorRecord).
-        const next = IteratorStep(iteratorRecord);
+        const next = yield* IteratorStep(iteratorRecord);
         // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
         if (next instanceof AbruptCompletion) {
           iteratorRecord.Done = Value.true;
@@ -238,7 +238,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
           iteratorRecord.Done = Value.true;
         } else { // e. Else,
           // i. Let value be IteratorValue(next).
-          value = IteratorValue(next);
+          value = yield* IteratorValue(next);
           // ii. If value is an abrupt completion, set iteratorRecord.[[Done]] to true.
           if (value instanceof AbruptCompletion) {
             iteratorRecord.Done = Value.true;
@@ -294,7 +294,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
       // 4. Repeat, while iteratorRecord.[[Done]] is false,
       while (iteratorRecord.Done === Value.false) {
         // a. Let next be IteratorStep(iteratorRecord).
-        const next = IteratorStep(iteratorRecord);
+        const next = yield* IteratorStep(iteratorRecord);
         // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
         if (next instanceof AbruptCompletion) {
           iteratorRecord.Done = Value.true;
@@ -306,7 +306,7 @@ function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
           iteratorRecord.Done = Value.true;
         } else { // e. Else,
           // i. Let nextValue be IteratorValue(next).
-          const nextValue = IteratorValue(next);
+          const nextValue = yield* IteratorValue(next);
           // ii. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
           if (nextValue instanceof AbruptCompletion) {
             iteratorRecord.Done = Value.true;

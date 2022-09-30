@@ -45,7 +45,7 @@ export function* GetIterator(obj, hint, method) {
       method = Q(GetMethod(obj, wellKnownSymbols.asyncIterator));
       if (method === Value.undefined) {
         const syncMethod = Q(GetMethod(obj, wellKnownSymbols.iterator));
-        const syncIteratorRecord = Q(GetIterator(obj, 'sync', syncMethod));
+        const syncIteratorRecord = Q(yield* GetIterator(obj, 'sync', syncMethod));
         return Q(CreateAsyncFromSyncIterator(syncIteratorRecord));
       }
     } else {
@@ -92,9 +92,9 @@ export function* IteratorValue(iterResult) {
 }
 
 // 7.4.5 #sec-iteratorstep
-export function IteratorStep(iteratorRecord) {
-  const result = Q(IteratorNext(iteratorRecord));
-  const done = Q(IteratorComplete(result));
+export function* IteratorStep(iteratorRecord) {
+  const result = Q(yield* IteratorNext(iteratorRecord));
+  const done = Q(yield* IteratorComplete(result));
   if (done === Value.true) {
     return EnsureCompletion(Value.false);
   }
@@ -227,17 +227,17 @@ export function* CreateAsyncFromSyncIterator(syncIteratorRecord) {
 }
 
 // 25.1.4.4 #sec-asyncfromsynciteratorcontinuation
-export function AsyncFromSyncIteratorContinuation(result, promiseCapability) {
+export function* AsyncFromSyncIteratorContinuation(result, promiseCapability) {
   // 1. Let done be IteratorComplete(result).
-  const done = IteratorComplete(result);
+  const done = yield* IteratorComplete(result);
   // 2. IfAbruptRejectPromise(done, promiseCapability).
   IfAbruptRejectPromise(done, promiseCapability);
   // 3. Let value be IteratorValue(result).
-  const value = IteratorValue(result);
+  const value = yield* IteratorValue(result);
   // 4. IfAbruptRejectPromise(value, promiseCapability).
   IfAbruptRejectPromise(value, promiseCapability);
   // 5. Let valueWrapper be PromiseResolve(%Promise%, value).
-  const valueWrapper = PromiseResolve(surroundingAgent.intrinsic('%Promise%'), value);
+  const valueWrapper = yield* PromiseResolve(surroundingAgent.intrinsic('%Promise%'), value);
   // 6. IfAbruptRejectPromise(valueWrapper, promiseCapability).
   IfAbruptRejectPromise(valueWrapper, promiseCapability);
   // 7. Let unwrap be a new Abstract Closure with parameters (value) that captures done and performs the following steps when called:

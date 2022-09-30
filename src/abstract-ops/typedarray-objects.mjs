@@ -216,9 +216,9 @@ export function TypedArraySpeciesCreate(exemplar, argumentList) {
 }
 
 // #sec-iterabletolist
-export function IterableToList(items, method) {
+export function* IterableToList(items, method) {
   // 1. Let iteratorRecord be ? GetIterator(items, sync, method).
-  const iteratorRecord = Q(GetIterator(items, 'sync', method));
+  const iteratorRecord = Q(yield* GetIterator(items, 'sync', method));
   // 2. Let values be a new empty List.
   const values = [];
   // 3. Let next be true.
@@ -226,11 +226,11 @@ export function IterableToList(items, method) {
   // 4. Repeat, while next is not false
   while (next !== Value.false) {
     // a. Set next to ? IteratorStep(iteratorRecord).
-    next = Q(IteratorStep(iteratorRecord));
+    next = Q(yield* IteratorStep(iteratorRecord));
     // b. If next is not false, then
     if (next !== Value.false) {
       // i. Let nextValue be ? IteratorValue(next).
-      const nextValue = Q(IteratorValue(next));
+      const nextValue = Q(yield* IteratorValue(next));
       // ii. Append nextValue to the end of the List values.
       values.push(nextValue);
     }

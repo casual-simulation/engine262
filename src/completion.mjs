@@ -105,7 +105,7 @@ export function* Await(value) {
   // 1. Let asyncContext be the running execution context.
   const asyncContext = surroundingAgent.runningExecutionContext;
   // 2. Let promise be ? PromiseResolve(%Promise%, value).
-  const promise = Q(PromiseResolve(surroundingAgent.intrinsic('%Promise%'), value));
+  const promise = Q(yield* PromiseResolve(surroundingAgent.intrinsic('%Promise%'), value));
   // 3. Let fulfilledClosure be a new Abstract Closure with parameters (value) that captures asyncContext and performs the following steps when called:
   const fulfilledClosure = ([valueInner = Value.undefined]) => {
     // a. Let prevContext be the running execution context.

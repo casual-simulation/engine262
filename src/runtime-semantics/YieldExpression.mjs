@@ -38,7 +38,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
     // 3. Let value be ? GetValue(exprRef).
     const value = Q(yield* GetValue(exprRef));
     // 4. Let iteratorRecord be ? GetIterator(value, generatorKind).
-    const iteratorRecord = Q(GetIterator(value, generatorKind));
+    const iteratorRecord = Q(yield* GetIterator(value, generatorKind));
     // 5. Let iterator be iteratorRecord.[[Iterator]].
     const iterator = iteratorRecord.Iterator;
     // 6. Let received be NormalCompletion(undefined).
@@ -58,15 +58,15 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
           return surroundingAgent.Throw('TypeError', 'NotAnObject', innerResult);
         }
         // iv. Let done be ? IteratorComplete(innerResult).
-        const done = Q(IteratorComplete(innerResult));
+        const done = Q(yield* IteratorComplete(innerResult));
         // v. If done is true, then
         if (done === Value.true) {
           // 1. Return ? IteratorValue(innerResult).
-          return Q(IteratorValue(innerResult));
+          return Q(yield* IteratorValue(innerResult));
         }
         // vi. If generatorKind is async, then set received to AsyncGeneratorYield(? IteratorValue(innerResult)).
         if (generatorKind === 'async') {
-          received = yield* AsyncGeneratorYield(Q(IteratorValue(innerResult)));
+          received = yield* AsyncGeneratorYield(Q(yield* IteratorValue(innerResult)));
         } else { // vii. Else, set received to GeneratorYield(innerResult).
           received = yield* GeneratorYield(innerResult);
         }
@@ -87,15 +87,15 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
             return surroundingAgent.Throw('TypeError', 'NotAnObject', innerResult);
           }
           // 5. Let done be ? IteratorComplete(innerResult).
-          const done = Q(IteratorComplete(innerResult));
+          const done = Q(yield* IteratorComplete(innerResult));
           // 6. If done is true, then
           if (done === Value.true) {
             // a. Return ? IteratorValue(innerResult).
-            return Q(IteratorValue(innerResult));
+            return Q(yield* IteratorValue(innerResult));
           }
           // 7. If generatorKind is async, then set received to AsyncGeneratorYield(? IteratorValue(innerResult)).
           if (generatorKind === 'async') {
-            received = yield* AsyncGeneratorYield(Q(IteratorValue(innerResult)));
+            received = yield* AsyncGeneratorYield(Q(yield* IteratorValue(innerResult)));
           } else { // 8. Else, set received to GeneratorYield(innerResult).
             received = yield* GeneratorYield(innerResult);
           }
@@ -108,7 +108,7 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
           if (generatorKind === 'async') {
             Q(yield* AsyncIteratorClose(iteratorRecord, closeCompletion));
           } else {
-            Q(IteratorClose(iteratorRecord, closeCompletion));
+            Q(yield* IteratorClose(iteratorRecord, closeCompletion));
           }
           // 5. NOTE: The next step throws a TypeError to indicate that there was a yield* protocol violation: iterator does not have a throw method.
           // 6. Throw a TypeError exception.
@@ -139,17 +139,17 @@ export function* Evaluate_YieldExpression({ hasStar, AssignmentExpression }) {
           return surroundingAgent.Throw('TypeError', 'NotAnObject', innerReturnResult);
         }
         // vii. Let done be ? IteratorComplete(innerReturnResult).
-        const done = Q(IteratorComplete(innerReturnResult));
+        const done = Q(yield* IteratorComplete(innerReturnResult));
         // viii. If done is true, then
         if (done === Value.true) {
           // 1. Let value be ? IteratorValue(innerReturnResult).
-          const innerValue = Q(IteratorValue(innerReturnResult));
+          const innerValue = Q(yield* IteratorValue(innerReturnResult));
           // 2. Return Completion { [[Type]]: return, [[Value]]: value, [[Target]]: empty }.
           return new Completion({ Type: 'return', Value: innerValue, Target: undefined });
         }
         // ix. If generatorKind is async, then set received to AsyncGeneratorYield(? IteratorValue(innerResult)).
         if (generatorKind === 'async') {
-          received = yield* AsyncGeneratorYield(Q(IteratorValue(innerReturnResult)));
+          received = yield* AsyncGeneratorYield(Q(yield* IteratorValue(innerReturnResult)));
         } else { // ixx. Else, set received to GeneratorYield(innerResult).
           received = yield* GeneratorYield(innerReturnResult);
         }

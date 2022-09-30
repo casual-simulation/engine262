@@ -55,7 +55,7 @@ function* ArrayAccumulation_SpreadElement({ AssignmentExpression }, array, nextI
   // 4. Repeat,
   while (true) {
     // a. Let next be ? IteratorStep(iteratorRecord).
-    const next = Q(IteratorStep(iteratorRecord));
+    const next = Q(yield* IteratorStep(iteratorRecord));
     // b. If next is false, return nextIndex.
     if (next === Value.false) {
       return nextIndex;

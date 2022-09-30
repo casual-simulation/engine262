@@ -132,7 +132,7 @@ function* PerformPromiseAll(iteratorRecord, constructor, resultCapability, promi
   // 7. Repeat,
   while (true) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -156,7 +156,7 @@ function* PerformPromiseAll(iteratorRecord, constructor, resultCapability, promi
       return resultCapability.Promise;
     }
     // e. Let nextValue be IteratorValue(next).
-    const nextValue = IteratorValue(next);
+    const nextValue = yield* IteratorValue(next);
     // f. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (nextValue instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -195,7 +195,7 @@ function* PerformPromiseAll(iteratorRecord, constructor, resultCapability, promi
 }
 
 // #sec-promise.all
-function Promise_all([iterable = Value.undefined], { thisValue }) {
+function* Promise_all([iterable = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
@@ -205,16 +205,16 @@ function Promise_all([iterable = Value.undefined], { thisValue }) {
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
-  const iteratorRecord = GetIterator(iterable);
+  const iteratorRecord = yield* GetIterator(iterable);
   // 6. IfAbruptRejectPromise(iteratorRecord, promiseCapability).
   IfAbruptRejectPromise(iteratorRecord, promiseCapability);
   // 7. Let result be PerformPromiseAll(iteratorRecord, C, promiseCapability, promiseResolve).
-  let result = EnsureCompletion(PerformPromiseAll(iteratorRecord, C, promiseCapability, promiseResolve));
+  let result = EnsureCompletion(yield* PerformPromiseAll(iteratorRecord, C, promiseCapability, promiseResolve));
   // 8. If result is an abrupt completion, then
   if (result instanceof AbruptCompletion) {
     // a. If iteratorRecord.[[Done]] is false, set result to IteratorClose(iteratorRecord, result).
     if (iteratorRecord.Done === Value.false) {
-      result = IteratorClose(iteratorRecord, result);
+      result = yield* IteratorClose(iteratorRecord, result);
     }
     // b. IfAbruptRejectPromise(result, promiseCapability).
     IfAbruptRejectPromise(result, promiseCapability);
@@ -286,7 +286,7 @@ function* PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability
   // 7. Repeat,
   while (true) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. Let next be IteratorStep(iteratorRecord).
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -310,7 +310,7 @@ function* PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability
       return resultCapability.Promise;
     }
     // e. Let nextValue be IteratorValue(next).
-    const nextValue = IteratorValue(next);
+    const nextValue = yield* IteratorValue(next);
     // f. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (nextValue instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -377,7 +377,7 @@ function* PerformPromiseAllSettled(iteratorRecord, constructor, resultCapability
 }
 
 // #sec-promise.allsettled
-function Promise_allSettled([iterable = Value.undefined], { thisValue }) {
+function* Promise_allSettled([iterable = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
@@ -391,12 +391,12 @@ function Promise_allSettled([iterable = Value.undefined], { thisValue }) {
   // 6. IfAbruptRejectPromise(iteratorRecord, promiseCapability).
   IfAbruptRejectPromise(iteratorRecord, promiseCapability);
   // 7. Let result be PerformPromiseAllSettled(iteratorRecord, C, promiseCapability, promiseResolve).
-  let result = EnsureCompletion(PerformPromiseAllSettled(iteratorRecord, C, promiseCapability, promiseResolve));
+  let result = EnsureCompletion(yield* PerformPromiseAllSettled(iteratorRecord, C, promiseCapability, promiseResolve));
   // 8. If result is an abrupt completion, then
   if (result instanceof AbruptCompletion) {
     // a. If iteratorRecord.[[Done]] is false, set result to IteratorClose(iteratorRecord, result).
     if (iteratorRecord.Done === Value.false) {
-      result = IteratorClose(iteratorRecord, result);
+      result = yield* IteratorClose(iteratorRecord, result);
     }
     // b. IfAbruptRejectPromise(result, promiseCapability).
     IfAbruptRejectPromise(result, promiseCapability);
@@ -464,7 +464,7 @@ function* PerformPromiseAny(iteratorRecord, constructor, resultCapability, promi
   // 7. Repeat,
   while (true) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -495,7 +495,7 @@ function* PerformPromiseAny(iteratorRecord, constructor, resultCapability, promi
       return resultCapability.Promise;
     }
     // e. Let nextValue be IteratorValue(next).
-    const nextValue = IteratorValue(next);
+    const nextValue = yield* IteratorValue(next);
     // f. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (nextValue instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -532,7 +532,7 @@ function* PerformPromiseAny(iteratorRecord, constructor, resultCapability, promi
 }
 
 // #sec-promise.any
-function Promise_any([iterable = Value.undefined], { thisValue }) {
+function* Promise_any([iterable = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
@@ -542,16 +542,16 @@ function Promise_any([iterable = Value.undefined], { thisValue }) {
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
-  const iteratorRecord = GetIterator(iterable);
+  const iteratorRecord = yield* GetIterator(iterable);
   // 6. IfAbruptRejectPromise(iteratorRecord, promiseCapability).
   IfAbruptRejectPromise(iteratorRecord, promiseCapability);
   // 7. Let result be PerformPromiseAny(iteratorRecord, C, promiseCapability).
-  let result = EnsureCompletion(PerformPromiseAny(iteratorRecord, C, promiseCapability, promiseResolve));
+  let result = EnsureCompletion(yield* PerformPromiseAny(iteratorRecord, C, promiseCapability, promiseResolve));
   // 8. If result is an abrupt completion, then
   if (result instanceof AbruptCompletion) {
     // a. If iteratorRecord.[[Done]] is false, set result to IteratorClose(iteratorRecord, result).
     if (iteratorRecord.Done === Value.false) {
-      result = IteratorClose(iteratorRecord, result);
+      result = yield* IteratorClose(iteratorRecord, result);
     }
     // b. IfAbruptRejectPromise(result, promiseCapability).
     IfAbruptRejectPromise(result, promiseCapability);
@@ -570,7 +570,7 @@ function* PerformPromiseRace(iteratorRecord, constructor, resultCapability, prom
   // 4. Repeat,
   while (true) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -585,7 +585,7 @@ function* PerformPromiseRace(iteratorRecord, constructor, resultCapability, prom
       return resultCapability.Promise;
     }
     // e. Let nextValue be IteratorValue(next).
-    const nextValue = IteratorValue(next);
+    const nextValue = yield* IteratorValue(next);
     // f. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (nextValue instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -600,7 +600,7 @@ function* PerformPromiseRace(iteratorRecord, constructor, resultCapability, prom
 }
 
 // #sec-promise.race
-function Promise_race([iterable = Value.undefined], { thisValue }) {
+function* Promise_race([iterable = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. Let promiseCapability be ? NewPromiseCapability(C).
@@ -610,16 +610,16 @@ function Promise_race([iterable = Value.undefined], { thisValue }) {
   // 4. IfAbruptRejectPromise(promiseResolve, promiseCapability).
   IfAbruptRejectPromise(promiseResolve, promiseCapability);
   // 5. Let iteratorRecord be GetIterator(iterable).
-  const iteratorRecord = GetIterator(iterable);
+  const iteratorRecord = yield* GetIterator(iterable);
   // 6. IfAbruptRejectPromise(iteratorRecord, promiseCapability).
   IfAbruptRejectPromise(iteratorRecord, promiseCapability);
   // 7. Let result be PerformPromiseRace(iteratorRecord, C, promiseCapability, promiseResolve).
-  let result = EnsureCompletion(PerformPromiseRace(iteratorRecord, C, promiseCapability, promiseResolve));
+  let result = EnsureCompletion(yield* PerformPromiseRace(iteratorRecord, C, promiseCapability, promiseResolve));
   // 8. If result is an abrupt completion, then
   if (result instanceof AbruptCompletion) {
     // a. If iteratorRecord.[[Done]] is false, set result to IteratorClose(iteratorRecord, result).
     if (iteratorRecord.Done === Value.false) {
-      result = IteratorClose(iteratorRecord, result);
+      result = yield* IteratorClose(iteratorRecord, result);
     }
     // b. IfAbruptRejectPromise(result, promiseCapability).
     IfAbruptRejectPromise(result, promiseCapability);
@@ -641,7 +641,7 @@ function* Promise_reject([r = Value.undefined], { thisValue }) {
 }
 
 // #sec-promise.resolve
-function Promise_resolve([x = Value.undefined], { thisValue }) {
+function* Promise_resolve([x = Value.undefined], { thisValue }) {
   // 1. Let C be the this value.
   const C = thisValue;
   // 2. If Type(C) is not Object, throw a TypeError exception.
@@ -649,7 +649,7 @@ function Promise_resolve([x = Value.undefined], { thisValue }) {
     return surroundingAgent.Throw('TypeError', 'InvalidReceiver', 'Promise.resolve', C);
   }
   // 3. Return ? PromiseResolve(C, x).
-  return Q(PromiseResolve(C, x));
+  return Q(yield* PromiseResolve(C, x));
 }
 
 // #sec-get-promise-@@species

@@ -14,7 +14,7 @@ import { captureStack } from '../helpers.mjs';
 import { bootstrapConstructor } from './bootstrap.mjs';
 
 // #sec-aggregate-error-constructor
-function AggregateErrorConstructor([errors = Value.undefined, message = Value.undefined, options = Value.undefined], { NewTarget }) {
+function* AggregateErrorConstructor([errors = Value.undefined, message = Value.undefined, options = Value.undefined], { NewTarget }) {
   // 1. If NewTarget is undefined, let newTarget be the active function object, else let newTarget be NewTarget.
   let newTarget;
   if (NewTarget === Value.undefined) {
@@ -34,7 +34,7 @@ function AggregateErrorConstructor([errors = Value.undefined, message = Value.un
     X(CreateMethodProperty(O, new Value('message'), msg));
   }
   // 4. Let errorsList be ? IterableToList(errors).
-  const errorsList = Q(IterableToList(errors));
+  const errorsList = Q(yield* IterableToList(errors));
   // 5. Perform ! DefinePropertyOrThrow(O, "errors", Property Descriptor { [[Configurable]]: true, [[Enumerable]]: false, [[Writable]]: true, [[Value]]: ! CreateArrayFromList(errorsList) }).
   X(DefinePropertyOrThrow(O, new Value('errors'), Descriptor({
     Configurable: Value.true,

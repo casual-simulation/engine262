@@ -49,7 +49,7 @@ function* TypedArray_from([source = Value.undefined, mapfn = Value.undefined, th
   const usingIterator = Q(GetMethod(source, wellKnownSymbols.iterator));
   // 6. If usingIterator is not undefined, then
   if (usingIterator !== Value.undefined) {
-    const values = Q(IterableToList(source, usingIterator));
+    const values = Q(yield* IterableToList(source, usingIterator));
     const len = values.length;
     const targetObj = Q(TypedArrayCreate(C, [F(len)]));
     let k = 0;

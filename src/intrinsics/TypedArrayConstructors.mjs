@@ -164,7 +164,7 @@ export function bootstrapTypedArrayConstructors(realmRec) {
         // 6. If usingIterator is not undefined, then
         if (usingIterator !== Value.undefined) {
           // a. Let values be ? IterableToList(object, usingIterator).
-          const values = Q(IterableToList(object, usingIterator));
+          const values = Q(yield* IterableToList(object, usingIterator));
           // b. Let len be the number of elements in values.
           const len = values.length;
           // c. Perform ? AllocateTypedArrayBuffer(O, len).

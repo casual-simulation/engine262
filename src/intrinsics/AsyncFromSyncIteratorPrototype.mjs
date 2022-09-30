@@ -13,7 +13,7 @@ import { IfAbruptRejectPromise, X } from '../completion.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-%asyncfromsynciteratorprototype%.next
-function AsyncFromSyncIteratorPrototype_next([value], { thisValue }) {
+function* AsyncFromSyncIteratorPrototype_next([value], { thisValue }) {
   // 1. Let O be the this value.
   const O = thisValue;
   // 2. Assert: Type(O) is Object and O has a [[SyncIteratorRecord]] internal slot.
@@ -26,15 +26,15 @@ function AsyncFromSyncIteratorPrototype_next([value], { thisValue }) {
   let result;
   if (value !== undefined) {
     // a. Let result be IteratorNext(syncIteratorRecord, value).
-    result = IteratorNext(syncIteratorRecord, value);
+    result = yield* IteratorNext(syncIteratorRecord, value);
   } else { // 6. Else,
     // a. Let result be IteratorNext(syncIteratorRecord).
-    result = IteratorNext(syncIteratorRecord);
+    result = yield* IteratorNext(syncIteratorRecord);
   }
   // 7. IfAbruptRejectPromise(result, promiseCapability).
   IfAbruptRejectPromise(result, promiseCapability);
   // 8. Return ! AsyncFromSyncIteratorContinuation(result, promiseCapability).
-  return X(AsyncFromSyncIteratorContinuation(result, promiseCapability));
+  return X(yield* AsyncFromSyncIteratorContinuation(result, promiseCapability));
 }
 
 // #sec-%asyncfromsynciteratorprototype%.return

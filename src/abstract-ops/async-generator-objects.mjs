@@ -263,7 +263,7 @@ export function AsyncGeneratorAwaitReturn(generator) {
   // 5. Assert: completion.[[Type]] is return.
   Assert(completion.Type === 'return');
   // 6. Let promise be ? PromiseResolve(%Promise%, completion.[[Value]]).
-  const promise = Q(PromiseResolve(surroundingAgent.intrinsic('%Promise%'), completion.Value));
+  const promise = Q(unwind(PromiseResolve(surroundingAgent.intrinsic('%Promise%'), completion.Value)));
   // 7. Let fulfilledClosure be a new Abstract Closure with parameters (value) that captures generator and performs the following steps when called:
   const fulfilledClosure = ([value = Value.undefined]) => {
     // a. Set generator.[[AsyncGeneratorState]] to completed.

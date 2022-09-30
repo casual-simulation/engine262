@@ -52,7 +52,7 @@ function* PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
       // i. Let result be ? Call(onFinally, undefined).
       const result = Q(yield* (Call(onFinally, Value.undefined)));
       // ii. Let promise be ? PromiseResolve(C, result).
-      const promiseInner = Q(PromiseResolve(C, result));
+      const promiseInner = Q(yield* PromiseResolve(C, result));
       // iii. Let returnValue be a new Abstract Closure with no parameters that captures value and performs the following steps when called:
       //   1. Return value.
       const returnValue = () => value;
@@ -68,7 +68,7 @@ function* PromiseProto_finally([onFinally = Value.undefined], { thisValue }) {
       // i. Let result be ? Call(onFinally, undefined).
       const result = Q(yield* (Call(onFinally, Value.undefined)));
       // ii. Let promise be ? PromiseResolve(C, result).
-      const promiseInner = Q(PromiseResolve(C, result));
+      const promiseInner = Q(yield* PromiseResolve(C, result));
       // iii. Let throwReason be a new Abstract Closure with no parameters that captures reason and performs the following steps when called:
       //   1. Return ThrowCompletion(reason).
       const throwReason = () => ThrowCompletion(reason);

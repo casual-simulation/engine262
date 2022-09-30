@@ -555,7 +555,7 @@ function* ForInOfHeadEvaluation(uninitializedBoundNames, expr, iterationKind) {
     // c. Else, let iteratorHint be sync.
     const iteratorHint = iterationKind === 'async-iterate' ? 'async' : 'sync';
     // d. Return ? GetIterator(exprValue, iteratorHint).
-    return Q(GetIterator(exprValue, iteratorHint));
+    return Q(yield* GetIterator(exprValue, iteratorHint));
   }
 }
 
@@ -596,13 +596,13 @@ function* ForInOfBodyEvaluation(lhs, stmt, iteratorRecord, iterationKind, lhsKin
       return surroundingAgent.Throw('TypeError', 'NotAnObject', nextResult);
     }
     // d. Let done be ? IteratorComplete(nextResult).
-    const done = Q(IteratorComplete(nextResult));
+    const done = Q(yield* IteratorComplete(nextResult));
     // e. If done is true, return NormalCompletion(V).
     if (done === Value.true) {
       return NormalCompletion(V);
     }
     // f. Let nextValue be ? IteratorValue(nextResult).
-    const nextValue = Q(IteratorValue(nextResult));
+    const nextValue = Q(yield* IteratorValue(nextResult));
     // g. If lhsKind is either assignment or varBinding, then
     let lhsRef;
     let iterationEnv;
@@ -680,7 +680,7 @@ function* ForInOfBodyEvaluation(lhs, stmt, iteratorRecord, iterationKind, lhsKin
         // 1. Assert: iterationKind is iterate.
         Assert(iterationKind === 'iterate');
         // 2 .Return ? IteratorClose(iteratorRecord, status).
-        return Q(IteratorClose(iteratorRecord, status));
+        return Q(yield* IteratorClose(iteratorRecord, status));
       }
     }
     // l. Let result be the result of evaluating stmt.
@@ -703,7 +703,7 @@ function* ForInOfBodyEvaluation(lhs, stmt, iteratorRecord, iterationKind, lhsKin
           return Q(yield* AsyncIteratorClose(iteratorRecord, status));
         }
         // 4. Return ? IteratorClose(iteratorRecord, status).
-        return Q(IteratorClose(iteratorRecord, status));
+        return Q(yield* IteratorClose(iteratorRecord, status));
       }
     }
     // o. If result.[[Value]] is not empty, set V to result.[[Value]].

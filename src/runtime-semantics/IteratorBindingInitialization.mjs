@@ -76,7 +76,7 @@ function* IteratorBindingInitialization_SingleNameBinding({ BindingIdentifier, I
   // 3. If iteratorRecord.[[Done]] is false, then
   if (iteratorRecord.Done === Value.false) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -88,7 +88,7 @@ function* IteratorBindingInitialization_SingleNameBinding({ BindingIdentifier, I
       iteratorRecord.Done = Value.true;
     } else { // e. Else,
       // i. Let v be IteratorValue(next).
-      v = IteratorValue(next);
+      v = yield* IteratorValue(next);
       // ii. If v is an abrupt completion, set iteratorRecord.[[Done]] to true.
       if (v instanceof AbruptCompletion) {
         iteratorRecord.Done = Value.true;
@@ -135,7 +135,7 @@ function* IteratorBindingInitialization_BindingRestElement({ BindingIdentifier, 
       // a. If iteratorRecord.[[Done]] is false, then
       if (iteratorRecord.Done === Value.false) {
         // i. Let next be IteratorStep(iteratorRecord).
-        next = IteratorStep(iteratorRecord);
+        next = yield* IteratorStep(iteratorRecord);
         // ii. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
         if (next instanceof AbruptCompletion) {
           iteratorRecord.Done = Value.true;
@@ -157,7 +157,7 @@ function* IteratorBindingInitialization_BindingRestElement({ BindingIdentifier, 
         return InitializeReferencedBinding(lhs, A);
       }
       // c. Let nextValue be IteratorValue(next).
-      const nextValue = IteratorValue(next);
+      const nextValue = yield* IteratorValue(next);
       // d. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
       if (nextValue instanceof AbruptCompletion) {
         iteratorRecord.Done = Value.true;
@@ -180,7 +180,7 @@ function* IteratorBindingInitialization_BindingRestElement({ BindingIdentifier, 
       // a. If iteratorRecord.[[Done]] is false, then
       if (iteratorRecord.Done === Value.false) {
         // i. Let next be IteratorStep(iteratorRecord).
-        next = IteratorStep(iteratorRecord);
+        next = yield* IteratorStep(iteratorRecord);
         // ii. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
         if (next instanceof AbruptCompletion) {
           iteratorRecord.Done = Value.true;
@@ -198,7 +198,7 @@ function* IteratorBindingInitialization_BindingRestElement({ BindingIdentifier, 
         return yield* BindingInitialization(BindingPattern, A, environment);
       }
       // c. Let nextValue be IteratorValue(next).
-      const nextValue = IteratorValue(next);
+      const nextValue = yield* IteratorValue(next);
       // d. If nextValue is an abrupt completion, set iteratorRecord.[[Done]] to true.
       if (nextValue instanceof AbruptCompletion) {
         iteratorRecord.Done = Value.true;
@@ -218,7 +218,7 @@ function* IteratorBindingInitialization_BindingPattern({ BindingPattern, Initial
   // 1. If iteratorRecord.[[Done]] is false, then
   if (iteratorRecord.Done === Value.false) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -230,7 +230,7 @@ function* IteratorBindingInitialization_BindingPattern({ BindingPattern, Initial
       iteratorRecord.Done = Value.true;
     } else { // e. Else,
       // i. Let v be IteratorValue(next).
-      v = IteratorValue(next);
+      v = yield* IteratorValue(next);
       // ii. If v is an abrupt completion, set iteratorRecord.[[Done]] to true.
       if (v instanceof AbruptCompletion) {
         iteratorRecord.Done = Value.true;
@@ -254,12 +254,12 @@ function* IteratorBindingInitialization_BindingPattern({ BindingPattern, Initial
   return yield* BindingInitialization(BindingPattern, v, environment);
 }
 
-function IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
+function* IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
   Assert(node.type === 'Elision');
   // 1. If iteratorRecord.[[Done]] is false, then
   if (iteratorRecord.Done === Value.false) {
     // a. Let next be IteratorStep(iteratorRecord).
-    const next = IteratorStep(iteratorRecord);
+    const next = yield* IteratorStep(iteratorRecord);
     // b. If next is an abrupt completion, set iteratorRecord.[[Done]] to true.
     if (next instanceof AbruptCompletion) {
       iteratorRecord.Done = Value.true;
@@ -278,7 +278,7 @@ function IteratorDestructuringAssignmentEvaluation(node, iteratorRecord) {
 export function* IteratorBindingInitialization_ArrayBindingPattern({ BindingElementList, BindingRestElement }, iteratorRecord, environment) {
   for (const BindingElement of BindingElementList) {
     if (BindingElement.type === 'Elision') {
-      Q(IteratorDestructuringAssignmentEvaluation(BindingElement, iteratorRecord));
+      Q(yield* IteratorDestructuringAssignmentEvaluation(BindingElement, iteratorRecord));
     } else {
       Q(yield* IteratorBindingInitialization_BindingElement(BindingElement, iteratorRecord, environment));
     }

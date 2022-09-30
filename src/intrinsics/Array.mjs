@@ -115,20 +115,20 @@ function* Array_from([items = Value.undefined, mapfn = Value.undefined, thisArg 
     } else {
       A = X(ArrayCreate(0));
     }
-    const iteratorRecord = Q(GetIterator(items, 'sync', usingIterator));
+    const iteratorRecord = Q(yield* GetIterator(items, 'sync', usingIterator));
     let k = 0;
     while (true) { // eslint-disable-line no-constant-condition
       if (k >= (2 ** 53) - 1) {
         const error = ThrowCompletion(surroundingAgent.Throw('TypeError', 'ArrayPastSafeLength').Value);
-        return Q(IteratorClose(iteratorRecord, error));
+        return Q(yield* IteratorClose(iteratorRecord, error));
       }
       const Pk = X(ToString(F(k)));
-      const next = Q(IteratorStep(iteratorRecord));
+      const next = Q(yield* IteratorStep(iteratorRecord));
       if (next === Value.false) {
         Q(unwind(Set(A, new Value('length'), F(k), Value.true)));
         return A;
       }
-      const nextValue = Q(IteratorValue(next));
+      const nextValue = Q(yield* IteratorValue(next));
       let mappedValue;
       if (mapping) {
         mappedValue = yield* (Call(mapfn, thisArg, [nextValue, F(k)]));
