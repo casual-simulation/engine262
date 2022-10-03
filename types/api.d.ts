@@ -3,14 +3,19 @@ import { Completion } from './completion';
 import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
 import { Value, ObjectValue } from './value';
+import { Evaluate } from './evaluator';
 
+export * from './value';
 export * from './engine';
-export * from './realms';
 export * from './completion';
+export * from './abstract-ops';
+export * from './runtime-semantics';
+export * from './realms';
 export * from './environment';
 export * from './parse';
 export * from './modules';
 export * from './inspect';
+export { Evaluate };
 
 export function setSurroundingAgent(agent: Agent): void;
 export let surroundingAgent: Agent;
