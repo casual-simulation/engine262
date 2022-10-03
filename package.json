@@ -9,6 +9,7 @@
     "url": "https://github.com/engine262/engine262/issues"
   },
   "main": "dist/engine262",
+  "types": "types/index.d.ts",
   "scripts": {
     "lint": "eslint rollup.config.js test/ src/ bin/ inspector/ scripts/ --cache --ext=js,mjs",
     "build": "run-s build:*",
