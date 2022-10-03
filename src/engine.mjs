@@ -318,10 +318,10 @@ function* FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapab
   }
 }
 
-export function* HostImportModuleDynamically(referencingScriptOrModule, specifier, promiseCapability) {
+export function HostImportModuleDynamically(referencingScriptOrModule, specifier, promiseCapability) {
   surroundingAgent.queueJob('ImportModuleDynamicallyJobs', function*() {
     const finish = (c) => FinishDynamicImport(referencingScriptOrModule, specifier, promiseCapability, c);
-    const c = (function*() {
+    const c = yield* (function*() {
       const module = Q(HostResolveImportedModule(referencingScriptOrModule, specifier));
       Q(module.Link());
       const maybePromise = Q(yield* module.Evaluate());

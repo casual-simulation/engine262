@@ -40,7 +40,7 @@ function ModuleNamespacePreventExtensions() {
   return Value.true;
 }
 
-function* ModuleNamespaceGetOwnProperty(P) {
+function ModuleNamespaceGetOwnProperty(P) {
   const O = this;
 
   if (Type(P) === 'Symbol') {
@@ -50,7 +50,7 @@ function* ModuleNamespaceGetOwnProperty(P) {
   if (!exports.has(P)) {
     return Value.undefined;
   }
-  const value = Q(yield* wrap(O.Get(P, O)));
+  const value = Q(unwind(wrap(O.Get(P, O))));
   return Descriptor({
     Value: value,
     Writable: Value.true,
