@@ -8,3 +8,4 @@ rollup.config.js
 .eslintignore
 .travis.yml
 .github
+.gitmodules
