@@ -4,6 +4,7 @@ import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
 import { Value, ObjectValue } from './value';
 import { Evaluate } from './evaluator';
+import { ScriptRecord } from './parse';
 
 export * from './value';
 export * from './engine';
@@ -22,7 +23,7 @@ export let surroundingAgent: Agent;
 
 export function runJobQueue(): Generator<any, any, any>;
 
-export function evaluateScript(sourceText: string, realm: Realm, hostDefined: any): Completion;
+export function evaluateScript(sourceText: string, realm: Realm, hostDefined: any): Completion<Value>;
 
 export interface ManagedRealmOptions {
     promiseRejectionTracker?(): void;
@@ -32,14 +33,16 @@ export interface ManagedRealmOptions {
     [key: string]: any;
 }
 
-export class ManagedRealm {
+export class ManagedRealm extends Realm {
     GlobalObject: ObjectValue;
 
     constructor(options: ManagedRealmOptions);
 
     scope<T>(func: () => T): T;
 
-    evaluateScript(script: string): Completion;
+    evaluateScript(script: string): Completion<Value>;
+
+    parseScript(sourceText: string, specifier?: any): ScriptRecord;
 
     createSourceTextModule(specifier: string, sourceText: string): ManagedSourceTextModuleRecord | [any];
 }

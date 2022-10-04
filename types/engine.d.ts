@@ -33,6 +33,6 @@ export class ExecutionContext {
     PrivateEnvironment: EnvironmentRecord;
 }
 
-export function ScriptEvaluation(scriptRecord: ScriptRecord): Completion;
+export function ScriptEvaluation(scriptRecord: ScriptRecord): Completion<Value>;
 // export function HostEnqueuePromiseJob(job)
 

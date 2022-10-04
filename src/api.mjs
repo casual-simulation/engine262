@@ -244,6 +244,22 @@ export class ManagedRealm extends Realm {
     return res;
   }
 
+  parseScript(sourceText, specifier = undefined) {
+    if (typeof sourceText !== 'string') {
+      throw new TypeError('sourceText must be a string');
+    }
+    const hostDefined = {
+      specifier,
+      public: { specifier },
+    };
+    const s = ParseScript(sourceText, this, hostDefined);
+    if (Array.isArray(s)) {
+      throw s[0];
+      // return ThrowCompletion(s[0]);
+    }
+    return s;
+  }
+
   createSourceTextModule(specifier, sourceText) {
     if (typeof specifier !== 'string') {
       throw new TypeError('specifier must be a string');

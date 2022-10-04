@@ -5,9 +5,9 @@ import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberVal
 
 // Object Operations
 export function MakeBasicObject(internalSlotsList: string[]): ObjectValue;
-export function Get(O: Value, P: Value): Generator<unknown, Completion, unknown>;
-export function Set(O: Value, P: Value, V: Value, Throw: BooleanValue): Generator<unknown, Completion, unknown>;
-export function CreateDataProperty(O: Value, P: Value, V: Value): Completion;
+export function Get(O: Value, P: Value): Generator<unknown, Completion<Value>, unknown>;
+export function Set(O: Value, P: Value, V: Value, Throw: BooleanValue): Generator<unknown, Completion<Value>, unknown>;
+export function CreateDataProperty(O: Value, P: Value, V: Value): Completion<Value>;
 
 
 // Function Operations
