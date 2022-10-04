@@ -10,7 +10,7 @@ export class DeclarativeEnvironmentRecord extends EnvironmentRecord {
     bindings: ValueMap;
 
     SetMutableBinding(N: Value, V: Value, S: BooleanValue): Completion<any>;
-    GetBindingValue(N: Value): Value;
+    GetBindingValue(N: Value, S?: BooleanValue): Value;
     HasBinding(N: Value): BooleanValue;
     DeleteBinding(N: Value): BooleanValue;
     HasThisBinding(): BooleanValue;
@@ -38,5 +38,5 @@ export class GlobalEnvironmentRecord extends EnvironmentRecord {
 }
 
 export class ModuleEnvironmentRecord extends DeclarativeEnvironmentRecord {
-
+    GetBindingValue(N: Value, S: BooleanValue): Value;
 }
