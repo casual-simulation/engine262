@@ -2,7 +2,7 @@ import { Agent } from './engine';
 import { Completion } from './completion';
 import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
-import { Value, ObjectValue } from './value';
+import { Value, ObjectValue, NullValue } from './value';
 import { Evaluate } from './evaluator';
 import { ScriptRecord } from './parse';
 
@@ -27,7 +27,7 @@ export function evaluateScript(sourceText: string, realm: Realm, hostDefined: an
 
 export interface ManagedRealmOptions {
     promiseRejectionTracker?(): void;
-    resolveImportedModule?(referencingScriptOrModule: SourceTextModuleRecord | ScriptRecord, specifier: string): SourceTextModuleRecord;
+    resolveImportedModule?(referencingScriptOrModule: SourceTextModuleRecord | ScriptRecord, specifier: string): SourceTextModuleRecord | NullValue;
     randomSeed?(): void;
 
     [key: string]: any;
