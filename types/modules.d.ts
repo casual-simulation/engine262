@@ -1,12 +1,12 @@
 import { Completion } from "./completion";
-import { EnvironmentRecord } from "./environment";
+import { ModuleEnvironmentRecord } from "./environment";
 import { Realm } from "./realms";
-import { BooleanValue, JSStringValue, NullValue, Value } from "./value";
+import { BooleanValue, JSStringValue, NullValue, ObjectValue, Value } from "./value";
 import { ECMAScriptNode } from './parse';
 
 export class AbstractModuleRecord {
     Realm: Realm;
-    Environment: EnvironmentRecord;
+    Environment: ModuleEnvironmentRecord;
     Namespace: any;
     HostDefined: any;
 }
@@ -14,11 +14,11 @@ export class AbstractModuleRecord {
 export class CyclicModuleRecord extends AbstractModuleRecord {
     Async: BooleanValue;
     AsyncEvaluating: BooleanValue;
-    Status: 'unlinked' | 'linked' | 'evaluated';
+    Status: 'unlinked' | 'linked' | 'evaluating-async' | 'evaluated';
     RequestedModules: JSStringValue[];
 
-    Evaluate(): Generator<any, any, any>;
-    EvaluateAndUnwind(): any;
+    Evaluate(): Generator<any, ObjectValue, any>;
+    EvaluateAndUnwind(): ObjectValue;
     Link(): Value | Completion<any>;
 }
 

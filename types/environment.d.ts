@@ -1,3 +1,4 @@
+import { Completion } from "./completion";
 import { ValueMap } from "./helpers";
 import { BooleanValue, ObjectValue, Value, JSStringValue } from "./value";
 
@@ -7,6 +8,14 @@ export class EnvironmentRecord {
 
 export class DeclarativeEnvironmentRecord extends EnvironmentRecord {
     bindings: ValueMap;
+
+    SetMutableBinding(N: Value, V: Value, S: BooleanValue): Completion<any>;
+    GetBindingValue(N: Value): Value;
+    HasBinding(N: Value): BooleanValue;
+    DeleteBinding(N: Value): BooleanValue;
+    HasThisBinding(): BooleanValue;
+    HasSuperBinding(): BooleanValue;
+    WithBaseObject(): ObjectValue;
 }
 
 export class ObjectEnvironmentRecord extends EnvironmentRecord {
@@ -29,5 +38,5 @@ export class GlobalEnvironmentRecord extends EnvironmentRecord {
 }
 
 export class ModuleEnvironmentRecord extends DeclarativeEnvironmentRecord {
-    
+
 }
