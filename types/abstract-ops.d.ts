@@ -28,3 +28,18 @@ export function Invoke(V: ObjectValue, P: Value, argumentsList: Value[]): Genera
 export function CreateBuiltinFunction(steps: Function, length: number, name: JSStringValue | SymbolValue, realm: Realm, prototype?: ObjectValue, prefix?: JSStringValue, isConstructor?: BooleanValue): ObjectValue;
 export function isECMAScriptFunctionObject(O: unknown): boolean;
 export function isFunctionObject(O: unknown): boolean;
+
+// Testing Comparision
+export function IsArray(argument: Value): BooleanValue;
+export function IsCallable(argument: Value): BooleanValue;
+export function IsConstructor(argument: Value): BooleanValue;
+export function IsExtensible(O: Value): BooleanValue;
+export function IsIntegralNumber(argument: Value): BooleanValue;
+export function IsPropertyKey(argument: Value): boolean;
+export function IsRegExp(argument: Value): BooleanValue;
+export function IsStringPrefix(p: JSStringValue, q: JSStringValue): BooleanValue;
+export function SameValue(x: Value, y: Value): BooleanValue;
+export function SameValueZero(x: Value, y: Value): BooleanValue;
+export function SameValueNonNumber(x: Value, y: Value): BooleanValue;
+export function StrictEqualityComparison(x: Value, y: Value): BooleanValue;
+export function IsValidIntegerIndex(O: Value, index: NumberValue): BooleanValue;
