@@ -27,7 +27,7 @@ export function evaluateScript(sourceText: string, realm: Realm, hostDefined: an
 
 export interface ManagedRealmOptions {
     promiseRejectionTracker?(): void;
-    resolveImportedModule?(): void;
+    resolveImportedModule?(referencingScriptOrModule: SourceTextModuleRecord | ScriptRecord, specifier: string): SourceTextModuleRecord;
     randomSeed?(): void;
 
     [key: string]: any;
