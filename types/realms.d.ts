@@ -4,6 +4,7 @@ import { Value } from "./value";
 export class Realm {
     GlobalObject: Value;
     GlobalEnv: GlobalEnvironmentRecord;
+    Intrinsics: { [key: string]: Value };
 }
 
 export function CreateRealm(): Realm;

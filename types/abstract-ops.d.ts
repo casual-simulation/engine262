@@ -3,6 +3,10 @@ import { Realm } from "./realms";
 import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberValue } from "./value";
 
 
+export function OrdinaryObjectCreate(proto: Value, additionalInternaSlotsList: string[]): ObjectValue;
+export function OrdinaryCreateFromConstructor(constructor: Value, intrinsicDefaultProto: string, internalSlotsList: string[]): ObjectValue;
+export function GetPrototypeFromConstructor(constructor: Value, intrinsicDefaultProto: string): Value;
+
 // Object Operations
 export function MakeBasicObject(internalSlotsList: string[]): ObjectValue;
 export function Get(O: Value, P: Value): Generator<unknown, Completion<Value>, unknown>;

@@ -64,8 +64,8 @@ export class ObjectValue extends Value {
     GetOwnProperty(P: Value): Value;
     DefineOwnProperty(P: Value, Desc: Value): Value;
     HasProperty(P: Value): Value;
-    Get(P: Value, Receiver: Value): Value;
-    Set(P: Value, V: Value, Receiver: Value): Value;
+    Get(P: Value, Receiver: Value): Value | Generator<any, Value, any>;
+    Set(P: Value, V: Value, Receiver: Value): Value | Generator<any, Value, any>;
     Delete(P: Value): Value;
     OwnPropertyKeys(): Value[];
 }
