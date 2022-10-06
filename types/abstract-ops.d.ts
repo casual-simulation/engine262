@@ -3,7 +3,7 @@ import { Realm } from "./realms";
 import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberValue } from "./value";
 
 
-export function OrdinaryObjectCreate(proto: Value, additionalInternaSlotsList: string[]): ObjectValue;
+export function OrdinaryObjectCreate(proto: Value, additionalInternaSlotsList?: string[]): ObjectValue;
 export function OrdinaryCreateFromConstructor(constructor: Value, intrinsicDefaultProto: string, internalSlotsList: string[]): ObjectValue;
 export function GetPrototypeFromConstructor(constructor: Value, intrinsicDefaultProto: string): Value;
 
@@ -29,7 +29,7 @@ export function Construct(F: ObjectValue, argumentsList: Value[], newTarget?: Ob
 export function Invoke(V: ObjectValue, P: Value, argumentsList: Value[]): Generator<unknown, Completion<Value>, unknown>;
 
 // Function Operations
-export function CreateBuiltinFunction(steps: Function, length: number, name: JSStringValue | SymbolValue, realm: Realm, prototype?: ObjectValue, prefix?: JSStringValue, isConstructor?: BooleanValue): ObjectValue;
+export function CreateBuiltinFunction(steps: Function, length: number, name: JSStringValue | SymbolValue, internalSlotsList: string[], realm?: Realm, prototype?: ObjectValue, prefix?: JSStringValue, isConstructor?: BooleanValue): ObjectValue;
 export function isECMAScriptFunctionObject(O: unknown): boolean;
 export function isFunctionObject(O: unknown): boolean;
 
