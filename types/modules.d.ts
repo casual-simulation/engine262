@@ -25,7 +25,7 @@ export class CyclicModuleRecord extends AbstractModuleRecord {
 export class SourceTextModuleRecord extends CyclicModuleRecord {
     ECMAScriptCode: ECMAScriptNode;
     ImportEntries: ImportEntry[];
-    LocalExportEntries: ImportEntry[];
+    LocalExportEntries: ExportEntry[];
     IndirectExportEntries: ExportEntry[];
     StarExportEntries: ExportEntry[];
 
