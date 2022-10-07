@@ -6,7 +6,7 @@ export class Value {
     static null: NullValue;
     static true: BooleanValue;
     static false: BooleanValue;
-    constructor(value?: string | number | bigint | Function);
+    constructor(value?: string | number | bigint | Function | boolean | undefined | null);
 }
 
 export class PrimitiveValue extends Value {}

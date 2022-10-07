@@ -38,6 +38,16 @@ export class Value {
         return new BigIntValue(value);
       case 'function':
         return CreateBuiltinFunction(value, 0, new Value(''), []);
+      case 'boolean':
+        return value ? Value.true : Value.false;
+      case 'undefined':
+        return Value.undefined;
+      case 'object':
+        if(value === null) {
+          return Value.null;
+        } else {
+          throw new OutOfRange('new Value', value);
+        }
       default:
         throw new OutOfRange('new Value', value);
     }
