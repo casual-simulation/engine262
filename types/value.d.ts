@@ -1,3 +1,4 @@
+import { Completion } from './completion';
 import { ValueMap } from './helpers';
 
 export class Value {
@@ -23,7 +24,9 @@ export class JSStringValue extends PrimitiveValue {
     stringValue(): string;
     constructor(string: string);
 }
-export class SymbolValue extends PrimitiveValue {}
+export class SymbolValue extends PrimitiveValue {
+    Description: string;
+}
 
 export class NumberValue extends PrimitiveValue {
     constructor(number: number);
@@ -57,17 +60,17 @@ export class ObjectValue extends Value {
     properties: ValueMap;
     internalSlotsList: string[];
 
-    GetPrototypeOf(): Value;
-    SetPrototypeOf(V: Value): Value;
-    IsExtensible(): Value;
-    PreventExtensions(): Value;
-    GetOwnProperty(P: Value): Value;
-    DefineOwnProperty(P: Value, Desc: Value): Value;
-    HasProperty(P: Value): Value;
-    Get(P: Value, Receiver: Value): Value | Generator<any, Value, any>;
-    Set(P: Value, V: Value, Receiver: Value): Value | Generator<any, Value, any>;
-    Delete(P: Value): Value;
-    OwnPropertyKeys(): Value[];
+    GetPrototypeOf(): Value | Completion<any>;
+    SetPrototypeOf(V: Value): Value | Completion<any>;
+    IsExtensible(): Value | Completion<any>;
+    PreventExtensions(): Value | Completion<any>;
+    GetOwnProperty(P: Value): Value | Completion<any>;
+    DefineOwnProperty(P: Value, Desc: Value): Value | Completion<any>;
+    HasProperty(P: Value): Value | Completion<any>;
+    Get(P: Value, Receiver: Value): (Value | Completion<any>) | Generator<any, (Value | Completion<any>), any>;
+    Set(P: Value, V: Value, Receiver: Value): (Value | Completion<any>) | Generator<any, (Value | Completion<any>), any>;
+    Delete(P: Value): Value | Completion<any>;
+    OwnPropertyKeys(): Value[] | Completion<any>;
 }
 
 export class ReferenceRecord {}

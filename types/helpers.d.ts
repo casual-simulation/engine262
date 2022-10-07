@@ -10,6 +10,8 @@ export class ValueMap {
     has(key: Value): boolean;
     delete(key: Value): boolean;
 
-    keys(): Iterator<string>;
-    entries(): Iterator<[Value, any][]>;
+    keys(): IterableIterator<string>;
+    entries(): IterableIterator<[Value, any]>;
+
+    [Symbol.iterator](): IterableIterator<[Value, any]>;
 }
