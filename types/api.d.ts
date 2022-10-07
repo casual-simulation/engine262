@@ -44,7 +44,7 @@ export class ManagedRealm extends Realm {
 
     parseScript(sourceText: string, specifier?: any): ScriptRecord;
 
-    createSourceTextModule(specifier: string, sourceText: string): ManagedSourceTextModuleRecord | [any];
+    createSourceTextModule(specifier: string, sourceText: string): ManagedSourceTextModuleRecord | Completion<any>;
 }
 
 export class ManagedSourceTextModuleRecord extends SourceTextModuleRecord {}
