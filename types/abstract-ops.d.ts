@@ -29,7 +29,7 @@ export function Construct(F: ObjectValue, argumentsList: Value[], newTarget?: Ob
 export function Invoke(V: ObjectValue, P: Value, argumentsList: Value[]): Generator<unknown, Completion<Value>, unknown>;
 
 // Function Operations
-export function CreateBuiltinFunction(steps: Function, length: number, name: JSStringValue | SymbolValue, internalSlotsList: string[], realm?: Realm, prototype?: ObjectValue, prefix?: JSStringValue, isConstructor?: BooleanValue): ObjectValue;
+export function CreateBuiltinFunction(steps: Function, length: number, name: Value, internalSlotsList: string[], realm?: Realm, prototype?: Value, prefix?: Value, isConstructor?: Value): ObjectValue;
 export function isECMAScriptFunctionObject(O: unknown): boolean;
 export function isFunctionObject(O: unknown): boolean;
 
@@ -41,9 +41,9 @@ export function IsExtensible(O: Value): BooleanValue;
 export function IsIntegralNumber(argument: Value): BooleanValue;
 export function IsPropertyKey(argument: Value): boolean;
 export function IsRegExp(argument: Value): BooleanValue;
-export function IsStringPrefix(p: JSStringValue, q: JSStringValue): BooleanValue;
+export function IsStringPrefix(p: Value, q: Value): BooleanValue;
 export function SameValue(x: Value, y: Value): BooleanValue;
 export function SameValueZero(x: Value, y: Value): BooleanValue;
 export function SameValueNonNumber(x: Value, y: Value): BooleanValue;
 export function StrictEqualityComparison(x: Value, y: Value): BooleanValue;
-export function IsValidIntegerIndex(O: Value, index: NumberValue): BooleanValue;
+export function IsValidIntegerIndex(O: Value, index: Value): BooleanValue;
