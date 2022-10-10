@@ -62,7 +62,7 @@ export interface StatementBase extends NodeBase {
 
 export interface ReturnStatement extends StatementBase {
     type: 'ReturnStatement';
-    expression: Expression;
+    Expression: Expression;
 }
 
 export interface IfStatement extends StatementBase {
