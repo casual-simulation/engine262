@@ -17,6 +17,7 @@ export interface AgentOptions {
 export class Agent {
     currentRealmRecord: Realm;
     executionContextStack: ExecutionContextStack;
+    hostDefinedOptions: AgentOptions;
     constructor(options: AgentOptions);
 }
 
