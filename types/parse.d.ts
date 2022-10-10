@@ -96,7 +96,7 @@ export interface LexicalDeclaration extends StatementBase {
 export interface LexicalBinding extends NodeBase {
     type: 'LexicalBinding';
     BindingIdentifier?: BindingIdentifier;
-    BindingPattern?: ObjectBindingPattern;
+    BindingPattern?: BindingPattern;
     Initializer: Expression;
 }
 
@@ -120,7 +120,7 @@ export interface ArrayBindingPattern extends NodeBase {
 
 export interface BindingProperty {
     type: 'BindingProperty';
-    BindingElement?: SingleNameBinding | BindingElement;
+    BindingElement: SingleNameBinding | BindingElement;
     PropertyName: Identifier;
 }
 
@@ -259,9 +259,11 @@ export type Expression =
     | MultiplicativeExpression
     | MemberExpression
     | ObjectLiteralExpression
+    | ArrayLiteralExpression
     | BooleanLiteralExpression
     | NumericLiteralExpression
     | StringLiteralExpression
+    | TemplateLiteral
     | EqualityExpression
     | CallExpression
     | RelationalExpression
@@ -298,6 +300,12 @@ export interface ObjectLiteralExpression extends ExpressionBase {
     PropertyDefinitionList: PropertyDefinition[];
 }
 
+export interface ArrayLiteralExpression extends ExpressionBase {
+    type: 'ArrayLiteral';
+    ElementList: Expression[];
+    hasTrailingComma: boolean;
+}
+
 export interface PropertyDefinition extends NodeBase {
     type: 'PropertyDefinition';
     AssignmentExpression: Expression;
@@ -318,6 +326,14 @@ export interface StringLiteralExpression extends ExpressionBase {
     type: 'StringLiteral';
     value: string;
 }
+
+export interface TemplateLiteral extends ExpressionBase {
+    type: 'TemplateLiteral';
+    TemplateSpanList: string[];
+    ExpressionList: Expression[];
+}
+
+
 
 export interface EqualityExpression extends ExpressionBase {
     type: 'EqualityExpression';
