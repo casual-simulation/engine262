@@ -25,8 +25,8 @@ export function LengthOfArrayLike(obj: ObjectValue): number;
 export function CreateListFromArrayLike(obj: ObjectValue): ObjectValue;
 
 export function Call(F: ObjectValue, V: Value, argumentsList: Value[]): Generator<unknown,Completion<Value>, unknown>;
-export function Construct(F: ObjectValue, argumentsList: Value[], newTarget?: ObjectValue): Generator<unknown, Completion<Value>, unknown>;
-export function Invoke(V: ObjectValue, P: Value, argumentsList: Value[]): Generator<unknown, Completion<Value>, unknown>;
+export function Construct(F: ObjectValue, argumentsList: Value[], newTarget?: ObjectValue): Generator<unknown, Value | Completion<Value>, unknown>;
+export function Invoke(V: ObjectValue, P: Value, argumentsList: Value[]): Generator<unknown, Value | Completion<Value>, unknown>;
 
 // Function Operations
 export function CreateBuiltinFunction(steps: Function, length: number, name: Value, internalSlotsList: string[], realm?: Realm, prototype?: Value, prefix?: Value, isConstructor?: Value): ObjectValue;
