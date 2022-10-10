@@ -3,7 +3,7 @@ import { Realm } from "./realms";
 
 export type ECMAScriptNode = Node | Statement | Expression | Identifier;
 
-export type Node = FunctionBodyNode;
+export type Node = FunctionBody;
 
 export interface NodeBase {
     /**
@@ -49,13 +49,27 @@ export interface NodeBase {
     sourceText(): string;
 }
 
-export interface FunctionBodyNode extends NodeBase {
+export interface FunctionBody extends NodeBase {
     type: 'FunctionBody';
 
     FunctionStatementList: Statement[];
 }
 
-export type Statement = ReturnStatement | IfStatement | Block | ExpressionStatement;
+export type Statement = 
+    | ReturnStatement
+    | IfStatement
+    | Block
+    | ExpressionStatement
+    | SwitchStatement
+    | ForStatement
+    | ForOfStatement
+    | ForInStatement
+    | WhileStatement
+    | DoWhileStatement
+    | BreakStatement
+    | TryStatement
+    | FunctionDeclaration
+    | LexicalDeclaration;
 
 export interface StatementBase extends NodeBase {
 }
@@ -73,14 +87,171 @@ export interface IfStatement extends StatementBase {
     Statement_b?:  Statement;
 }
 
+export interface LexicalDeclaration extends StatementBase {
+    type: 'LexicalDeclaration';
+    LetOrConst: 'let' | 'const';
+    BindingList: LexicalBinding[];
+}
+
+export interface LexicalBinding extends NodeBase {
+    type: 'LexicalBinding';
+    BindingIdentifier?: BindingIdentifier;
+    BindingPattern?: ObjectBindingPattern;
+    Initializer: Expression;
+}
+
+export interface BindingIdentifier extends NodeBase {
+    type: 'BindingIdentifier';
+    name: string;
+}
+
+export type BindingPattern = ObjectBindingPattern | ArrayBindingPattern;
+
+export interface ObjectBindingPattern extends NodeBase {
+    type: 'ObjectBindingPattern';
+    BindingPropertyList: BindingProperty[];
+}
+
+export interface ArrayBindingPattern extends NodeBase {
+    type: 'ArrayBindingPattern';
+    BindingElementList: (SingleNameBinding | BindingElement)[];
+}
+
+
+export interface BindingProperty {
+    type: 'BindingProperty';
+    BindingElement?: SingleNameBinding | BindingElement;
+    PropertyName: Identifier;
+}
+
+
+
+export interface SwitchStatement extends StatementBase {
+    type: 'SwitchStatement';
+
+    Expression: Expression;
+    CaseBlock: CaseBlock;
+}
+
 export interface Block extends StatementBase {
     type: 'Block';
+    StatementList: Statement[];
+}
+
+export interface CaseBlock extends StatementBase {
+    type: 'CaseBlock';
+    CaseClauses_a: CaseClause[];
+    DefaultClause?: CaseClause;
+}
+
+export interface CaseClause extends StatementBase {
+    type: 'CaseClause';
+    Expression: Expression;
     StatementList: Statement[];
 }
 
 export interface ExpressionStatement extends StatementBase {
     type: 'ExpressionStatement';
     Expression: Expression;
+}
+
+export interface BreakStatement extends StatementBase {
+    type: 'BreakStatement';
+    LabelIdentifier: Identifier;
+}
+
+export interface ForStatement extends StatementBase {
+    type: 'ForStatement';
+    VariableDeclarationList: VariableDeclaration[];
+    Expression_a: Expression;
+    Expression_b: Expression;
+    Statement: Statement;
+}
+
+export interface VariableDeclaration extends NodeBase {
+    type: 'VariableDeclaration';
+    BindingIdentifier: Identifier;
+    Initializer: Expression;
+}
+
+export interface ForOfStatement extends StatementBase {
+    type: 'ForOfStatement';
+    ForDeclaration: ForDeclaration;
+    AssignmentExpression: Expression;
+    Statement: Statement;
+}
+
+export interface ForDeclaration extends NodeBase {
+    type: 'ForDeclaration';
+    LetOrConst: 'let' | 'const';
+    ForBinding: ForBinding;
+}
+
+export interface ForBinding extends NodeBase {
+    type: 'ForBinding';
+
+    BindingIdentifier: Identifier;
+    Initializer: Expression | null;
+}
+
+export interface ForInStatement extends StatementBase {
+    type: 'ForInStatement';
+
+    ForDeclaration: ForDeclaration;
+    Expression: Expression;
+    Statement: Statement;
+}
+
+export interface WhileStatement extends StatementBase {
+    type: 'WhileStatement';
+
+    Expression: Expression;
+    Statement: Statement;
+}
+
+export interface DoWhileStatement extends StatementBase {
+    type: 'DoWhileStatement';
+
+    Expression: Expression;
+    Statement: Statement;
+}
+
+export interface TryStatement extends StatementBase {
+    type: 'TryStatement';
+
+    Block: Statement;
+    Catch: Catch;
+    Finally?: Statement;
+}
+
+export interface Catch extends StatementBase {
+    type: 'Catch';
+    CatchParameter: Identifier;
+    Block: Statement;
+}
+
+export interface FunctionDeclaration extends StatementBase {
+    type: 'FunctionDeclaration';
+    BindingIdentifier: Identifier;
+    FormalParameters: FormalParameter[];
+    FunctionBody: FunctionBody;
+}
+
+export type FormalParameter = SingleNameBinding | BindingElement;
+
+
+export interface BindingElement {
+    type: 'BindingElement';
+    BindingPattern: BindingPattern;
+    Initalizer: Expression;
+}
+
+
+export interface SingleNameBinding extends NodeBase {
+    type: 'SingleNameBinding';
+
+    BindingIdentifier: Identifier;
+    Initializer: Expression;
 }
 
 export type Expression = 
@@ -93,6 +264,9 @@ export type Expression =
     | StringLiteralExpression
     | EqualityExpression
     | CallExpression
+    | RelationalExpression
+    | UpdateExpression
+    | ArrowFunction
     | Identifier;
 
 export interface ExpressionBase extends NodeBase {
@@ -157,6 +331,33 @@ export interface CallExpression extends ExpressionBase {
     CallExpression: Expression;
     Arguments: Expression[];
 }
+
+export interface RelationalExpression extends ExpressionBase {
+    type: 'RelationalExpression';
+    operator: '<' | '>' | '<=' | '>=';
+
+    RelationalExpression: Expression;
+    ShiftExpression: Expression;
+}
+
+export interface UpdateExpression extends ExpressionBase {
+    type: 'UpdateExpression';
+    LeftHandSideExpression: Expression;
+    UnaryExpression: Expression | null;
+    operator: '++' | '-' | '--';
+}
+
+export interface ArrowFunction extends ExpressionBase {
+    type: 'ArrowFunction';
+    ArrowParameters: FormalParameter[];
+    ConciseBody?: ConciseBody | FunctionBody;
+}
+
+export interface ConciseBody extends NodeBase {
+    type: 'ConciseBody';
+    ExpressionBody: Expression;
+}
+
 
 export type Identifier = IdentifierName | IdentifierReference;
 
