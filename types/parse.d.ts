@@ -284,9 +284,11 @@ export interface ClassDeclaration extends StatementBase {
 
 export interface ClassTail extends NodeBase {
     type: 'ClassTail';
-    ClassBody: [],
+    ClassBody: ClassMember[],
     ClassHeritage: Expression;
 }
+
+export type ClassMember = FieldDefinition | MethodDefinition | AsyncMethod | GeneratorMethod | AsyncGeneratorMethod;
 
 export interface FieldDefinition extends NodeBase {
     type: 'FieldDefinition';
@@ -302,11 +304,32 @@ export interface MethodDefinition extends NodeBase {
     FunctionBody: FunctionBody;
 }
 
+export interface AsyncMethod extends NodeBase {
+    type: 'AsyncMethod';
+    ClassElementName: Identifier;
+    UniqueFormalParameters: FormalParameter[];
+    AsyncFunctionBody: AsyncFunctionBody;
+}
+
+export interface GeneratorMethod extends NodeBase {
+    type: 'GeneratorMethod';
+    ClassElementName: Identifier;
+    UniqueFormalParameters: FormalParameter[];
+    GeneratorBody: GeneratorBody;
+}
+
+export interface AsyncGeneratorMethod extends NodeBase {
+    type: 'AsyncGeneratorMethod';
+    ClassElementName: Identifier;
+    UniqueFormalParameters: FormalParameter[];
+    AsyncGeneratorBody: AsyncGeneratorBody;
+}
+
 
 export type FormalParameter = SingleNameBinding | BindingElement;
 
 
-export interface BindingElement {
+export interface BindingElement extends NodeBase {
     type: 'BindingElement';
     BindingPattern: BindingPattern;
     Initalizer: Expression;
@@ -494,19 +517,24 @@ export interface AwaitExpression extends ExpressionBase {
 }
 
 
-export type Identifier = IdentifierName | IdentifierReference;
+export type Identifier = IdentifierName | IdentifierReference | PrivateIdentifier | BindingIdentifier;
 
 export interface IdentifierBase extends NodeBase {
 }
 
-export interface IdentifierName {
+export interface IdentifierName extends IdentifierBase {
     type: 'IdentifierName';
     name: string;
 }
 
-export interface IdentifierReference {
+export interface IdentifierReference extends IdentifierBase {
     type: 'IdentifierReference';
     escaped: boolean;
+    name: string;
+}
+
+export interface PrivateIdentifier extends IdentifierBase {
+    type: 'PrivateIdentifier';
     name: string;
 }
 
