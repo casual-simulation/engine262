@@ -69,6 +69,9 @@ export type Statement =
     | BreakStatement
     | TryStatement
     | FunctionDeclaration
+    | AsyncFunctionDeclaration
+    | GeneratorDeclaration
+    | AsyncGeneratorDeclaration
     | LexicalDeclaration;
 
 export interface StatementBase extends NodeBase {
@@ -237,6 +240,69 @@ export interface FunctionDeclaration extends StatementBase {
     FunctionBody: FunctionBody;
 }
 
+export interface AsyncFunctionDeclaration extends StatementBase {
+    type: 'AsyncFunctionDeclaration';
+    BindingIdentifier: Identifier;
+    FormalParameters: FormalParameter[];
+    AsyncFunctionBody: AsyncFunctionBody;
+}
+
+export interface AsyncFunctionBody extends NodeBase {
+    type: 'AsyncFunctionBody';
+    FunctionStatementList: Statement[];
+}
+
+export interface GeneratorDeclaration extends StatementBase {
+    type: 'GeneratorDeclaration';
+    BindingIdentifier: Identifier;
+    FormalParameters: FormalParameter[];
+    GeneratorBody: GeneratorBody;
+}
+
+export interface GeneratorBody extends NodeBase {
+    type: 'GeneratorBody';
+    FunctionStatementList: Statement[];
+}
+
+export interface AsyncGeneratorDeclaration extends StatementBase {
+    type: 'AsyncGeneratorDeclaration';
+    BindingIdentifier: Identifier;
+    FormalParameters: FormalParameter[];
+    AsyncGeneratorBody: AsyncGeneratorBody;
+}
+
+export interface AsyncGeneratorBody extends NodeBase {
+    type: 'AsyncGeneratorBody';
+    FunctionStatementList: Statement[];
+}
+
+export interface ClassDeclaration extends StatementBase {
+    type: 'ClassDeclaration';
+    BindingIdentifier: Identifier;
+    ClassTail: ClassTail;
+}
+
+export interface ClassTail extends NodeBase {
+    type: 'ClassTail';
+    ClassBody: [],
+    ClassHeritage: Expression;
+}
+
+export interface FieldDefinition extends NodeBase {
+    type: 'FieldDefinition';
+    ClassElementName: Identifier;
+    Initializer: Expression | null;
+    static: boolean;
+}
+
+export interface MethodDefinition extends NodeBase {
+    type: 'MethodDefinition';
+    ClassElementName: Identifier;
+    UniqueFormalParameters: FormalParameter[];
+    FunctionBody: FunctionBody;
+}
+
+
 export type FormalParameter = SingleNameBinding | BindingElement;
 
 
@@ -263,12 +329,19 @@ export type Expression =
     | BooleanLiteralExpression
     | NumericLiteralExpression
     | StringLiteralExpression
+    | NullLiteral
     | TemplateLiteral
     | EqualityExpression
     | CallExpression
     | RelationalExpression
     | UpdateExpression
     | ArrowFunction
+    | AsyncArrowFunction
+    | ConditionalExpression
+    | CoalesceExpression
+    | ParenthesizedExpression
+    | YieldExpression
+    | AwaitExpression
     | Identifier;
 
 export interface ExpressionBase extends NodeBase {
@@ -327,6 +400,10 @@ export interface StringLiteralExpression extends ExpressionBase {
     value: string;
 }
 
+export interface NullLiteral extends ExpressionBase {
+    type: 'NullLiteral';
+}
+
 export interface TemplateLiteral extends ExpressionBase {
     type: 'TemplateLiteral';
     TemplateSpanList: string[];
@@ -369,9 +446,51 @@ export interface ArrowFunction extends ExpressionBase {
     ConciseBody?: ConciseBody | FunctionBody;
 }
 
+export interface AsyncArrowFunction extends ExpressionBase {
+    type: 'AsyncArrowFunction';
+    ArrowParameters: FormalParameter[];
+    AsyncConciseBody: AsyncConciseBody | AsyncFunctionBody;
+}
+
+
 export interface ConciseBody extends NodeBase {
     type: 'ConciseBody';
     ExpressionBody: Expression;
+}
+
+export interface AsyncConciseBody extends NodeBase {
+    type: 'AsyncConciseBody';
+    ExpressionBody: Expression;
+}
+
+
+export interface ConditionalExpression extends ExpressionBase {
+    type: 'ConditionalExpression';
+    ShortCircuitExpression: Expression;
+    AssignmentExpression_a: Expression;
+    AssignmentExpression_b: Expression;
+}
+
+export interface CoalesceExpression extends ExpressionBase {
+    type: 'CoalesceExpression';
+    CoalesceExpressionHead: Expression;
+    BitwiseORExpression: Expression;
+}
+
+export interface ParenthesizedExpression extends ExpressionBase {
+    type: 'ParenthesizedExpression';
+    Expression: Expression;
+}
+
+export interface YieldExpression extends ExpressionBase {
+    type: 'YieldExpression';
+    AssignmentExpression: Expression;
+    hasStar: boolean;
+}
+
+export interface AwaitExpression extends ExpressionBase {
+    type: 'AwaitExpression';
+    UnaryExpression: Expression;
 }
 
 
