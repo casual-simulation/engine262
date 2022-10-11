@@ -12,7 +12,7 @@ export interface BeforeEvaluationYield {
 export interface AfterEvaluationYield {
     evaluationState: 'after';
     node: ECMAScriptNode;
-    result: Value;
+    result: Value | Completion<Value>;
 }
 
 export function Evaluate(node: ECMAScriptNode): Generator<EvaluationYield, Completion<Value>, any>;
