@@ -344,9 +344,12 @@ export interface SingleNameBinding extends NodeBase {
 }
 
 export type Expression = 
+    | AssignmentExpression
     | AdditiveExpression
     | MultiplicativeExpression
     | MemberExpression
+    | ThisExpression
+    | SuperExpression
     | ObjectLiteralExpression
     | ArrayLiteralExpression
     | BooleanLiteralExpression
@@ -370,6 +373,13 @@ export type Expression =
 export interface ExpressionBase extends NodeBase {
 }
 
+export interface AssignmentExpression extends ExpressionBase {
+    type: 'AssignmentExpression';
+    LeftHandSideExpression: Expression;
+    AssignmentExpression: Expression;
+    AssignmentOperator: '=' | '+=' | '-=' | '*=' | '/=';
+}
+
 export interface AdditiveExpression extends ExpressionBase {
     type: 'AdditiveExpression';
     operator: '+' | '-';
@@ -389,6 +399,21 @@ export interface MemberExpression extends ExpressionBase {
     Expression: Expression | null;
     IdentifierName: Identifier;
     MemberExpression: Identifier;
+}
+
+export interface ThisExpression extends ExpressionBase {
+    type: 'ThisExpression';
+}
+
+export interface SuperCall extends ExpressionBase {
+    type: 'SuperCall';
+    Arguments: Expression[];
+}
+
+export interface SuperProperty extends ExpressionBase {
+    type: 'SuperProperty';
+    IdentifierName: Identifier;
+    Expression: null | Expression;
 }
 
 export interface ObjectLiteralExpression extends ExpressionBase {
