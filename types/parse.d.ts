@@ -72,7 +72,8 @@ export type Statement =
     | AsyncFunctionDeclaration
     | GeneratorDeclaration
     | AsyncGeneratorDeclaration
-    | LexicalDeclaration;
+    | LexicalDeclaration
+    | VariableStatement;
 
 export interface StatementBase extends NodeBase {
 }
@@ -94,6 +95,17 @@ export interface LexicalDeclaration extends StatementBase {
     type: 'LexicalDeclaration';
     LetOrConst: 'let' | 'const';
     BindingList: LexicalBinding[];
+}
+
+export interface VariableStatement extends StatementBase {
+    type: 'VariableStatement';
+    VariableDeclarationList: VariableDeclaration[];
+}
+
+export interface VariableDeclaration extends NodeBase {
+    type: 'VariableDeclaration';
+    BindingIdentifier: Identifier;
+    Initializer: Expression;
 }
 
 export interface LexicalBinding extends NodeBase {
