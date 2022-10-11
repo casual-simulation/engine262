@@ -349,7 +349,8 @@ export type Expression =
     | MultiplicativeExpression
     | MemberExpression
     | ThisExpression
-    | SuperExpression
+    | SuperCall
+    | SuperProperty
     | ObjectLiteralExpression
     | ArrayLiteralExpression
     | BooleanLiteralExpression
