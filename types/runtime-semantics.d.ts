@@ -5,4 +5,4 @@ import { Value } from './value';
 
 export function GlobalDeclarationInstantiation(script: ECMAScriptNode, env: EnvironmentRecord): Completion<Value>;
 
-export function InstanceOfOperator(V: Value, target: Value): Completion<Value>;
+export function InstanceofOperator(V: Value, target: Value): Completion<Value>;
