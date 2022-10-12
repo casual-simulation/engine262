@@ -59,3 +59,6 @@ export function IsPromise(O: Value): BooleanValue;
 export function GetActiveScriptOrModule(): ScriptRecord | AbstractModuleRecord;
 export function GetThisEnvironment(): EnvironmentRecord;
 export function GetGlobalObject(): ObjectValue;
+
+// Proxy
+export function isProxyExoticObject(O: Value): boolean;
