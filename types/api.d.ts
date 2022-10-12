@@ -3,7 +3,7 @@ import { Completion } from './completion';
 import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
 import { Value, ObjectValue, NullValue } from './value';
-import { Evaluate } from './evaluator';
+import { Evaluate, EvaluationYield } from './evaluator';
 import { ScriptRecord } from './parse';
 
 export * from './value';
@@ -21,7 +21,7 @@ export { Evaluate };
 export function setSurroundingAgent(agent: Agent): void;
 export let surroundingAgent: Agent;
 
-export function runJobQueue(): Generator<any, any, any>;
+export function runJobQueue(): Generator<EvaluationYield, void, any>;
 
 export function evaluateScript(sourceText: string, realm: Realm, hostDefined: any): Completion<Value>;
 

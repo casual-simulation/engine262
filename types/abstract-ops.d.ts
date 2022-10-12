@@ -2,6 +2,9 @@ import { Completion } from "./completion";
 import { Realm } from "./realms";
 import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberValue } from "./value";
 import { EvaluationYield } from './evaluator';
+import { ScriptRecord } from "./parse";
+import { AbstractModuleRecord } from "./modules";
+import { EnvironmentRecord } from "./environment";
 
 
 export function OrdinaryObjectCreate(proto: Value, additionalInternaSlotsList?: string[]): ObjectValue;
@@ -48,3 +51,8 @@ export function SameValueZero(x: Value, y: Value): BooleanValue;
 export function SameValueNonNumber(x: Value, y: Value): BooleanValue;
 export function StrictEqualityComparison(x: Value, y: Value): BooleanValue;
 export function IsValidIntegerIndex(O: Value, index: Value): BooleanValue;
+
+// Execution contexts
+export function GetActiveScriptOrModule(): ScriptRecord | AbstractModuleRecord;
+export function GetThisEnvironment(): EnvironmentRecord;
+export function GetGlobalObject(): ObjectValue;
