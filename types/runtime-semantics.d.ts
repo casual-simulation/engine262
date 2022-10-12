@@ -4,3 +4,5 @@ import { ECMAScriptNode } from './parse';
 import { Value } from './value';
 
 export function GlobalDeclarationInstantiation(script: ECMAScriptNode, env: EnvironmentRecord): Completion<Value>;
+
+export function InstanceOfOperator(V: Value, target: Value): Completion<Value>;

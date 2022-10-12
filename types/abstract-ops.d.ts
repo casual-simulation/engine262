@@ -52,6 +52,9 @@ export function SameValueNonNumber(x: Value, y: Value): BooleanValue;
 export function StrictEqualityComparison(x: Value, y: Value): BooleanValue;
 export function IsValidIntegerIndex(O: Value, index: Value): BooleanValue;
 
+// Promise Operations
+export function IsPromise(O: Value): BooleanValue;
+
 // Execution contexts
 export function GetActiveScriptOrModule(): ScriptRecord | AbstractModuleRecord;
 export function GetThisEnvironment(): EnvironmentRecord;
