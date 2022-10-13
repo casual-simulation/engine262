@@ -15,8 +15,12 @@ export function GetPrototypeFromConstructor(constructor: Value, intrinsicDefault
 export function MakeBasicObject(internalSlotsList: string[]): ObjectValue;
 export function Get(O: Value, P: Value): Generator<EvaluationYield, Completion<Value>, unknown>;
 export function GetV(V: Value, P: Value): Generator<EvaluationYield, Value | Completion<any>, unknown>;
-export function Set(O: Value, P: Value, V: Value, Throw: BooleanValue): Generator<EvaluationYield, Completion<Value>, unknown>;
+export function Set(O: Value, P: Value, V: Value, Throw: BooleanValue): Generator<EvaluationYield, Value | Completion<Value>, unknown>;
 export function CreateDataProperty(O: Value, P: Value, V: Value): Completion<Value>;
+export function EnumerableOwnPropertyNames(O: Value, kind: 'key' | 'value' | 'key+value'): Value[] | [Value, Value][] | Completion<Value>;
+export function EnumerableOwnPropertyNames(O: Value, kind: 'key' ): Value[] | Completion<Value>;
+export function EnumerableOwnPropertyNames(O: Value, kind: 'value'): Value[] | Completion<Value>;
+export function EnumerableOwnPropertyNames(O: Value, kind: 'key+value'): [Value, Value][] | Completion<Value>;
 
 export function DefinePropertyOrThrow(O: Value, P: Value, desc: any): BooleanValue | Completion<any>;
 export function DeletePropertyOrThrow(O: Value, P: Value): BooleanValue | Completion<any>;
