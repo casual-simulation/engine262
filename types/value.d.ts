@@ -76,7 +76,7 @@ export class ObjectValue extends Value {
 export class ReferenceRecord {}
 
 export class Descriptor {
-    constructor(init: Pick<Descriptor, 'Value' | 'Get' | 'Set' | 'Writable' | 'Enumerable' | 'Configurable'>);
+    constructor(init: Partial<Pick<Descriptor, 'Value' | 'Get' | 'Set' | 'Writable' | 'Enumerable' | 'Configurable'>>);
 
     Value: Value;
     Get: Value;

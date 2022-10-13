@@ -1,6 +1,6 @@
 import { Completion } from "./completion";
 import { Realm } from "./realms";
-import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberValue } from "./value";
+import { BooleanValue, ObjectValue, Value, JSStringValue, SymbolValue, NumberValue, Descriptor } from "./value";
 import { EvaluationYield } from './evaluator';
 import { ScriptRecord } from "./parse";
 import { AbstractModuleRecord } from "./modules";
@@ -22,7 +22,7 @@ export function EnumerableOwnPropertyNames(O: Value, kind: 'key' ): Value[] | Co
 export function EnumerableOwnPropertyNames(O: Value, kind: 'value'): Value[] | Completion<Value>;
 export function EnumerableOwnPropertyNames(O: Value, kind: 'key+value'): [Value, Value][] | Completion<Value>;
 
-export function DefinePropertyOrThrow(O: Value, P: Value, desc: any): BooleanValue | Completion<any>;
+export function DefinePropertyOrThrow(O: Value, P: Value, desc: Descriptor): BooleanValue | Completion<any>;
 export function DeletePropertyOrThrow(O: Value, P: Value): BooleanValue | Completion<any>;
 export function GetMethod(V: Value, P: Value): ObjectValue | Completion<any>;
 export function HasProperty(O: Value, P: Value): BooleanValue | Completion<any>;
@@ -66,3 +66,11 @@ export function GetGlobalObject(): ObjectValue;
 
 // Proxy
 export function isProxyExoticObject(O: Value): boolean;
+
+// Spec types
+export function ToPropertyDescriptor(O: Value): Descriptor;
+export function FromPropertyDescriptor(Desc: Descriptor): ObjectValue;
+export function CompletePropertyDescriptor(Desc: Descriptor): Descriptor;
+export function IsGenericDescriptor(Desc: Descriptor): boolean;
+export function IsDataDescriptor(Desc: Descriptor): boolean;
+export function IsAccessorDescriptor(Desc: Descriptor): boolean;
