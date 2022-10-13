@@ -64,8 +64,8 @@ export class ObjectValue extends Value {
     SetPrototypeOf(V: Value): Value | Completion<any>;
     IsExtensible(): Value | Completion<any>;
     PreventExtensions(): Value | Completion<any>;
-    GetOwnProperty(P: Value): Value | Completion<any>;
-    DefineOwnProperty(P: Value, Desc: Value): Value | Completion<any>;
+    GetOwnProperty(P: Value): Descriptor | Completion<any>;
+    DefineOwnProperty(P: Value, Desc: Descriptor): Value | Completion<any>;
     HasProperty(P: Value): Value | Completion<any>;
     Get(P: Value, Receiver: Value): (Value | Completion<any>) | Generator<any, (Value | Completion<any>), any>;
     Set(P: Value, V: Value, Receiver: Value): (Value | Completion<any>) | Generator<any, (Value | Completion<any>), any>;
