@@ -1,4 +1,4 @@
-import { Agent } from './engine';
+import { Agent, ExecutionContext } from './engine';
 import { Completion } from './completion';
 import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
@@ -35,6 +35,7 @@ export interface ManagedRealmOptions {
 
 export class ManagedRealm extends Realm {
     GlobalObject: ObjectValue;
+    topContext: ExecutionContext;
 
     constructor(options: ManagedRealmOptions);
 
