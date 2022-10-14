@@ -174,9 +174,17 @@ export function resume(context, completion) {
 }
 
 export class CallSite {
+
+  get lastNode() {
+    if(this.nodes.length > 0) {
+      return this.nodes[this.nodes.length - 1];
+    }
+    return null;
+  }
+
   constructor(context) {
     this.context = context;
-    this.lastNode = null;
+    this.nodes = [];
     this.lastCallNode = null;
     this.inheritedLastCallNode = null;
     this.constructCall = false;
@@ -184,7 +192,7 @@ export class CallSite {
 
   clone(context = this.context) {
     const c = new CallSite(context);
-    c.lastNode = this.lastNode;
+    c.nodes = this.nodes.slice();
     c.lastCallNode = this.lastCallNode;
     c.inheritedLastCallNode = this.inheritedLastCallNode;
     c.constructCall = this.constructCall;
@@ -228,8 +236,15 @@ export class CallSite {
     return null;
   }
 
-  setLocation(node) {
-    this.lastNode = node;
+  pushLocation(node) {
+    this.nodes.push(node);
+  }
+
+  popLocation() {
+    if (this.nodes.length > 0) {
+      return this.nodes.pop();
+    }
+    return null;
   }
 
   setCallLocation(node) {
