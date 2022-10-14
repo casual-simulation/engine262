@@ -74,8 +74,7 @@ import {
 } from './runtime-semantics/all.mjs';
 
 export function* Evaluate(node) {
-  const callSite = surroundingAgent.runningExecutionContext.callSite;
-  callSite.pushLocation(node);
+  surroundingAgent.runningExecutionContext.callSite.setLocation(node);
 
   if (surroundingAgent.hostDefinedOptions.onNodeEvaluation) {
     surroundingAgent.hostDefinedOptions.onNodeEvaluation(node, surroundingAgent.currentRealmRecord);
@@ -335,8 +334,6 @@ export function* Evaluate(node) {
       node
     };
   }
-
-  callSite.popLocation();
 
   return result;
 }
