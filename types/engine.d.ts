@@ -44,6 +44,14 @@ export class Agent {
      * @param job The job that should be enqueued.
      */
     queueJob(queueName: string, job: AgentJob['job']): void;
+
+    /**
+     * Generates a throw completion with the given message template.
+     * @param type The type of the error.
+     * @param template The message template.
+     * @param templateArgs The arguments for the template.
+     */
+    Throw(type: string, template: string, ...templateArgs: any[]): Completion<ObjectValue>;
 }
 
 export class ExecutionContext {
