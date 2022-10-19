@@ -28,6 +28,22 @@ export class SymbolValue extends PrimitiveValue {
     Description: string;
 }
 
+export const wellKnownSymbols: {
+    asyncIterator: SymbolValue;
+    hasInstance: SymbolValue;
+    isConcatSpreadable: SymbolValue;
+    iterator: SymbolValue;
+    match: SymbolValue;
+    matchAll: SymbolValue;
+    replace: SymbolValue;
+    search: SymbolValue;
+    species: SymbolValue;
+    split: SymbolValue;
+    toPrimitive: SymbolValue;
+    toStringTag: SymbolValue;
+    unscopables: SymbolValue;
+};
+
 export class NumberValue extends PrimitiveValue {
     constructor(number: number);
     number: number;
