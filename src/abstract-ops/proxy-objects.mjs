@@ -493,7 +493,7 @@ function ProxyOwnPropertyKeys() {
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-call-thisargument-argumentslist
-function ProxyCall(thisArgument, argumentsList) {
+function* ProxyCall(thisArgument, argumentsList) {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -504,14 +504,14 @@ function ProxyCall(thisArgument, argumentsList) {
   const target = O.ProxyTarget;
   const trap = Q(GetMethod(handler, new Value('apply')));
   if (trap === Value.undefined) {
-    return Q(unwind(Call(target, thisArgument, argumentsList)));
+    return Q(yield* Call(target, thisArgument, argumentsList));
   }
   const argArray = X(CreateArrayFromList(argumentsList));
-  return Q(unwind(Call(trap, handler, [target, thisArgument, argArray])));
+  return Q(yield* Call(trap, handler, [target, thisArgument, argArray]));
 }
 
 // #sec-proxy-object-internal-methods-and-internal-slots-construct-argumentslist-newtarget
-function ProxyConstruct(argumentsList, newTarget) {
+function* ProxyConstruct(argumentsList, newTarget) {
   const O = this;
 
   const handler = O.ProxyHandler;
@@ -523,10 +523,10 @@ function ProxyConstruct(argumentsList, newTarget) {
   Assert(IsConstructor(target) === Value.true);
   const trap = Q(GetMethod(handler, new Value('construct')));
   if (trap === Value.undefined) {
-    return Q(unwind(Construct(target, argumentsList, newTarget)));
+    return Q(yield* Construct(target, argumentsList, newTarget));
   }
   const argArray = X(CreateArrayFromList(argumentsList));
-  const newObj = Q(unwind((Call(trap, handler, [target, argArray, newTarget]))));
+  const newObj = Q(yield* Call(trap, handler, [target, argArray, newTarget]));
   if (Type(newObj) !== 'Object') {
     return surroundingAgent.Throw('TypeError', 'NotAnObject', newObj);
   }
