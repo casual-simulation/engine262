@@ -3,7 +3,7 @@ import { Completion } from './completion';
 import { AbstractModuleRecord, SourceTextModuleRecord } from './modules';
 import { Realm } from './realms';
 import { Value, ObjectValue, NullValue } from './value';
-import { Evaluate, EvaluationYield } from './evaluator';
+import { Evaluate, EvaluationYield, EVAL_YIELD } from './evaluator';
 import { ScriptRecord } from './parse';
 
 export * from './value';
@@ -16,7 +16,7 @@ export * from './environment';
 export * from './parse';
 export * from './modules';
 export * from './inspect';
-export { Evaluate };
+export { Evaluate, EVAL_YIELD };
 
 export function setSurroundingAgent(agent: Agent): void;
 export let surroundingAgent: Agent;

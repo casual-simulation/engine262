@@ -73,6 +73,8 @@ import {
   Evaluate_ExpressionBody,
 } from './runtime-semantics/all.mjs';
 
+export const EVAL_YIELD = Symbol('EVAL_YIELD');
+
 export function* Evaluate(node) {
   const callSite = surroundingAgent.runningExecutionContext.callSite;
   const lastNode = callSite.lastNode;
@@ -83,6 +85,7 @@ export function* Evaluate(node) {
   }
   if (surroundingAgent.hostDefinedOptions.yieldEachNode) {
     yield {
+      [EVAL_YIELD]: true,
       evaluationState: 'before',
       node
     };
@@ -331,6 +334,7 @@ export function* Evaluate(node) {
 
   if (surroundingAgent.hostDefinedOptions.yieldEachNode) {
     yield {
+      [EVAL_YIELD]: true,
       evaluationState: 'after',
       result,
       node
