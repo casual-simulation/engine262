@@ -5,6 +5,8 @@ import { X } from './completion.mjs';
 
 export const kInternal = Symbol('kInternal');
 
+export const EVAL_YIELD = Symbol('EVAL_YIELD');
+
 function convertValueForKey(key) {
   switch (Type(key)) {
     case 'String':
@@ -165,12 +167,18 @@ export function handleInResume(fn, ...args) {
   return bound;
 }
 
-export function resume(context, completion) {
-  const { value } = context.codeEvaluationState.next(completion);
-  if (typeof value === 'function' && value[kSafeToResume] === true) {
-    return X(value());
+export function* resume(context, completion) {
+  while(true) {
+    const { value } = context.codeEvaluationState.next(completion);
+
+    if (typeof value === 'object' && value !== null && EVAL_YIELD in value) {
+      yield value;
+    } else if (typeof value === 'function' && value[kSafeToResume] === true) {
+      return X(value());
+    } else {
+      return value;
+    }
   }
-  return value;
 }
 
 export class CallSite {

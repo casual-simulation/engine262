@@ -123,7 +123,7 @@ export function GeneratorValidate(generator, generatorBrand) {
 }
 
 // #sec-generatorresume
-export function GeneratorResume(generator, value, generatorBrand) {
+export function* GeneratorResume(generator, value, generatorBrand) {
   // 1. Let state be ? GeneratorValidate(generator, generatorBrand).
   const state = Q(GeneratorValidate(generator, generatorBrand));
   // 2. If state is completed, return CreateIterResultObject(undefined, true).
@@ -144,7 +144,7 @@ export function GeneratorResume(generator, value, generatorBrand) {
   // 9. Resume the suspended evaluation of genContext using NormalCompletion(value) as
   //    the result of the operation that suspended it. Let result be the value returned by
   //    the resumed computation.
-  const result = EnsureCompletion(resume(genContext, NormalCompletion(value)));
+  const result = EnsureCompletion(yield* resume(genContext, NormalCompletion(value)));
   // 10. Assert: When we return here, genContext has already been removed from the execution
   //     context stack and methodContext is the currently running execution context.
   Assert(surroundingAgent.runningExecutionContext === methodContext);
@@ -153,7 +153,7 @@ export function GeneratorResume(generator, value, generatorBrand) {
 }
 
 // #sec-generatorresumeabrupt
-export function GeneratorResumeAbrupt(generator, abruptCompletion, generatorBrand) {
+export function* GeneratorResumeAbrupt(generator, abruptCompletion, generatorBrand) {
   // 1. Let state be ? GeneratorValidate(generator, generatorBrand).
   let state = Q(GeneratorValidate(generator, generatorBrand));
   // 2. If state is suspendedStart, then
@@ -191,7 +191,7 @@ export function GeneratorResumeAbrupt(generator, abruptCompletion, generatorBran
   // 10. Resume the suspended evaluation of genContext using abruptCompletion as the
   //     result of the operation that suspended it. Let result be the completion record
   //     returned by the resumed computation.
-  const result = EnsureCompletion(resume(genContext, abruptCompletion));
+  const result = EnsureCompletion(yield* resume(genContext, abruptCompletion));
   // 11. Assert: When we return here, genContext has already been removed from the
   //     execution context stack and methodContext is the currently running execution context.
   Assert(surroundingAgent.runningExecutionContext === methodContext);

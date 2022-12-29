@@ -48,7 +48,7 @@ function* AsyncGeneratorPrototype_next([value = Value.undefined], { thisValue })
   // 9. If state is either suspendedStart or suspendedYield, then
   if (state === 'suspendedStart' || state === 'suspendedYield') {
     // a. Perform ! AsyncGeneratorResume(generator, completion).
-    X(AsyncGeneratorResume(generator, completion));
+    X(yield* AsyncGeneratorResume(generator, completion));
   } else { // 10. Else,
     // a. Assert: state is either executing or awaiting-return.
     Assert(state === 'executing' || state === 'awaiting-return');
@@ -81,7 +81,7 @@ function* AsyncGeneratorPrototype_return([value = Value.undefined], { thisValue 
     X(yield* AsyncGeneratorAwaitReturn(generator));
   } else if (state === 'suspendedYield') { // 9. Else if state is suspendedYield, then
     // a. Perform ! AsyncGeneratorResume(generator, completion).
-    X(AsyncGeneratorResume(generator, completion));
+    X(yield* AsyncGeneratorResume(generator, completion));
   } else { // 10. Else,
     // a. Assert: state is either executing or awaiting-return.
     Assert(state === 'executing' || state === 'awaiting-return');
@@ -123,7 +123,7 @@ function* AsyncGeneratorPrototype_throw([exception = Value.undefined], { thisVal
   // 10. If state is suspendedYield, then
   if (state === 'suspendedYield') {
     // a. Perform ! AsyncGeneratorResume(generator, completion).
-    X(AsyncGeneratorResume(generator, completion));
+    X(yield* AsyncGeneratorResume(generator, completion));
   } else { // 11. Else,
     // a. Assert: state is either executing or awaiting-return.
     Assert(state === 'executing' || state === 'awaiting-return');

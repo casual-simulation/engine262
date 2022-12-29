@@ -1,5 +1,5 @@
 import { surroundingAgent } from './engine.mjs';
-import { OutOfRange } from './helpers.mjs';
+import { OutOfRange, EVAL_YIELD } from './helpers.mjs';
 import {
   Evaluate_Script,
   Evaluate_ScriptBody,
@@ -72,8 +72,6 @@ import {
   Evaluate_AnyFunctionBody,
   Evaluate_ExpressionBody,
 } from './runtime-semantics/all.mjs';
-
-export const EVAL_YIELD = Symbol('EVAL_YIELD');
 
 export function* Evaluate(node) {
   const callSite = surroundingAgent.runningExecutionContext.callSite;

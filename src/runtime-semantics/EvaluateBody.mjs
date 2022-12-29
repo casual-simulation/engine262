@@ -66,7 +66,7 @@ function* EvaluateBody_AsyncConciseBody({ ExpressionBody }, functionObject, argu
   // 3. If declResult is not an abrupt completion, then
   if (!(declResult instanceof AbruptCompletion)) {
     // a. Perform ! AsyncFunctionStart(promiseCapability, ExpressionBody).
-    X(AsyncFunctionStart(promiseCapability, ExpressionBody));
+    X(yield* AsyncFunctionStart(promiseCapability, ExpressionBody));
   } else { // 4. Else
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « declResult.[[Value]] »).
     X(yield* Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));
@@ -120,7 +120,7 @@ export function* EvaluateBody_AsyncFunctionBody(FunctionBody, functionObject, ar
   // 3. If declResult is not an abrupt completion, then
   if (!(declResult instanceof AbruptCompletion)) {
     // a. Perform ! AsyncFunctionStart(promiseCapability, FunctionBody).
-    X(AsyncFunctionStart(promiseCapability, FunctionBody));
+    X(yield* AsyncFunctionStart(promiseCapability, FunctionBody));
   } else { // 4. Else,
     // a. Perform ! Call(promiseCapability.[[Reject]], undefined, « declResult.[[Value]] »).
     X(yield* Call(promiseCapability.Reject, Value.undefined, [declResult.Value]));

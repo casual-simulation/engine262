@@ -63,9 +63,9 @@ export function CreateRegExpStringIterator(R, S, global, fullUnicode) {
 }
 
 // 21.2.7.1.1 #sec-%regexpstringiteratorprototype%.next
-function RegExpStringIteratorPrototype_next(args, { thisValue }) {
+function* RegExpStringIteratorPrototype_next(args, { thisValue }) {
   // 1. Return ? GeneratorResume(this value, empty, "%RegExpStringIteratorPrototype%").
-  return Q(GeneratorResume(thisValue, undefined, kRegExpStringIteratorPrototype));
+  return Q(yield* GeneratorResume(thisValue, undefined, kRegExpStringIteratorPrototype));
 }
 
 export function bootstrapRegExpStringIteratorPrototype(realmRec) {

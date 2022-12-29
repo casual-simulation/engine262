@@ -109,14 +109,14 @@ export function* Await(value) {
   // 2. Let promise be ? PromiseResolve(%Promise%, value).
   const promise = Q(yield* PromiseResolve(surroundingAgent.intrinsic('%Promise%'), value));
   // 3. Let fulfilledClosure be a new Abstract Closure with parameters (value) that captures asyncContext and performs the following steps when called:
-  const fulfilledClosure = ([valueInner = Value.undefined]) => {
+  const fulfilledClosure = function* ([valueInner = Value.undefined]) {
     // a. Let prevContext be the running execution context.
     const prevContext = surroundingAgent.runningExecutionContext;
     // b. Suspend prevContext.
     // c. Push asyncContext onto the execution context stack; asyncContext is now the running execution context.
     surroundingAgent.executionContextStack.push(asyncContext);
     // d. Resume the suspended evaluation of asyncContext using NormalCompletion(value) as the result of the operation that suspended it.
-    resume(asyncContext, NormalCompletion(valueInner));
+    yield* resume(asyncContext, NormalCompletion(valueInner));
     // e. Assert: When we reach this step, asyncContext has already been removed from the execution context stack and prevContext is the currently running execution context.
     Assert(surroundingAgent.runningExecutionContext === prevContext);
     // f. Return undefined.
@@ -126,14 +126,14 @@ export function* Await(value) {
   const onFulfilled = X(CreateBuiltinFunction(fulfilledClosure, 1, new Value(''), []));
   onFulfilled[kAsyncContext] = asyncContext;
   // 5. Let rejectedClosure be a new Abstract Closure with parameters (reason) that captures asyncContext and performs the following steps when called:
-  const rejectedClosure = ([reason = Value.undefined]) => {
+  const rejectedClosure = function* ([reason = Value.undefined]) {
     // a. Let prevContext be the running execution context.
     const prevContext = surroundingAgent.runningExecutionContext;
     // b. Suspend prevContext.
     // c. Push asyncContext onto the execution context stack; asyncContext is now the running execution context.
     surroundingAgent.executionContextStack.push(asyncContext);
     // d. Resume the suspended evaluation of asyncContext using ThrowCompletion(reason) as the result of the operation that suspended it.
-    resume(asyncContext, ThrowCompletion(reason));
+    yield* resume(asyncContext, ThrowCompletion(reason));
     // e. Assert: When we reach this step, asyncContext has already been removed from the execution context stack and prevContext is the currently running execution context.
     Assert(surroundingAgent.runningExecutionContext === prevContext);
     // f. Return undefined.

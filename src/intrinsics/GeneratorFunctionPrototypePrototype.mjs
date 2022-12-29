@@ -12,31 +12,31 @@ import { Value } from '../value.mjs';
 import { bootstrapPrototype } from './bootstrap.mjs';
 
 // #sec-generator.prototype.next
-function GeneratorProto_next([value = Value.undefined], { thisValue }) {
+function* GeneratorProto_next([value = Value.undefined], { thisValue }) {
   // 1. Let g be the this value.
   const g = thisValue;
   // 2. Return ? GeneratorResume(g, value, empty).
-  return Q(GeneratorResume(g, value, undefined));
+  return Q(yield* GeneratorResume(g, value, undefined));
 }
 
 // #sec-generator.prototype.return
-function GeneratorProto_return([value = Value.undefined], { thisValue }) {
+function* GeneratorProto_return([value = Value.undefined], { thisValue }) {
   // 1. Let g be the this value.
   const g = thisValue;
   // 2. Let C be Completion { [[Type]]: return, [[Value]]: value, [[Target]]: empty }.
   const C = new Completion({ Type: 'return', Value: value, Target: undefined });
   // 3. Return ? GeneratorResumeAbrupt(g, C, empty).
-  return Q(GeneratorResumeAbrupt(g, C, undefined));
+  return Q(yield* GeneratorResumeAbrupt(g, C, undefined));
 }
 
 // #sec-generator.prototype.throw
-function GeneratorProto_throw([exception = Value.undefined], { thisValue }) {
+function* GeneratorProto_throw([exception = Value.undefined], { thisValue }) {
   // 1. Let g be the this value.
   const g = thisValue;
   // 2. Let C be ThrowCompletion(exception).
   const C = ThrowCompletion(exception);
   // 3. Return ? GeneratorResumeAbrupt(g, C, empty).
-  return Q(GeneratorResumeAbrupt(g, C, undefined));
+  return Q(yield* GeneratorResumeAbrupt(g, C, undefined));
 }
 
 export function bootstrapGeneratorFunctionPrototypePrototype(realmRec) {

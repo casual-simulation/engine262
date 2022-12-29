@@ -8,9 +8,9 @@ import { bootstrapPrototype } from './bootstrap.mjs';
 const kArrayIteratorPrototype = new Value('%ArrayIteratorPrototype%');
 
 // #sec-%arrayiteratorprototype%.next
-function ArrayIteratorPrototype_next(args, { thisValue }) {
+function* ArrayIteratorPrototype_next(args, { thisValue }) {
   // 1. Return ? GeneratorResume(this value, empty, "%ArrayIteratorPrototype%").
-  return Q(GeneratorResume(thisValue, undefined, kArrayIteratorPrototype));
+  return Q(yield* GeneratorResume(thisValue, undefined, kArrayIteratorPrototype));
 }
 
 export function bootstrapArrayIteratorPrototype(realmRec) {

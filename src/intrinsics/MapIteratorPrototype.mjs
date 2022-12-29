@@ -60,9 +60,9 @@ export function CreateMapIterator(map, kind) {
 }
 
 // #sec-%mapiteratorprototype%.next
-function MapIteratorPrototype_next(args, { thisValue }) {
+function* MapIteratorPrototype_next(args, { thisValue }) {
   // 1. Return ? GeneratorResume(this value, empty, "%MapIteratorPrototype%")
-  return Q(GeneratorResume(thisValue, undefined, kMapIteratorPrototype));
+  return Q(yield* GeneratorResume(thisValue, undefined, kMapIteratorPrototype));
 }
 
 export function bootstrapMapIteratorPrototype(realmRec) {

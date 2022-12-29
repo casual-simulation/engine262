@@ -57,9 +57,9 @@ export function CreateSetIterator(set, kind) {
 }
 
 // #sec-%setiteratorprototype%.next
-function SetIteratorPrototype_next(args, { thisValue }) {
+function* SetIteratorPrototype_next(args, { thisValue }) {
   // 1. Return ? GeneratorResume(this value, empty, "%SetIteratorPrototype%").
-  return Q(GeneratorResume(thisValue, undefined, kSetIteratorPrototype));
+  return Q(yield* GeneratorResume(thisValue, undefined, kSetIteratorPrototype));
 }
 
 export function bootstrapSetIteratorPrototype(realmRec) {

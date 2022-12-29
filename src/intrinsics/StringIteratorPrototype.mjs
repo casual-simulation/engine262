@@ -8,9 +8,9 @@ import { bootstrapPrototype } from './bootstrap.mjs';
 const kStringIteratorPrototype = new Value('%StringIteratorPrototype%');
 
 // #sec-%stringiteratorprototype%.next
-function StringIteratorPrototype_next(args, { thisValue }) {
+function* StringIteratorPrototype_next(args, { thisValue }) {
   // 1. Return ? GeneratorResume(this value, empty, "%StringIteratorPrototype%").
-  return Q(GeneratorResume(thisValue, undefined, kStringIteratorPrototype));
+  return Q(yield* GeneratorResume(thisValue, undefined, kStringIteratorPrototype));
 }
 
 export function bootstrapStringIteratorPrototype(realmRec) {

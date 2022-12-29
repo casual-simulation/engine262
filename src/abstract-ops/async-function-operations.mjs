@@ -9,7 +9,7 @@ import { Assert, Call } from './all.mjs';
 // 25.7 #sec-async-function-objects
 
 // #sec-asyncblockstart
-export function AsyncBlockStart(promiseCapability, asyncBody, asyncContext) {
+export function* AsyncBlockStart(promiseCapability, asyncBody, asyncContext) {
   asyncContext.promiseCapability = promiseCapability;
 
   const runningContext = surroundingAgent.runningExecutionContext;
@@ -28,15 +28,15 @@ export function AsyncBlockStart(promiseCapability, asyncBody, asyncContext) {
     return Value.undefined;
   }());
   surroundingAgent.executionContextStack.push(asyncContext);
-  const result = EnsureCompletion(resume(asyncContext, undefined));
+  const result = EnsureCompletion(yield* resume(asyncContext, undefined));
   Assert(surroundingAgent.runningExecutionContext === runningContext);
   Assert(result.Type === 'normal' && result.Value === Value.undefined);
   return Value.undefined;
 }
 
 // 25.7.5.1 #sec-async-functions-abstract-operations-async-function-start
-export function AsyncFunctionStart(promiseCapability, asyncFunctionBody) {
+export function* AsyncFunctionStart(promiseCapability, asyncFunctionBody) {
   const runningContext = surroundingAgent.runningExecutionContext;
   const asyncContext = runningContext.copy();
-  X(AsyncBlockStart(promiseCapability, asyncFunctionBody, asyncContext));
+  X(yield* AsyncBlockStart(promiseCapability, asyncFunctionBody, asyncContext));
 }

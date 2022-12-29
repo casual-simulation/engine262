@@ -511,7 +511,7 @@ export class SourceTextModuleRecord extends CyclicModuleRecord {
       // a. Assert: capability is a PromiseCapability Record.
       Assert(capability instanceof PromiseCapabilityRecord);
       // b. Perform ! AsyncBlockStart(capability, module.[[ECMAScriptCode]], moduleCxt).
-      X(AsyncBlockStart(capability, module.ECMAScriptCode, moduleContext));
+      X(yield* AsyncBlockStart(capability, module.ECMAScriptCode, moduleContext));
       // c. Return.
       return Value.undefined;
     }

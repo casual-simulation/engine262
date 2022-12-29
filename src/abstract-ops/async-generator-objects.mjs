@@ -163,7 +163,7 @@ function* AsyncGeneratorCompleteStep(generator, completion, done, realm) {
 }
 
 // #sec-asyncgeneratorresume
-export function AsyncGeneratorResume(generator, completion) {
+export function* AsyncGeneratorResume(generator, completion) {
   // 1. Assert: generator.[[AsyncGeneratorState]] is either suspendedStart or suspendedYield.
   Assert(generator.AsyncGeneratorState === 'suspendedStart' || generator.AsyncGeneratorState === 'suspendedYield');
   // 2. Let genContext be generator.[[AsyncGeneratorContext]].
@@ -176,7 +176,7 @@ export function AsyncGeneratorResume(generator, completion) {
   // 6. Push genContext onto the execution context stack; genContext is now the running execution context.
   surroundingAgent.executionContextStack.push(genContext);
   // 7. Resume the suspended evaluation of genContext using completion as the result of the operation that suspended it. Let result be the completion record returned by the resumed computation.
-  const result = resume(genContext, completion);
+  const result = yield* resume(genContext, completion);
   // 8. Assert: result is never an abrupt completion.
   Assert(!(result instanceof AbruptCompletion));
   // 9. Assert: When we return here, genContext has already been removed from the execution context stack and callerContext is the currently running execution context.

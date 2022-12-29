@@ -24,8 +24,8 @@ import {
   ParseJSONModule,
 } from './parse.mjs';
 import { SourceTextModuleRecord } from './modules.mjs';
-import { Evaluate, EVAL_YIELD } from './evaluator.mjs';
-import { unwind, wrap } from './helpers.mjs';
+import { Evaluate } from './evaluator.mjs';
+import { unwind, wrap, EVAL_YIELD } from './helpers.mjs';
 
 export * from './value.mjs';
 export * from './engine.mjs';
