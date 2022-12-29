@@ -374,6 +374,7 @@ export type Expression =
     | CallExpression
     | RelationalExpression
     | UpdateExpression
+    | FunctionExpression
     | ArrowFunction
     | AsyncArrowFunction
     | ConditionalExpression
@@ -499,6 +500,13 @@ export interface UpdateExpression extends ExpressionBase {
     LeftHandSideExpression: Expression;
     UnaryExpression: Expression | null;
     operator: '++' | '-' | '--';
+}
+
+export interface FunctionExpression extends ExpressionBase {
+    type: 'FunctionExpression';
+    BindingIdentifier: Identifier;
+    FormalParameters: FormalParameter[];
+    FunctionBody: FunctionBody;
 }
 
 export interface ArrowFunction extends ExpressionBase {
